@@ -107,8 +107,6 @@ public class ControladorInimigo : MonoBehaviour
     private void IniciarCombate()
     {
         Debug.Log("Inicio do combate!");
-        //Apenas para o jogo (por enquanto)
-        Time.timeScale = 0f;
     }
 
     private void Perseguir()
