@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8fe966cd8ab75104f854a716378aa16f, type: 3}
-  m_Name: PocaoVida
+  m_Name: "\xD3leo de Peixe"
   m_EditorClassIdentifier: Assembly-CSharp::DadosItem
-  nomeDoItem: "Po\xE7\xE3o de Vida"
-  id: item_pocao_vida
-  icone: {fileID: 21300000, guid: d4cf0771c864568418a68682a5deb4f5, type: 3}
-  descricao: "Po\xE7\xE3o m\xE1gica que restaura 50 pontos de vida do jogador."
-  valorEmOuro: 5
+  nomeDoItem: "\xD3leo de Peixe"
+  id: item_fish_oil
+  icone: {fileID: 359681568462213966, guid: a3f6ade4d7849ca459a1718983bd25b8, type: 3}
+  descricao: "\xD3leo de peixe. Curativo em textura mas n\xE3o consum\xEDvel."
+  valorEmOuro: 2
   ehEmpilhavel: 1

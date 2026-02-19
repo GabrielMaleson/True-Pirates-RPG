@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8fe966cd8ab75104f854a716378aa16f, type: 3}
-  m_Name: EspadaTreinamento
+  m_Name: DenteTubarao
   m_EditorClassIdentifier: Assembly-CSharp::DadosItem
-  nomeDoItem: Espada de Treinamento
-  id: item_espada_treinamento
-  icone: {fileID: 21300000, guid: 62b0fc13496691b48a2c064bf2e4d8d3, type: 3}
-  descricao: Espada de madeira para treinamento de recrutas.
-  valorEmOuro: 10
-  ehEmpilhavel: 0
+  nomeDoItem: "Dente de Tubar\xE3o"
+  id: item_tubarao_dente
+  icone: {fileID: 6658270426124323479, guid: a1dfb11679c144945bc33a24bfad5efb, type: 3}
+  descricao: "Dente de tubar\xE3o. Forte o suficiente para quebrar uma pessoa."
+  valorEmOuro: 1
+  ehEmpilhavel: 1

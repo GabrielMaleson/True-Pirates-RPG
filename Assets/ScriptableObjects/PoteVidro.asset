@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8fe966cd8ab75104f854a716378aa16f, type: 3}
-  m_Name: FlechaSimples
+  m_Name: PoteVidro
   m_EditorClassIdentifier: Assembly-CSharp::DadosItem
-  nomeDoItem: Flecha Simples
-  id: item_flecha_simples
-  icone: {fileID: 21300000, guid: 13c68d5f76e1d0647ae5c8578c0a8fd5, type: 3}
-  descricao: Flecha simples de madeira
-  valorEmOuro: 1
-  ehEmpilhavel: 1
+  nomeDoItem: Pote de Vidro
+  id: item_pote_vidro
+  icone: {fileID: 6841301914281609026, guid: 756c005e0f59a0240a5af6aa2786758e, type: 3}
+  descricao: "Pote de Vidro para po\xE7\xF5es"
+  valorEmOuro: 10
+  ehEmpilhavel: 0

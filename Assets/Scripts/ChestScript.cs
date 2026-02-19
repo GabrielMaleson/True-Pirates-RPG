@@ -6,16 +6,17 @@ public class ChestScript : MonoBehaviour
     public DadosItem item; //ScriptableObject
     public int quantidade = 1;
 
-    private SpriteRenderer spriteRenderer;
+    public SpriteRenderer spriteRenderer;
     public Sprite openchest;
     private bool ChestOpen = false;
-    private void Start()
-    {
-        spriteRenderer = GetComponent<SpriteRenderer>();
+    private bool playerInRange = false;
 
-        if (item != null)
+    private void Update()
+    {
+        // Check for input in Update while player is in range and chest is not open
+        if (playerInRange && !ChestOpen && Input.GetKeyDown(KeyCode.Space))
         {
-            spriteRenderer.sprite = item.icone;
+            TryOpenChest();
         }
     }
 
@@ -23,45 +24,65 @@ public class ChestScript : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
-            GameObject popup = GameObject.FindWithTag("Notification");
+            if (!ChestOpen)
+            {
+                playerInRange = true;
+                ShowPopup();
+                Debug.Log("aperte space bar pra abrir o baú. no jogo final vai aparecer um icone mais relevante");
+            }
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Player"))
+        {
+            playerInRange = false;
+            HidePopup();
+        }
+    }
+
+    private void TryOpenChest()
+    {
+        SistemaInventario inventario = FindFirstObjectByType<SistemaInventario>();
+
+        if (inventario != null)
+        {
+            inventario.AdicionarItem(item, quantidade);
+            spriteRenderer.sprite = openchest;
+            ChestOpen = true;
+            Debug.Log("chest aberto");
+            HidePopup(); 
+        }
+    }
+
+    private void ShowPopup()
+    {
+        GameObject popup = GameObject.FindWithTag("Notification");
+        if (popup != null)
+        {
             SpriteRenderer spriteRend = popup.GetComponent<SpriteRenderer>();
             if (spriteRend != null)
             {
                 Color color = spriteRend.color;
                 color.a = 1f;
                 spriteRend.color = color;
-                return;
-            }
-
-            Debug.Log("aperte space bar pra abrir o baú. no jogo final vai aparecer um icone mais relevante");
-            //Procura pelo inventario no gerenciador do jogo
-            SistemaInventario inventario = FindFirstObjectByType<SistemaInventario>();
-
-            if (inventario != null && Input.GetKeyDown(KeyCode.Space))
-            {
-                if (!ChestOpen)
-                { 
-                inventario.AdicionarItem(item, quantidade);
-                spriteRenderer.sprite = openchest;
-                ChestOpen = true;
-                }
             }
         }
     }
-    private void OnTriggerExit2D(Collider2D collision)
+
+    private void HidePopup()
     {
-        if (collision.CompareTag("Player"))
+        GameObject popup = GameObject.FindWithTag("Notification");
+        if (popup != null)
         {
-            GameObject popup = GameObject.FindWithTag("Notification");
             SpriteRenderer spriteRend = popup.GetComponent<SpriteRenderer>();
             if (spriteRend != null)
             {
                 Color color = spriteRend.color;
                 color.a = 0f;
                 spriteRend.color = color;
-                return;
             }
         }
     }
-
 }
