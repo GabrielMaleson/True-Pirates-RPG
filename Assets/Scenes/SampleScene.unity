@@ -2251,7 +2251,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TesteInventario
   inventario: {fileID: 1337405898}
-  espada: {fileID: 11400000, guid: 9f2d6a8fb4c76884e9ed4fba87936880, type: 2}
+  espada: {fileID: 11400000, guid: b2674fc773674fd4699085e018fafe0a, type: 2}
+  escudo: {fileID: 11400000, guid: dcc1005cefe96a9478a682dcc28fb1c0, type: 2}
+  livro: {fileID: 11400000, guid: 6dc36105c350fcb41964ec3958d61159, type: 2}
+  pote: {fileID: 11400000, guid: 9f2d6a8fb4c76884e9ed4fba87936880, type: 2}
 --- !u!4 &1337405900
 Transform:
   m_ObjectHideFlags: 0
@@ -2328,6 +2331,24 @@ MonoBehaviour:
       quantidade: 3
     results:
     - item: {fileID: 11400000, guid: c864c74d835731d4b833d9313ba5fbab, type: 2}
+      quantidade: 1
+  - recipeName: Espada Morte
+    requiredItems:
+    - item: {fileID: 11400000, guid: b2674fc773674fd4699085e018fafe0a, type: 2}
+      quantidade: 1
+    - item: {fileID: 11400000, guid: c864c74d835731d4b833d9313ba5fbab, type: 2}
+      quantidade: 1
+    results:
+    - item: {fileID: 11400000, guid: 96b3984d85a0bac4ba2944d387081fa4, type: 2}
+      quantidade: 1
+  - recipeName: Escudo Vida
+    requiredItems:
+    - item: {fileID: 11400000, guid: dcc1005cefe96a9478a682dcc28fb1c0, type: 2}
+      quantidade: 1
+    - item: {fileID: 11400000, guid: 429c578530f4a9044ad0af2628215113, type: 2}
+      quantidade: 1
+    results:
+    - item: {fileID: 11400000, guid: 7840db85a48c5b74f98f7e580208eef1, type: 2}
       quantidade: 1
 --- !u!114 &1337405904
 MonoBehaviour:
