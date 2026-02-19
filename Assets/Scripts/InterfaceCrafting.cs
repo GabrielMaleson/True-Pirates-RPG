@@ -1,8 +1,9 @@
-using UnityEngine;
-using TMPro;
-using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+using static CraftingSimples;
 
 public class InterfaceCrafting : MonoBehaviour
 {
@@ -366,28 +367,51 @@ public class InterfaceCrafting : MonoBehaviour
 
             if (temTodos)
             {
-                // Remove required items
+                // Store the required items info BEFORE adding anything
+                // This creates a copy of what needs to be removed
+                List<ItemRequirement> requisitos = new List<ItemRequirement>();
                 foreach (var requirement in receitaAtual.requiredItems)
+                {
+                    requisitos.Add(new ItemRequirement
+                    {
+                        item = requirement.item,
+                        quantidade = requirement.quantidade
+                    });
+                }
+
+                // Store results info as well
+                List<ItemResult> resultados = new List<ItemResult>();
+                foreach (var result in receitaAtual.results)
+                {
+                    resultados.Add(new ItemResult
+                    {
+                        item = result.item,
+                        quantidade = result.quantidade
+                    });
+                }
+
+                // Clear selection BEFORE any inventory changes
+                slotsSelecionados.Clear();
+                receitaAtual = null;
+
+                // FIRST add the crafted items (as per your system requirement)
+                foreach (var result in resultados)
+                {
+                    Debug.Log($"Adicionando: {result.quantidade}x {result.item.nomeDoItem}");
+                    sistemaInventario.AdicionarItem(result.item, result.quantidade);
+                }
+
+                // THEN remove required items
+                // Note: This will trigger another onInventarioMudou event
+                foreach (var requirement in requisitos)
                 {
                     int quantidadeARemover = requirement.quantidade;
                     Debug.Log($"Removendo: {quantidadeARemover}x {requirement.item.nomeDoItem}");
                     sistemaInventario.RemoverItem(requirement.item, quantidadeARemover);
                 }
 
-                // Add crafted items
-                foreach (var result in receitaAtual.results)
-                {
-                    Debug.Log($"Adicionando: {result.quantidade}x {result.item.nomeDoItem}");
-                    sistemaInventario.AdicionarItem(result.item, result.quantidade);
-                }
-
-                // Clear selection after crafting
-                slotsSelecionados.Clear();
-
-                Debug.Log($"Sucesso! Receita '{receitaAtual.recipeName}' craftada!");
-
-                // UI will update automatically via the inventory event
+                Debug.Log($"Sucesso! Receita '{receitaAtual?.recipeName}' craftada!");
             }
-        }
     }
+}
 }

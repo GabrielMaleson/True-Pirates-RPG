@@ -202,9 +202,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1337405904}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: InterfaceCrafting, Assembly-CSharp
-        m_MethodName: TentarCraftar
+        m_MethodName: 
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

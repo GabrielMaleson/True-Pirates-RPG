@@ -16,5 +16,5 @@ MonoBehaviour:
   id: item_fish_oil
   icone: {fileID: 359681568462213966, guid: a3f6ade4d7849ca459a1718983bd25b8, type: 3}
   descricao: "\xD3leo de peixe. Curativo em textura mas n\xE3o consum\xEDvel."
-  valorEmOuro: 2
+  valorEmOuro: 5
   ehEmpilhavel: 1
