@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7aaed775e293fcf46924317e9bb24f99, type: 3}
+  m_Name: basic attack
+  m_EditorClassIdentifier: Assembly-CSharp::BattleAnimationData
+  userAnimation: {fileID: 0}
+  targetHitAnimation: {fileID: 0}
+  impactVFX: {fileID: 0}
+  chargeVFX: {fileID: 0}
+  chargeSound: {fileID: 0}
+  impactSound: {fileID: 0}
+  useCameraShake: 1
+  cameraShakeIntensity: 0.3
+  cameraShakeDuration: 0.2
+  preDelay: 0.2
+  hitDelay: 0.5
+  postDelay: 0.3
