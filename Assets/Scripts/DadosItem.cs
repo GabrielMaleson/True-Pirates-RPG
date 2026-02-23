@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-[CreateAssetMenu(fileName = "Novo Item", menuName = "Sistema RPG/Item")]
+[CreateAssetMenu(fileName = "Novo Item", menuName = "RPG/Item")]
 public class DadosItem : ScriptableObject
 {
     [Header("Identificação")]

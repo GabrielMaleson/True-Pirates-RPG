@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-[CreateAssetMenu(fileName = "Nova Animacao", menuName = "Sistema RPG/Battle Animation")]
+[CreateAssetMenu(fileName = "Nova Animacao", menuName = "RPG/Battle Animation")]
 public class BattleAnimationData : ScriptableObject
 {
     [Header("Animation Clips")]

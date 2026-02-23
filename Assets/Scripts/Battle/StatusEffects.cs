@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 
 // Simplified Status Effects that work with existing systems
-[CreateAssetMenu(fileName = "Novo Status", menuName = "Sistema RPG/Status Effect")]
+[CreateAssetMenu(fileName = "Novo Status", menuName = "RPG/Status Effect")]
 public class StatusEffectData : ScriptableObject
 {
     [Header("Identificação")]
