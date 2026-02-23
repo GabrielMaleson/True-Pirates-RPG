@@ -36,12 +36,12 @@ public class CharacterData : ScriptableObject
 
     // Runtime variables
     public int currentAP { get; set; }
-    public int hp { get; private set; }
-    public int attack { get; private set; }
-    public int defense { get; private set; }
-    public int currentExperience { get; private set; }
-    public List<AttackFile> availableAttacks { get; private set; } = new List<AttackFile>();
-    public List<AttackFile> selectedActions { get; private set; } = new List<AttackFile>();
+    public int hp { get; set; }
+    public int attack { get; set; }
+    public int defense { get; set; }
+    public int currentExperience { get; set; }
+    public List<AttackFile> availableAttacks { get; set; } = new List<AttackFile>();
+    public List<AttackFile> selectedActions { get; set; } = new List<AttackFile>();
 
     // Transform reference for animations (set at runtime)
     public Transform transform { get; set; }
