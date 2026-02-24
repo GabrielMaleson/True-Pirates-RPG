@@ -32,8 +32,6 @@ public class EffectData
     public int accuracy = 100;
     public EffectTrigger triggersOn = EffectTrigger.OnSuccess;
 }
-
-// Add TargetingMode here since it wasn't defined globally
 public enum TargetingMode
 {
     Single,

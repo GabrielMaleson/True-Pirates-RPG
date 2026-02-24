@@ -48,18 +48,27 @@ public class EncounterStarter : MonoBehaviour
         // Store reference to original player GameObject
         encounterData.originalPlayer = playerObject;
 
-        // Store player data from SistemaInventario
+        // Get player inventory
         SistemaInventario inventory = playerObject.GetComponent<SistemaInventario>();
         if (inventory != null)
         {
             encounterData.playerInventory = inventory;
         }
 
-        // Store player CharacterData
-        CharacterData playerCharacter = playerObject.GetComponent<CharacterData>();
-        if (playerCharacter != null)
+        // FIXED: Get CharacterComponent instead of CharacterData directly
+        CharacterComponent playerCharacterComponent = playerObject.GetComponent<CharacterComponent>();
+        if (playerCharacterComponent != null && playerCharacterComponent.characterData != null)
         {
-            encounterData.playerCharacter = CreateCharacterDataCopy(playerCharacter);
+            // Create a copy of the player's character data
+            encounterData.playerCharacter = CreateCharacterDataCopy(playerCharacterComponent.characterData);
+
+            // Store reference to the original component for later
+            encounterData.playerCharacterComponent = playerCharacterComponent;
+        }
+        else
+        {
+            Debug.LogError("Player does not have a CharacterComponent with valid CharacterData!");
+            return;
         }
 
         // Store enemy data

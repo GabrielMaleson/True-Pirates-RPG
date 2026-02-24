@@ -11,7 +11,6 @@ public enum CombatState
     VICTORY,
     DEFEAT
 }
-
 public enum TargetType
 {
     Ally,
@@ -24,6 +23,8 @@ public enum EffectTrigger
     OnMiss
 }
 
+
+// Add these events at the top of your CombatSystem class
 public class CombatSystem : MonoBehaviour
 {
     [Header("Combatants")]
@@ -33,9 +34,18 @@ public class CombatSystem : MonoBehaviour
     [Header("Combat State")]
     public CombatState currentState = CombatState.STARTING;
 
+    // Events for UI
+    public System.Action<CharacterData> onTurnStarted;
+    public System.Action<CharacterData, AttackFile, List<CharacterData>> onActionExecuted;
+    public System.Action<CombatState> onCombatEnded;
+
     private Queue<CharacterData> turnQueue = new Queue<CharacterData>();
     private CharacterData currentCharacter;
     private bool isExecutingActions = false;
+    private bool isAnimating = false;
+
+    // Store actions with their targets
+    private Dictionary<AttackFile, List<CharacterData>> pendingActions = new Dictionary<AttackFile, List<CharacterData>>();
 
     private void Start()
     {
@@ -100,6 +110,19 @@ public class CombatSystem : MonoBehaviour
 
         Debug.Log($"Starting turn for: {currentCharacter.characterName}");
 
+        // Process status effects at start of turn
+        currentCharacter.ProcessStatusEffectsOnTurnStart();
+
+        if (!currentCharacter.CanAct())
+        {
+            Debug.Log($"{currentCharacter.characterName} is unable to act!");
+            StartNextTurn();
+            return;
+        }
+
+        // Invoke turn started event
+        onTurnStarted?.Invoke(currentCharacter);
+
         // Determine turn type
         if (partyMembers.Contains(currentCharacter))
         {
@@ -115,48 +138,56 @@ public class CombatSystem : MonoBehaviour
 
     private IEnumerator PlayerTurnRoutine()
     {
-        // Process status effects at start of turn
-        currentCharacter.ProcessStatusEffectsOnTurnStart();
-
-        if (!currentCharacter.CanAct())
-        {
-            Debug.Log($"{currentCharacter.characterName} is unable to act!");
-            yield return new WaitForSeconds(1f);
-            StartNextTurn();
-            yield break;
-        }
-        while (currentCharacter.currentAP > 0 && !isExecutingActions)
+        // Wait for player actions
+        while (currentCharacter.currentAP > 0 && !isExecutingActions && !isAnimating)
         {
             yield return null; // Player selects actions via UI
         }
 
         // Process selected actions in order (highest AP cost first)
-        ExecuteActionsInOrder();
+        if (pendingActions.Count > 0)
+        {
+            ExecuteActionsInOrder();
+        }
+        else
+        {
+            // End turn if no actions selected
+            EndPlayerTurn();
+        }
     }
 
     private IEnumerator EnemyTurnRoutine()
     {
-        // Process status effects at start of turn
-        currentCharacter.ProcessStatusEffectsOnTurnStart();
+        // Use ComplexAI if available, otherwise fall back to simple AI
+        ComplexAI ai = GetComponent<ComplexAI>();
+        AttackFile selectedAction = null;
+        List<CharacterData> targets = new List<CharacterData>();
 
-        if (!currentCharacter.CanAct())
+        if (ai != null)
         {
-            Debug.Log($"{currentCharacter.characterName} is unable to act!");
-            yield return new WaitForSeconds(1f);
-            StartNextTurn();
-            yield break;
+            var decision = ai.MakeDecision(partyMembers, enemies);
+            selectedAction = decision.selectedAction;
+            targets = decision.targets;
         }
-        // Simple AI: select highest damage action
-        AttackFile selectedAction = GetHighestDamageAction(currentCharacter);
+        else
+        {
+            // Simple AI: select highest damage action
+            selectedAction = GetHighestDamageAction(currentCharacter);
+            if (selectedAction != null)
+            {
+                targets = GetTargets(selectedAction.effects[0].targetType,
+                                     selectedAction.effects[0].numberOfTargets);
+            }
+        }
 
         if (selectedAction != null && currentCharacter.currentAP >= selectedAction.actionPointCost)
         {
             // Execute enemy action
-            ExecuteAttack(currentCharacter, selectedAction);
+            yield return StartCoroutine(ExecuteAttackWithAnimation(currentCharacter, selectedAction, targets));
             currentCharacter.currentAP -= selectedAction.actionPointCost;
         }
 
-        yield return new WaitForSeconds(1f); // Brief pause between turns
+        yield return new WaitForSeconds(0.5f); // Brief pause between turns
 
         // End enemy turn
         StartNextTurn();
@@ -196,47 +227,103 @@ public class CombatSystem : MonoBehaviour
         return highestDamageAction;
     }
 
+    // NEW: Public method for UI to end turn
+    public void EndPlayerTurn()
+    {
+        if (currentState == CombatState.PLAYER_TURN && !isExecutingActions && !isAnimating)
+        {
+            StartNextTurn();
+        }
+    }
+
+    // NEW: Public method for UI to select action with targets
+    public void SelectPlayerAction(AttackFile action, List<CharacterData> targets)
+    {
+        if (currentState == CombatState.PLAYER_TURN &&
+            currentCharacter.currentAP >= action.actionPointCost &&
+            !isExecutingActions && !isAnimating)
+        {
+            // Store the action with its targets
+            pendingActions[action] = targets;
+            Debug.Log($"Selected: {action.attackName} with {targets.Count} targets");
+        }
+    }
+
     private void ExecuteActionsInOrder()
     {
         isExecutingActions = true;
 
         // Sort selected actions by AP cost (highest first)
-        var orderedActions = currentCharacter.selectedActions
+        var orderedActions = pendingActions.Keys
             .OrderByDescending(a => a.actionPointCost)
             .ToList();
 
-        foreach (var action in orderedActions)
-        {
-            if (currentCharacter.currentAP >= action.actionPointCost)
-            {
-                ExecuteAttack(currentCharacter, action);
-                currentCharacter.currentAP -= action.actionPointCost;
-            }
-        }
-
-        currentCharacter.selectedActions.Clear();
-        isExecutingActions = false;
-
-        // End turn
-        StartNextTurn();
+        StartCoroutine(ExecuteActionQueue(orderedActions));
     }
 
-    private void ExecuteAttack(CharacterData user, AttackFile attack)
+    private IEnumerator ExecuteActionQueue(List<AttackFile> actions)
     {
+        foreach (var action in actions)
+        {
+            if (currentCharacter.currentAP >= action.actionPointCost && pendingActions.ContainsKey(action))
+            {
+                List<CharacterData> targets = pendingActions[action];
+                yield return StartCoroutine(ExecuteAttackWithAnimation(currentCharacter, action, targets));
+                currentCharacter.currentAP -= action.actionPointCost;
+
+                // Invoke action executed event
+                onActionExecuted?.Invoke(currentCharacter, action, targets);
+            }
+
+            yield return new WaitForSeconds(0.2f);
+        }
+
+        pendingActions.Clear();
+        isExecutingActions = false;
+
+        // Check if character still has AP and can act
+        if (currentCharacter.currentAP > 0 && currentCharacter.CanAct())
+        {
+            // Still have AP, let them choose more actions
+            currentState = CombatState.PLAYER_TURN;
+            onTurnStarted?.Invoke(currentCharacter);
+        }
+        else
+        {
+            // End turn
+            EndPlayerTurn();
+        }
+    }
+
+    // NEW: Method to execute attack with animation
+    private IEnumerator ExecuteAttackWithAnimation(CharacterData user, AttackFile attack, List<CharacterData> targets)
+    {
+        isAnimating = true;
+
         Debug.Log($"{user.characterName} uses {attack.attackName}!");
 
         // Play animation if available
         if (attack.battleAnimation != null)
         {
-            StartCoroutine(attack.battleAnimation.PlayAnimation(user, new List<CharacterData> { /* targets */ }));
+            yield return attack.battleAnimation.PlayAnimation(user, targets, () => {
+                // Apply effects after animation
+                ApplyAttackEffects(user, attack, targets);
+            });
         }
-        Debug.Log($"{user.characterName} uses {attack.attackName}!");
+        else
+        {
+            // No animation, apply effects immediately
+            ApplyAttackEffects(user, attack, targets);
+            yield return null;
+        }
 
+        isAnimating = false;
+    }
+
+    private void ApplyAttackEffects(CharacterData user, AttackFile attack, List<CharacterData> targets)
+    {
         foreach (var effect in attack.effects)
         {
-            // Determine targets
-            List<CharacterData> targets = GetTargets(effect.targetType, effect.numberOfTargets);
-
             // Roll for accuracy
             int accuracyRoll = Random.Range(0, 101);
             bool isSuccess = accuracyRoll <= effect.accuracy;
@@ -309,6 +396,7 @@ public class CombatSystem : MonoBehaviour
         if (allEnemiesDowned)
         {
             currentState = CombatState.VICTORY;
+            onCombatEnded?.Invoke(CombatState.VICTORY);
             AwardExperience();
             Debug.Log("Victory! All enemies defeated!");
             return true;
@@ -316,6 +404,7 @@ public class CombatSystem : MonoBehaviour
         else if (allPartyDowned)
         {
             currentState = CombatState.DEFEAT;
+            onCombatEnded?.Invoke(CombatState.DEFEAT);
             Debug.Log("Defeat! All party members are DOWNED!");
             return true;
         }
@@ -331,16 +420,5 @@ public class CombatSystem : MonoBehaviour
             member.GainExperience(totalExp);
         }
         Debug.Log($"Party gained {totalExp} experience!");
-    }
-
-    // Public method for UI to call when player selects an action
-    public void SelectPlayerAction(AttackFile action)
-    {
-        if (currentState == CombatState.PLAYER_TURN &&
-            currentCharacter.currentAP >= action.actionPointCost)
-        {
-            currentCharacter.selectedActions.Add(action);
-            Debug.Log($"Selected: {action.attackName}");
-        }
     }
 }

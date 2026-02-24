@@ -14,6 +14,9 @@ public class EncounterData : MonoBehaviour
     public GameObject originalPlayer;
     public SistemaInventario playerInventory;
 
+    // NEW: Store reference to the player's CharacterComponent
+    public CharacterComponent playerCharacterComponent;
+
     [Header("Encounter Tracking")]
     public GameObject encounterStarterObject;
     public bool combatVictory = false;
@@ -103,18 +106,16 @@ public class EncounterData : MonoBehaviour
     {
         if (originalPlayer != null)
         {
-            // Restore player stats
-            if (playerCharacter != null)
+            // Restore player stats - FIXED: Use CharacterComponent
+            if (playerCharacter != null && playerCharacterComponent != null)
             {
-                CharacterData playerChar = originalPlayer.GetComponent<CharacterData>();
-                if (playerChar != null)
-                {
-                    // Copy back the updated stats
-                    playerChar.currentHP = playerCharacter.currentHP;
-                    playerChar.level = playerCharacter.level;
-                    playerChar.currentExperience = playerCharacter.currentExperience;
-                    playerChar.availableAttacks = new List<AttackFile>(playerCharacter.availableAttacks);
-                }
+                // Copy back the updated stats to the original character data
+                playerCharacterComponent.characterData.currentHP = playerCharacter.currentHP;
+                playerCharacterComponent.characterData.level = playerCharacter.level;
+                playerCharacterComponent.characterData.currentExperience = playerCharacter.currentExperience;
+
+                // Update the component's runtime stats
+                playerCharacterComponent.characterData.CalculateStatsForLevel();
             }
 
             originalPlayer.SetActive(true);

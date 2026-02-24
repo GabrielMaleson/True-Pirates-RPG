@@ -10,7 +10,7 @@ public class SistemaInventario : MonoBehaviour
     public int moedas = 0;
 
     [Header("Party Members")]
-    public List<CharacterData> partyMembers = new List<CharacterData>();
+    public List<CharacterComponent> partyMembers = new List<CharacterComponent>(); // Changed to CharacterComponent
 
     [Header("Inventory Settings")]
     public int maxInventorySize = 30;
@@ -26,9 +26,9 @@ public class SistemaInventario : MonoBehaviour
         // Store references to original CharacterData for each party member
         foreach (var member in partyMembers)
         {
-            if (member != null)
+            if (member != null && member.characterData != null)
             {
-                originalCharacterData[member] = member;
+                originalCharacterData[member.characterData] = member.characterData;
             }
         }
     }
@@ -143,24 +143,25 @@ public class SistemaInventario : MonoBehaviour
 
         foreach (var member in partyMembers)
         {
-            if (member != null)
+            if (member != null && member.characterData != null)
             {
                 // Create a runtime copy to preserve original data
                 CharacterData combatCopy = ScriptableObject.CreateInstance<CharacterData>();
 
                 // Copy all data
-                combatCopy.characterName = member.characterName;
-                combatCopy.level = member.level;
-                combatCopy.currentHP = member.currentHP;
-                combatCopy.hp = member.hp;
-                combatCopy.attack = member.attack;
-                combatCopy.defense = member.defense;
-                combatCopy.maxAP = member.maxAP;
-                combatCopy.availableAttacks = new List<AttackFile>(member.availableAttacks);
-                combatCopy.expValue = member.expValue;
+                CharacterData source = member.characterData;
+                combatCopy.characterName = source.characterName;
+                combatCopy.level = source.level;
+                combatCopy.currentHP = source.currentHP;
+                combatCopy.hp = source.hp;
+                combatCopy.attack = source.attack;
+                combatCopy.defense = source.defense;
+                combatCopy.maxAP = source.maxAP;
+                combatCopy.availableAttacks = new List<AttackFile>(source.availableAttacks);
+                combatCopy.expValue = source.expValue;
 
                 // Copy equipped items
-                combatCopy.equippedItems = new List<DadosItem>(member.equippedItems);
+                combatCopy.equippedItems = new List<DadosItem>(source.equippedItems);
 
                 combatParty.Add(combatCopy);
             }
@@ -173,28 +174,19 @@ public class SistemaInventario : MonoBehaviour
     {
         for (int i = 0; i < combatPartyMembers.Count && i < partyMembers.Count; i++)
         {
-            if (partyMembers[i] != null && combatPartyMembers[i] != null)
+            if (partyMembers[i] != null && partyMembers[i].characterData != null && combatPartyMembers[i] != null)
             {
                 // Update the original CharacterData with combat results
-                partyMembers[i].currentHP = combatPartyMembers[i].currentHP;
-                partyMembers[i].level = combatPartyMembers[i].level;
-                partyMembers[i].currentExperience = combatPartyMembers[i].currentExperience;
+                partyMembers[i].characterData.currentHP = combatPartyMembers[i].currentHP;
+                partyMembers[i].characterData.level = combatPartyMembers[i].level;
+                partyMembers[i].characterData.currentExperience = combatPartyMembers[i].currentExperience;
 
                 // Update stats if level changed
-                if (partyMembers[i].level != combatPartyMembers[i].level)
+                if (partyMembers[i].characterData.level != combatPartyMembers[i].level)
                 {
-                    partyMembers[i].CalculateStatsForLevel();
+                    partyMembers[i].characterData.CalculateStatsForLevel();
                 }
             }
-        }
-    }
-
-    // When Unity editor changes, update inventory display
-    private void OnValidate()
-    {
-        if (Application.isPlaying && onInventarioMudou != null)
-        {
-            onInventarioMudou.Invoke();
         }
     }
 }
