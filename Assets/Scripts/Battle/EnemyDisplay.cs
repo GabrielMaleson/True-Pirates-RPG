@@ -2,14 +2,12 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CharacterUI : MonoBehaviour
+public class EnemyUI : MonoBehaviour
 {
     [Header("UI Elements")]
     public TextMeshProUGUI nameText;
     public TextMeshProUGUI hpText;
     public Image healthBar;
-    public TextMeshProUGUI apText;
-    public Image apBar;
     public GameObject defeatedOverlay;
 
     private CharacterData character;
@@ -19,7 +17,7 @@ public class CharacterUI : MonoBehaviour
     public void Initialize(CharacterData characterData, bool isPartyMember)
     {
         character = characterData;
-        isParty = isPartyMember;
+        isParty = !isPartyMember;
 
         nameText.text = characterData.characterName;
         UpdateDisplay();
@@ -32,11 +30,6 @@ public class CharacterUI : MonoBehaviour
             hpText.text = $"{character.currentHP}/{character.hp}";
             if (healthBar != null)
                 healthBar.fillAmount = (float)character.currentHP / character.hp;
-
-            if (apText != null)
-                apText.text = $"AP: {character.currentAP}/{character.maxAP}";
-            if (apBar != null)
-                apBar.fillAmount = (float)character.currentAP / character.maxAP;
         }
     }
 

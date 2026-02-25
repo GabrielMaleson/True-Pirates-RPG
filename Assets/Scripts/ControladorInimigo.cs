@@ -62,7 +62,6 @@ public class ControladorInimigo : MonoBehaviour
                 animator.speed = 1f;
 
                 animator.SetBool("Andando", false);
-                Debug.Log($"{gameObject.name} mudando para o estado {estadoAtual}.");
                 break;
             case EstadoInimigo.Patrulha:
                 //Regra 01: Se o jogador entro no raio de visão
@@ -74,7 +73,6 @@ public class ControladorInimigo : MonoBehaviour
                     estadoAtual = EstadoInimigo.Perseguicao;
                 }
                 animator.SetBool("Andando", true);
-                Debug.Log($"{gameObject.name} mudando para o estado {estadoAtual}.");
                 Patrulhar();
                 break;
             case EstadoInimigo.Perseguicao:

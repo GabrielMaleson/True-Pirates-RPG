@@ -7,7 +7,14 @@ public enum EffectType
     Damage,
     Heal,
     Attack,
-    // Add more effect types as needed
+    HP_Restore,
+    StatusEffect,
+    Buff,
+    Debuff,
+    ManaRestore,
+    Revive,
+    MultiHit
+    // Add more as needed
 }
 [CreateAssetMenu(fileName = "NewAttack", menuName = "RPG/Attack File")]
 public class AttackFile : ScriptableObject
@@ -31,6 +38,12 @@ public class EffectData
     [Range(0, 100)]
     public int accuracy = 100;
     public EffectTrigger triggersOn = EffectTrigger.OnSuccess;
+
+    // New fields for advanced effects
+    public StatusEffectData statusEffect; // For status effect applications
+    public List<StatModifier> statModifiers; // For buffs/debuffs
+    public int hitCount = 1; // For multi-hit attacks
+    public float damageMultiplier = 1f; // For scaling damage
 }
 public enum TargetingMode
 {

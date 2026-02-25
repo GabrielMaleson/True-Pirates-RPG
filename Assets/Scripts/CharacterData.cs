@@ -72,6 +72,21 @@ public class CharacterData : ScriptableObject
         }
     }
 
+    public void ModifyAttack(int amount)
+    {
+        attack += amount;
+    }
+
+    public void ModifyDefense(int amount)
+    {
+        defense += amount;
+    }
+    public void RemoveAllBuffs()
+    {
+        // Reset stats to base + equipment
+        CalculateStatsForLevel();
+    }
+
     private void ApplyEquipmentModifiers()
     {
         foreach (var item in equippedItems)

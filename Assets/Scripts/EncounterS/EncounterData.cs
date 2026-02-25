@@ -3,65 +3,50 @@ using UnityEngine;
 
 public class EncounterData : MonoBehaviour
 {
-    [Header("Enemy Data")]
-    public List<CharacterData> enemyCharacters = new List<CharacterData>();
-    public int totalExpReward = 0;
-    public int totalGoldReward = 0;
+    [Header("Encounter File")]
     public EncounterFile encounterFile;
 
     [Header("Player Data")]
-    public CharacterData playerCharacter;
-    public GameObject originalPlayer;
+    public List<CharacterData> playerPartyMembers = new List<CharacterData>();
     public SistemaInventario playerInventory;
-
-    // NEW: Store reference to the player's CharacterComponent
-    public CharacterComponent playerCharacterComponent;
 
     [Header("Encounter Tracking")]
     public GameObject encounterStarterObject;
     public bool combatVictory = false;
 
-    // Store player stats before combat to restore after
-    private Dictionary<string, object> preCombatStats = new Dictionary<string, object>();
+    [Header("Rewards")]
+    public int totalExpReward = 0;
+    public int totalGoldReward = 0;
 
     private void Awake()
     {
         DontDestroyOnLoad(gameObject);
     }
 
-    public void StorePlayerPreCombatStats()
+    public void CalculateRewards()
     {
-        if (playerCharacter != null)
+        if (encounterFile != null)
         {
-            preCombatStats["hp"] = playerCharacter.currentHP;
-            preCombatStats["level"] = playerCharacter.level;
-            preCombatStats["exp"] = playerCharacter.currentExperience;
-        }
-    }
+            totalGoldReward = encounterFile.baseGoldReward;
 
-    public void RestorePlayerStats()
-    {
-        if (playerCharacter != null && preCombatStats.ContainsKey("hp"))
-        {
-            playerCharacter.currentHP = (int)preCombatStats["hp"];
+            // Calculate EXP from all enemies
+            foreach (var enemyData in encounterFile.enemies)
+            {
+                totalExpReward += enemyData.characterData.expValue;
+            }
+            totalExpReward += encounterFile.baseExpReward;
         }
     }
 
     public void ApplyCombatRewards()
     {
-        if (playerCharacter != null)
+        if (playerInventory != null)
         {
-            // Apply experience
-            playerCharacter.GainExperience(totalExpReward);
+            // Apply gold
+            playerInventory.ModificadorMoedas(totalGoldReward);
 
-            // Apply gold to inventory
-            if (playerInventory != null)
-            {
-                playerInventory.ModificadorMoedas(totalGoldReward);
-            }
-
-            // Apply item drops
-            if (encounterFile != null && playerInventory != null)
+            // Apply item drops from encounter file
+            if (encounterFile != null)
             {
                 // Guaranteed drops
                 foreach (var item in encounterFile.guaranteedDrops)
@@ -82,62 +67,31 @@ public class EncounterData : MonoBehaviour
                         playerInventory.AdicionarItem(drop.item, quantity);
                     }
                 }
-
-                // Enemy-specific drops
-                foreach (var enemy in enemyCharacters)
-                {
-                    // Check if this enemy has specific drops in the encounter file
-                    foreach (var enemyData in encounterFile.enemies)
-                    {
-                        if (enemyData.characterData.characterName == enemy.characterName)
-                        {
-                            foreach (var item in enemyData.enemySpecificDrops)
-                            {
-                                playerInventory.AdicionarItem(item, 1);
-                            }
-                        }
-                    }
-                }
             }
         }
     }
 
     public void ReactivateOriginalPlayer(Vector3 position)
     {
-        if (originalPlayer != null)
+        if (playerInventory != null)
         {
-            // Restore player stats - FIXED: Use CharacterComponent
-            if (playerCharacter != null && playerCharacterComponent != null)
-            {
-                // Copy back the updated stats to the original character data
-                playerCharacterComponent.characterData.currentHP = playerCharacter.currentHP;
-                playerCharacterComponent.characterData.level = playerCharacter.level;
-                playerCharacterComponent.characterData.currentExperience = playerCharacter.currentExperience;
+            // Update party members with combat results
+            playerInventory.UpdatePartyMembersFromCombat(playerPartyMembers);
 
-                // Update the component's runtime stats
-                playerCharacterComponent.characterData.CalculateStatsForLevel();
-            }
-
-            originalPlayer.SetActive(true);
-            originalPlayer.transform.position = position;
-
-            Debug.Log($"Player reactivated at position {position} with HP: {playerCharacter?.currentHP}");
+            // Reactivate player GameObject
+            playerInventory.gameObject.SetActive(true);
+            playerInventory.transform.position = position;
         }
     }
 
     private void OnDestroy()
     {
         // Clean up runtime scriptable objects
-        if (playerCharacter != null && playerCharacter.name.Contains("(Clone)"))
+        foreach (var member in playerPartyMembers)
         {
-            Destroy(playerCharacter);
-        }
-
-        foreach (var enemy in enemyCharacters)
-        {
-            if (enemy != null && enemy.name.Contains("(Clone)"))
+            if (member != null && member.name.Contains("(Clone)"))
             {
-                Destroy(enemy);
+                Destroy(member);
             }
         }
     }

@@ -352,6 +352,9 @@ MonoBehaviour:
   hpText: {fileID: 524446584259671965}
   healthBar: {fileID: 5746514386620092196}
   button: {fileID: 5159339156487119333}
+  background: {fileID: 6234017541194920606}
+  normalColor: {r: 1, g: 1, b: 1, a: 1}
+  highlightedColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!1 &7605054204991743468
 GameObject:
   m_ObjectHideFlags: 0

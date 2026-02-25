@@ -504,8 +504,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EncounterStarter
   encounterFile: {fileID: 11400000, guid: f841df8eeed8eb149a64c27b6c9c5b45, type: 2}
-  useManualEnemies: 0
-  manualEnemies: []
+  playerInventory: {fileID: 0}
 --- !u!61 &230615028
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2301,7 +2300,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SistemaInventario
   inventario: []
   moedas: 0
-  partyMembers: []
+  partyMembers:
+  - {fileID: 1954456082905731064}
   maxInventorySize: 30
 --- !u!114 &1337405899
 MonoBehaviour:
@@ -61275,6 +61275,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1e7f3dc7f8881124c80d49cc85d2388b, type: 3}
+--- !u!114 &1954456082905731064 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2276497191558045096, guid: 1e7f3dc7f8881124c80d49cc85d2388b, type: 3}
+  m_PrefabInstance: {fileID: 1954456082905731063}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07db9b2fbd5b38940a98b94e391400c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
 --- !u!1001 &4306362573018584605
 PrefabInstance:
   m_ObjectHideFlags: 0

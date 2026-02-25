@@ -61,7 +61,7 @@ public class PreviousScene : MonoBehaviour
         }
 
         // Reactivate player at the encounter location
-        if (encounterData != null && encounterData.originalPlayer != null)
+        if (encounterData != null)
         {
             // Get the position where combat started (where the EncounterStarter was)
             Vector3 playerPosition = Vector3.zero;

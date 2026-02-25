@@ -1,11 +1,13 @@
-using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
+using static Unity.Burst.Intrinsics.X86.Avx;
 
 public class ComplexAI : MonoBehaviour
 {
+    public CharacterComponent comp;
     [Header("AI Configuration")]
-    public CharacterData controlledCharacter;
+    private CharacterData controlledCharacter;
     public AIStrategy currentStrategy = AIStrategy.Balanced;
 
     [Header("Behavior Weights")]
@@ -18,6 +20,12 @@ public class ComplexAI : MonoBehaviour
     public bool focusHighestThreat = false;
 
     private Dictionary<CharacterData, float> threatLevels = new Dictionary<CharacterData, float>();
+
+    private void Start()
+    {
+        comp = GetComponent<CharacterComponent>();
+        controlledCharacter = comp.characterData;
+    }
 
     public AIDecision MakeDecision(List<CharacterData> partyMembers, List<CharacterData> enemies)
     {

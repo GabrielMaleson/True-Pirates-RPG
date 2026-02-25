@@ -27,11 +27,10 @@ public class EncounterFile : ScriptableObject
 public class EncounterEnemyData
 {
     public CharacterData characterData;
+    public GameObject enemyPrefab; // <-- ADD THIS
     public int level = 1;
     public int overrideHP; // 0 = use calculated from level
     public List<AttackFile> additionalAttacks = new List<AttackFile>();
-
-    // Optional: specific drops for this enemy
     public List<DadosItem> enemySpecificDrops = new List<DadosItem>();
 }
 

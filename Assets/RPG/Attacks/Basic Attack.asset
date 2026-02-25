@@ -22,4 +22,8 @@ MonoBehaviour:
     value: 5
     accuracy: 80
     triggersOn: 0
+    statusEffect: {fileID: 0}
+    statModifiers: []
+    hitCount: 1
+    damageMultiplier: 1
   battleAnimation: {fileID: 11400000, guid: cc180d481f3f9a24eae690927d2b3767, type: 2}
