@@ -124,15 +124,10 @@ public class CombatSystem : MonoBehaviour
             Debug.LogError("No party members found in EncounterData!");
         }
 
-        // 2. Set up enemies from encounter file (com proteções e logs adicionais)
+        // 2. Set up enemies from encounter file
         if (encounterData.encounterFile != null && encounterData.encounterFile.enemies.Count > 0)
         {
             Debug.Log($"Setting up {encounterData.encounterFile.enemies.Count} enemies");
-
-            if (enemySpawnPoints == null || enemySpawnPoints.Count < encounterData.encounterFile.enemies.Count)
-            {
-                Debug.LogWarning("Not enough enemySpawnPoints for all enemies. Some enemies may fail to spawn.");
-            }
 
             for (int i = 0; i < encounterData.encounterFile.enemies.Count; i++)
             {
@@ -144,7 +139,7 @@ public class CombatSystem : MonoBehaviour
                     continue;
                 }
 
-                Debug.Log($"Enemy {i}: {enemyData.characterData.characterName}, Prefab: {enemyData.enemyPrefab?.name}, Level: {enemyData.level}");
+                Debug.Log($"Enemy {i}: {enemyData.characterData.characterName}, Prefab: {enemyData.enemyPrefab?.name}");
 
                 // Create a copy of the character data
                 CharacterData enemyCopy = CreateCharacterDataCopy(enemyData.characterData);
@@ -170,48 +165,37 @@ public class CombatSystem : MonoBehaviour
                     }
                 }
 
-                // Decide qual prefab usar
-                GameObject prefabToUse = enemyData.enemyPrefab != null ? enemyData.enemyPrefab : enemyVisualPrefab;
-
+                // Create visual representation - USE ENEMY'S PREFAB, NOT PARTY PREFAB
+                GameObject prefabToUse = enemyData.enemyPrefab;
                 if (prefabToUse == null)
                 {
-                    Debug.LogError($"No prefab available for enemy {i} ('{enemyData.characterData.characterName}'). Check EncounterFile and CombatSystem inspector.");
-                    // Não tente instanciar sem prefab
-                    enemies.Add(enemyCopy); // ainda adiciona dados, mas sem visual
-                    continue;
+                    Debug.LogWarning($"Enemy {i} has no prefab, using default enemy visual");
+                    prefabToUse = enemyVisualPrefab;
                 }
 
-                // Log se o prefab escolhido é igual ao de party (ajuda a detectar atribuição errada no Inspector)
-                if (partyMemberVisualPrefab != null && prefabToUse == partyMemberVisualPrefab)
-                {
-                    Debug.LogWarning($"Enemy prefab for '{enemyData.characterData.characterName}' is the same as party prefab. Did you assign the wrong prefab in the Inspector?");
-                }
-
-                // Spawn only if spawn point exists
-                if (i < enemySpawnPoints.Count && enemySpawnPoints[i] != null)
+                if (prefabToUse != null && i < enemySpawnPoints.Count && enemySpawnPoints[i] != null)
                 {
                     GameObject enemyObj = Instantiate(prefabToUse, enemySpawnPoints[i].position, Quaternion.identity);
                     enemyObj.name = $"Enemy_{enemyCopy.characterName}";
 
-                    // Ensure CharacterComponent exists and assign data
+                    // Add CharacterComponent and assign data
                     CharacterComponent comp = enemyObj.GetComponent<CharacterComponent>();
-                    if (comp == null) comp = enemyObj.AddComponent<CharacterComponent>();
                     comp.characterData = enemyCopy;
 
                     // Set transform reference for animations
                     enemyCopy.transform = enemyObj.transform;
 
-                    // Add ComplexAI for enemy behavior if missing
+                    // Add ComplexAI for enemy behavior
                     if (enemyObj.GetComponent<ComplexAI>() == null)
                     {
                         enemyObj.AddComponent<ComplexAI>();
                     }
 
-                    Debug.Log($"Spawned enemy: {enemyCopy.characterName} at {enemySpawnPoints[i].position} (using prefab '{prefabToUse.name}')");
+                    Debug.Log($"Spawned enemy: {enemyCopy.characterName} at {enemySpawnPoints[i].position}");
                 }
                 else
                 {
-                    Debug.LogError($"Cannot spawn enemy {i}: spawn point missing at index {i}");
+                    Debug.LogError($"Cannot spawn enemy {i}: prefab null or spawn point missing");
                 }
 
                 enemies.Add(enemyCopy);
