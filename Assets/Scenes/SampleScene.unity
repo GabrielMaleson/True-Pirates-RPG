@@ -299,6 +299,7 @@ GameObject:
   - component: {fileID: 230615026}
   - component: {fileID: 230615027}
   - component: {fileID: 230615028}
+  - component: {fileID: 230615029}
   m_Layer: 0
   m_Name: Topeira
   m_TagString: Untagged
@@ -551,6 +552,19 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1.5, y: 1.5}
   m_EdgeRadius: 0
+--- !u!114 &230615029
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 230615020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07db9b2fbd5b38940a98b94e391400c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterComponent
+  characterData: {fileID: 11400000, guid: 3477d9bdb332f6347a5e175785076f35, type: 2}
 --- !u!1 &295447043
 GameObject:
   m_ObjectHideFlags: 0
