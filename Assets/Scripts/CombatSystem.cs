@@ -90,18 +90,21 @@ public class CombatSystem : MonoBehaviour
             for (int i = 0; i < encounterData.playerPartyMembers.Count; i++)
             {
                 CharacterData memberData = encounterData.playerPartyMembers[i];
-                Debug.Log($"Party member {i}: {memberData?.characterName}");
 
-                if (memberData == null) continue;
+                if (memberData == null)
+                {
+                    Debug.LogError($"Party member {i} is null!");
+                    continue;
+                }
+
+                Debug.Log($"Party member {i}: {memberData.characterName}");
 
                 // Create visual representation
                 if (i < partySpawnPoints.Count && partySpawnPoints[i] != null)
                 {
-                    GameObject visualPrefab = partyMemberVisualPrefab;
-
-                    if (visualPrefab != null)
+                    if (partyMemberVisualPrefab != null)
                     {
-                        GameObject memberObj = Instantiate(visualPrefab, partySpawnPoints[i].position, Quaternion.identity);
+                        GameObject memberObj = Instantiate(partyMemberVisualPrefab, partySpawnPoints[i].position, Quaternion.identity);
                         memberObj.name = $"Party_{memberData.characterName}";
 
                         // Add CharacterComponent and assign data
@@ -112,78 +115,65 @@ public class CombatSystem : MonoBehaviour
                         // Set transform reference for animations
                         memberData.transform = memberObj.transform;
 
-                        Debug.Log($"Spawned party member: {memberData.characterName} at {partySpawnPoints[i].position}");
+                        Debug.Log($"Spawned party member: {memberData.characterName}");
+                    }
+                    else
+                    {
+                        Debug.LogError("partyMemberVisualPrefab is null!");
                     }
                 }
 
                 partyMembers.Add(memberData);
             }
         }
-        else
-        {
-            Debug.LogError("No party members found in EncounterData!");
-        }
 
-        // 2. Set up enemies from encounter file
-        if (encounterData.encounterFile != null && encounterData.encounterFile.enemies.Count > 0)
+        // 2. Set up enemies from EncounterData (NOT from the file directly)
+        if (encounterData.enemyCharacters != null && encounterData.enemyCharacters.Count > 0)
         {
-            Debug.Log($"Setting up {encounterData.encounterFile.enemies.Count} enemies");
+            Debug.Log($"Setting up {encounterData.enemyCharacters.Count} enemies from EncounterData");
 
-            for (int i = 0; i < encounterData.encounterFile.enemies.Count; i++)
+            for (int i = 0; i < encounterData.enemyCharacters.Count; i++)
             {
-                var enemyData = encounterData.encounterFile.enemies[i];
+                CharacterData enemyData = encounterData.enemyCharacters[i];
+                GameObject enemyPrefab = i < encounterData.enemyPrefabs.Count ? encounterData.enemyPrefabs[i] : null;
+                int enemyLevel = i < encounterData.enemyLevels.Count ? encounterData.enemyLevels[i] : 1;
+                int overrideHP = i < encounterData.enemyOverrideHP.Count ? encounterData.enemyOverrideHP[i] : 0;
 
-                if (enemyData.characterData == null)
+                if (enemyData == null)
                 {
-                    Debug.LogError($"Enemy {i} has no CharacterData!");
+                    Debug.LogError($"Enemy {i} character data is null!");
                     continue;
                 }
 
-                Debug.Log($"Enemy {i}: {enemyData.characterData.characterName}, Prefab: {enemyData.enemyPrefab?.name}");
+                Debug.Log($"Enemy {i}: {enemyData.characterName}, Prefab: {enemyPrefab?.name}, Level: {enemyLevel}");
 
-                // Create a copy of the character data
-                CharacterData enemyCopy = CreateCharacterDataCopy(enemyData.characterData);
-
-                // Apply level
-                while (enemyCopy.level < enemyData.level)
+                // Apply level (if different from base)
+                while (enemyData.level < enemyLevel)
                 {
-                    enemyCopy.LevelUp();
+                    enemyData.LevelUp();
                 }
 
                 // Override HP if specified
-                if (enemyData.overrideHP > 0)
+                if (overrideHP > 0)
                 {
-                    enemyCopy.currentHP = enemyData.overrideHP;
+                    enemyData.currentHP = overrideHP;
                 }
 
-                // Add additional attacks
-                foreach (var attack in enemyData.additionalAttacks)
-                {
-                    if (!enemyCopy.availableAttacks.Contains(attack))
-                    {
-                        enemyCopy.availableAttacks.Add(attack);
-                    }
-                }
-
-                // Create visual representation - USE ENEMY'S PREFAB, NOT PARTY PREFAB
-                GameObject prefabToUse = enemyData.enemyPrefab;
-                if (prefabToUse == null)
-                {
-                    Debug.LogWarning($"Enemy {i} has no prefab, using default enemy visual");
-                    prefabToUse = enemyVisualPrefab;
-                }
+                // Create visual representation - USE ENEMY'S PREFAB FROM ENCOUNTERDATA
+                GameObject prefabToUse = enemyPrefab != null ? enemyPrefab : enemyVisualPrefab;
 
                 if (prefabToUse != null && i < enemySpawnPoints.Count && enemySpawnPoints[i] != null)
                 {
                     GameObject enemyObj = Instantiate(prefabToUse, enemySpawnPoints[i].position, Quaternion.identity);
-                    enemyObj.name = $"Enemy_{enemyCopy.characterName}";
+                    enemyObj.name = $"Enemy_{enemyData.characterName}";
 
                     // Add CharacterComponent and assign data
                     CharacterComponent comp = enemyObj.GetComponent<CharacterComponent>();
-                    comp.characterData = enemyCopy;
+                    if (comp == null) comp = enemyObj.AddComponent<CharacterComponent>();
+                    comp.characterData = enemyData;
 
                     // Set transform reference for animations
-                    enemyCopy.transform = enemyObj.transform;
+                    enemyData.transform = enemyObj.transform;
 
                     // Add ComplexAI for enemy behavior
                     if (enemyObj.GetComponent<ComplexAI>() == null)
@@ -191,19 +181,22 @@ public class CombatSystem : MonoBehaviour
                         enemyObj.AddComponent<ComplexAI>();
                     }
 
-                    Debug.Log($"Spawned enemy: {enemyCopy.characterName} at {enemySpawnPoints[i].position}");
+                    Debug.Log($"Spawned enemy: {enemyData.characterName} using prefab: {prefabToUse.name}");
                 }
                 else
                 {
                     Debug.LogError($"Cannot spawn enemy {i}: prefab null or spawn point missing");
+                    if (prefabToUse == null) Debug.LogError("  - prefabToUse is null");
+                    if (i >= enemySpawnPoints.Count) Debug.LogError($"  - enemySpawnPoints[{i}] doesn't exist");
+                    else if (enemySpawnPoints[i] == null) Debug.LogError($"  - enemySpawnPoints[{i}] is null");
                 }
 
-                enemies.Add(enemyCopy);
+                enemies.Add(enemyData);
             }
         }
         else
         {
-            Debug.LogError("No encounter file or enemies found!");
+            Debug.LogError("No enemy characters found in EncounterData!");
         }
 
         Debug.Log($"Final counts - Party: {partyMembers.Count}, Enemies: {enemies.Count}");

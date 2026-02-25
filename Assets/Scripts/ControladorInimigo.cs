@@ -97,7 +97,6 @@ public class ControladorInimigo : MonoBehaviour
                     Perseguir();
                 }
                 animator.SetBool("Andando", true);
-                Debug.Log($"{gameObject.name} mudando para o estado {estadoAtual}.");
                 break;
         }
     }

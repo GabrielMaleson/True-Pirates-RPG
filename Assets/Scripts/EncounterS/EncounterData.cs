@@ -10,6 +10,12 @@ public class EncounterData : MonoBehaviour
     public List<CharacterData> playerPartyMembers = new List<CharacterData>();
     public SistemaInventario playerInventory;
 
+    [Header("Enemy Data - IMPORTANT")]
+    public List<CharacterData> enemyCharacters = new List<CharacterData>(); // Store the copied character data
+    public List<GameObject> enemyPrefabs = new List<GameObject>(); // Store which prefab to use for each enemy
+    public List<int> enemyLevels = new List<int>(); // Store enemy levels
+    public List<int> enemyOverrideHP = new List<int>(); // Store HP overrides
+
     [Header("Encounter Tracking")]
     public GameObject encounterStarterObject;
     public bool combatVictory = false;
@@ -23,19 +29,75 @@ public class EncounterData : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    public void CalculateRewards()
+    public void LoadEncounterFromFile(EncounterFile file)
     {
-        if (encounterFile != null)
-        {
-            totalGoldReward = encounterFile.baseGoldReward;
+        Debug.Log($"=== Loading Encounter From File: {file.name} ===");
 
-            // Calculate EXP from all enemies
-            foreach (var enemyData in encounterFile.enemies)
+        encounterFile = file;
+
+        // Clear existing enemy data
+        enemyCharacters.Clear();
+        enemyPrefabs.Clear();
+        enemyLevels.Clear();
+        enemyOverrideHP.Clear();
+
+        // Load each enemy from the file
+        for (int i = 0; i < file.enemies.Count; i++)
+        {
+            var enemyData = file.enemies[i];
+
+            if (enemyData.characterData == null)
             {
-                totalExpReward += enemyData.characterData.expValue;
+                Debug.LogError($"Enemy {i} has no CharacterData!");
+                continue;
             }
-            totalExpReward += encounterFile.baseExpReward;
+
+            Debug.Log($"Loading enemy {i}: {enemyData.characterData.characterName}, Prefab: {enemyData.enemyPrefab?.name}, Level: {enemyData.level}");
+
+            // Create a copy of the character data
+            CharacterData enemyCopy = CreateCharacterDataCopy(enemyData.characterData);
+
+            // Store the data
+            enemyCharacters.Add(enemyCopy);
+            enemyPrefabs.Add(enemyData.enemyPrefab);
+            enemyLevels.Add(enemyData.level);
+            enemyOverrideHP.Add(enemyData.overrideHP);
+
+            // Calculate EXP reward
+            totalExpReward += enemyData.characterData.expValue;
         }
+
+        // Add base rewards
+        totalGoldReward = file.baseGoldReward;
+        totalExpReward += file.baseExpReward;
+
+        Debug.Log($"Loaded {enemyCharacters.Count} enemies. Total EXP: {totalExpReward}, Gold: {totalGoldReward}");
+    }
+
+    private CharacterData CreateCharacterDataCopy(CharacterData source)
+    {
+        CharacterData copy = ScriptableObject.CreateInstance<CharacterData>();
+
+        copy.characterName = source.characterName;
+        copy.level = source.level;
+        copy.currentHP = source.currentHP;
+        copy.expValue = source.expValue;
+
+        copy.baseHP = source.baseHP;
+        copy.baseAttack = source.baseAttack;
+        copy.baseDefense = source.baseDefense;
+        copy.maxAP = source.maxAP;
+
+        copy.hpGrowth = source.hpGrowth;
+        copy.attackGrowth = source.attackGrowth;
+        copy.defenseGrowth = source.defenseGrowth;
+
+        copy.unlockableAttacks = new List<UnlockableAttack>(source.unlockableAttacks);
+        copy.availableAttacks = new List<AttackFile>(source.availableAttacks);
+
+        copy.CalculateStatsForLevel();
+
+        return copy;
     }
 
     public void ApplyCombatRewards()
@@ -44,6 +106,7 @@ public class EncounterData : MonoBehaviour
         {
             // Apply gold
             playerInventory.ModificadorMoedas(totalGoldReward);
+            Debug.Log($"Added {totalGoldReward} gold to player");
 
             // Apply item drops from encounter file
             if (encounterFile != null)
@@ -54,6 +117,7 @@ public class EncounterData : MonoBehaviour
                     if (item != null)
                     {
                         playerInventory.AdicionarItem(item, 1);
+                        Debug.Log($"Added guaranteed drop: {item.nomeDoItem}");
                     }
                 }
 
@@ -65,6 +129,7 @@ public class EncounterData : MonoBehaviour
                     {
                         int quantity = Random.Range(drop.minQuantity, drop.maxQuantity + 1);
                         playerInventory.AdicionarItem(drop.item, quantity);
+                        Debug.Log($"Added random drop: {drop.item.nomeDoItem} x{quantity}");
                     }
                 }
             }
@@ -81,6 +146,8 @@ public class EncounterData : MonoBehaviour
             // Reactivate player GameObject
             playerInventory.gameObject.SetActive(true);
             playerInventory.transform.position = position;
+
+            Debug.Log($"Player reactivated at {position} with updated party stats");
         }
     }
 
@@ -92,6 +159,14 @@ public class EncounterData : MonoBehaviour
             if (member != null && member.name.Contains("(Clone)"))
             {
                 Destroy(member);
+            }
+        }
+
+        foreach (var enemy in enemyCharacters)
+        {
+            if (enemy != null && enemy.name.Contains("(Clone)"))
+            {
+                Destroy(enemy);
             }
         }
     }
