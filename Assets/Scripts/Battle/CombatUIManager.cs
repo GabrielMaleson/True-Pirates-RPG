@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -10,10 +11,12 @@ public class CombatUIManager : MonoBehaviour
     [Header("UI Parents")]
     public Transform partyUIParent;
     public Transform enemyUIParent;
+    public Transform targetButtonParent; // New: where target buttons will spawn
 
     [Header("Prefabs")]
-    public GameObject partyMemberUIPrefab; // Uses CharacterUI script
-    public GameObject enemyUIPrefab;        // Uses EnemyUI script
+    public GameObject partyMemberUIPrefab;
+    public GameObject enemyUIPrefab;
+    public GameObject targetButtonPrefab; // New: prefab for target buttons
 
     [Header("Text Displays")]
     public TextMeshProUGUI turnText;
@@ -21,6 +24,7 @@ public class CombatUIManager : MonoBehaviour
 
     [Header("Panels")]
     public GameObject waitPanel;
+    public GameObject targetPanel; // New: panel that contains target buttons
 
     private Dictionary<CharacterData, CharacterUI> partyUIDictionary = new Dictionary<CharacterData, CharacterUI>();
     private Dictionary<CharacterData, EnemyUI> enemyUIDictionary = new Dictionary<CharacterData, EnemyUI>();
@@ -31,19 +35,60 @@ public class CombatUIManager : MonoBehaviour
     private AttackFile selectedAttack;
     private int remainingTargetsToSelect = 0;
     private List<CharacterData> selectedTargets = new List<CharacterData>();
+    private bool isInitialized = false;
+    private List<GameObject> activeTargetButtons = new List<GameObject>();
 
     private void Start()
     {
+        Debug.Log("=== CombatUIManager Start ===");
+
         if (combatSystem == null)
             combatSystem = FindFirstObjectByType<CombatSystem>();
 
-        // Subscribe to events
-        combatSystem.onTurnStarted += OnTurnStarted;
-        combatSystem.onCharacterUpdated += OnCharacterUpdated;
-        combatSystem.onCombatEnded += OnCombatEnded;
+        // Subscribe to events IMMEDIATELY
+        if (combatSystem != null)
+        {
+            combatSystem.onTurnStarted += OnTurnStarted;
+            combatSystem.onCharacterUpdated += OnCharacterUpdated;
+            combatSystem.onCombatEnded += OnCombatEnded;
+            Debug.Log("Subscribed to CombatSystem events");
+        }
+
+        // Start initialization
+        StartCoroutine(InitializeAfterCombatSystem());
+    }
+
+    private IEnumerator InitializeAfterCombatSystem()
+    {
+        Debug.Log("Starting initialization...");
+
+        // Wait for combatSystem to be ready
+        while (combatSystem == null)
+        {
+            combatSystem = FindFirstObjectByType<CombatSystem>();
+            yield return new WaitForSeconds(0.1f);
+        }
+
+        // Wait for party members to be populated
+        while (combatSystem.partyMembers == null || combatSystem.partyMembers.Count == 0)
+        {
+            Debug.Log("Waiting for party members to be initialized...");
+            yield return new WaitForSeconds(0.1f);
+        }
+
+        Debug.Log($"CombatSystem has {combatSystem.partyMembers.Count} party members. Creating UI...");
 
         // Create UI for all characters
         CreateAllCharacterUI();
+        isInitialized = true;
+
+        // Manually trigger OnTurnStarted for the current character if one exists
+        CharacterData currentChar = combatSystem.GetCurrentCharacter();
+        if (currentChar != null)
+        {
+            Debug.Log($"Manually triggering OnTurnStarted for {currentChar.characterName}");
+            OnTurnStarted(currentChar);
+        }
     }
 
     private void CreateAllCharacterUI()
@@ -58,29 +103,30 @@ public class CombatUIManager : MonoBehaviour
 
         // Find all visual objects in the scene FIRST
         FindAllVisualObjects();
+
+        Debug.Log($"Creating UI for {combatSystem.partyMembers.Count} party members and {combatSystem.enemies.Count} enemies");
+
         // Create party member UI (using CharacterUI)
         foreach (var member in combatSystem.partyMembers)
         {
             if (member != null && member.currentHP > 0)
             {
-                Debug.Log($"Creating UI for party member: {member.characterName}");
-                Debug.Log($"  - HP: {member.currentHP}/{member.hp}");
-                Debug.Log($"  - AP: {member.currentAP}/{member.maxAP}");
-                Debug.Log($"  - Attacks: {member.availableAttacks.Count}");
-
-                foreach (var attack in member.availableAttacks)
-                {
-                    Debug.Log($"    * {attack.attackName} (AP: {attack.actionPointCost})");
-                }
-
                 GameObject uiObj = Instantiate(partyMemberUIPrefab, partyUIParent);
                 CharacterUI characterUI = uiObj.GetComponent<CharacterUI>();
 
+                // Find the visual object for this party member
+                GameObject visualObj = null;
+                if (partyVisualDictionary.ContainsKey(member))
+                {
+                    visualObj = partyVisualDictionary[member];
+                    Debug.Log($"Found visual for {member.characterName}: {visualObj.name}");
+                }
+
                 if (characterUI != null)
                 {
-                    // FIX: Only pass 2 arguments - CharacterData and CombatUIManager
-                    characterUI.Initialize(member, this);
+                    characterUI.Initialize(member, visualObj, this);
                     partyUIDictionary[member] = characterUI;
+                    Debug.Log($"Added {member.characterName} to partyUIDictionary");
                 }
             }
         }
@@ -111,9 +157,7 @@ public class CombatUIManager : MonoBehaviour
 
     private void FindAllVisualObjects()
     {
-        // Find all CharacterComponent objects in the scene
         CharacterComponent[] allCharacters = FindObjectsByType<CharacterComponent>(FindObjectsSortMode.None);
-
         Debug.Log($"Found {allCharacters.Length} CharacterComponents in scene");
 
         foreach (var characterComp in allCharacters)
@@ -121,26 +165,32 @@ public class CombatUIManager : MonoBehaviour
             if (characterComp != null && characterComp.characterData != null)
             {
                 CharacterData data = characterComp.characterData;
-                Debug.Log($"Found character: {data.characterName} on {characterComp.gameObject.name}");
 
-                // Check if this is a party member or enemy
                 if (combatSystem.partyMembers.Contains(data))
                 {
                     partyVisualDictionary[data] = characterComp.gameObject;
-                    Debug.Log($" -> Added to party visuals");
+                    Debug.Log($"Party visual: {data.characterName}");
                 }
                 else if (combatSystem.enemies.Contains(data))
                 {
                     enemyVisualDictionary[data] = characterComp.gameObject;
-                    Debug.Log($" -> Added to enemy visuals");
+                    Debug.Log($"Enemy visual: {data.characterName}");
+
+                    // Add TargetSelector to enemy if it doesn't have one
+                    if (characterComp.GetComponent<TargetSelector>() == null)
+                    {
+                        TargetSelector selector = characterComp.gameObject.AddComponent<TargetSelector>();
+                        selector.Initialize(targetButtonPrefab, targetButtonParent, this);
+                        Debug.Log($"Added TargetSelector to {data.characterName}");
+                    }
                 }
             }
         }
     }
 
-    // Public method for CharacterUI to call when an action is selected
     public void OnActionSelected(AttackFile attack, CharacterData character)
     {
+        if (!isInitialized) return;
         if (character != currentCharacter) return;
 
         selectedAttack = attack;
@@ -157,6 +207,10 @@ public class CombatUIManager : MonoBehaviour
             if (partyUIDictionary.ContainsKey(character))
                 partyUIDictionary[character].HideActionButtons();
 
+            // Show target panel
+            if (targetPanel != null)
+                targetPanel.SetActive(true);
+
             // Enable targeting on appropriate characters
             if (targetType == TargetType.Ally)
             {
@@ -171,6 +225,9 @@ public class CombatUIManager : MonoBehaviour
 
     private void EnableTargetingOnCharacters(List<CharacterData> characters)
     {
+        // Clear any existing target buttons
+        ClearTargetButtons();
+
         foreach (var character in characters)
         {
             if (character.currentHP <= 0) continue;
@@ -191,18 +248,43 @@ public class CombatUIManager : MonoBehaviour
                 TargetSelector selector = visualObj.GetComponent<TargetSelector>();
                 if (selector != null)
                 {
-                    selector.EnableTargeting(OnTargetSelected);
+                    selector.EnableTargeting(character, OnTargetSelected);
                 }
-                else
-                {
-                    Debug.LogWarning($"No TargetSelector on {visualObj.name}");
-                }
+            }
+        }
+    }
+
+    private void ClearTargetButtons()
+    {
+        foreach (var btn in activeTargetButtons)
+        {
+            Destroy(btn);
+        }
+        activeTargetButtons.Clear();
+    }
+
+    public void CreateTargetButton(CharacterData target, System.Action<CharacterData> callback)
+    {
+        if (targetButtonPrefab != null && targetButtonParent != null)
+        {
+            GameObject btnObj = Instantiate(targetButtonPrefab, targetButtonParent);
+            TargetButton btn = btnObj.GetComponent<TargetButton>();
+
+            if (btn != null)
+            {
+                btn.Initialize(target, () => callback(target));
+                activeTargetButtons.Add(btnObj);
             }
         }
     }
 
     private void DisableAllTargeting()
     {
+        ClearTargetButtons();
+
+        if (targetPanel != null)
+            targetPanel.SetActive(false);
+
         foreach (var visualObj in partyVisualDictionary.Values)
         {
             if (visualObj != null)
@@ -265,27 +347,40 @@ public class CombatUIManager : MonoBehaviour
 
     private void OnTurnStarted(CharacterData character)
     {
+        Debug.Log($"OnTurnStarted called for {character.characterName}");
+
         currentCharacter = character;
 
         // Update turn text
         turnText.text = $"{character.characterName}'s Turn";
 
-        // Hide all action buttons first (only party members have them)
+        // Hide all action buttons first
         HideAllActionButtons();
+
+        if (!isInitialized)
+        {
+            Debug.Log("UI not initialized yet, will show buttons after initialization");
+            return;
+        }
 
         if (combatSystem.partyMembers.Contains(character))
         {
-            // It's player's turn - show action buttons on this character's UI
+            Debug.Log($"It's player {character.characterName}'s turn. Party UI Dictionary has {partyUIDictionary.Count} entries");
+
             if (partyUIDictionary.ContainsKey(character))
             {
+                Debug.Log($"Found UI for {character.characterName}, showing action buttons");
                 partyUIDictionary[character].ShowActionButtons();
                 statusText.text = "Select an action";
+            }
+            else
+            {
+                Debug.LogError($"No UI found for party member {character.characterName} in dictionary!");
             }
             waitPanel.SetActive(false);
         }
         else
         {
-            // It's enemy's turn
             waitPanel.SetActive(true);
             statusText.text = $"{character.characterName} is thinking...";
         }
@@ -297,15 +392,32 @@ public class CombatUIManager : MonoBehaviour
             ui.HideActionButtons();
     }
 
+    public void ForceShowButtonsForCharacter(string characterName)
+    {
+        Debug.Log($"ForceShowButtonsForCharacter: {characterName}");
+
+        foreach (var kvp in partyUIDictionary)
+        {
+            if (kvp.Key.characterName == characterName)
+            {
+                Debug.Log($"Found match, calling ShowActionButtons");
+                kvp.Value.ShowActionButtons();
+                return;
+            }
+        }
+
+        Debug.LogError($"No character named {characterName} found in partyUIDictionary");
+    }
+
     private void OnCharacterUpdated(CharacterData character)
     {
-        // Update UI for this character
+        if (!isInitialized) return;
+
         if (partyUIDictionary.ContainsKey(character))
             partyUIDictionary[character].UpdateDisplay();
         if (enemyUIDictionary.ContainsKey(character))
             enemyUIDictionary[character].UpdateDisplay();
 
-        // Check if character died
         if (character.currentHP <= 0)
         {
             if (partyUIDictionary.ContainsKey(character))
@@ -313,7 +425,6 @@ public class CombatUIManager : MonoBehaviour
             if (enemyUIDictionary.ContainsKey(character))
                 enemyUIDictionary[character].SetDefeated();
 
-            // If it was the current character, disable targeting
             if (character == currentCharacter)
             {
                 DisableAllTargeting();

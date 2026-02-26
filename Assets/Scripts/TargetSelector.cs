@@ -1,72 +1,49 @@
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
-using System;
 
 public class TargetSelector : MonoBehaviour
 {
-    [Header("Target Button")]
-    public GameObject targetButtonObject;
-    public TargetButton targetButton;
-
-    [Header("References")]
-    public CharacterComponent characterComponent;
-
+    private GameObject targetButtonPrefab;
+    private Transform targetButtonParent;
+    private CombatUIManager uiManager;
+    private System.Action<CharacterData> onTargetSelected;
     private CharacterData characterData;
-    private Action<CharacterData> onTargetSelectedCallback;
     private bool isActive = false;
 
-    private void Start()
+    public void Initialize(GameObject prefab, Transform parent, CombatUIManager manager)
     {
-        if (characterComponent == null)
-            characterComponent = GetComponent<CharacterComponent>();
+        targetButtonPrefab = prefab;
+        targetButtonParent = parent;
+        uiManager = manager;
 
-        if (characterComponent != null)
-            characterData = characterComponent.characterData;
-
-        if (targetButton == null && targetButtonObject != null)
-            targetButton = targetButtonObject.GetComponent<TargetButton>();
-
-        // Initially hide the target button
-        if (targetButtonObject != null)
-            targetButtonObject.SetActive(false);
+        CharacterComponent comp = GetComponent<CharacterComponent>();
+        if (comp != null)
+            characterData = comp.characterData;
     }
 
-    public void EnableTargeting(Action<CharacterData> callback)
+    public void EnableTargeting(CharacterData target, System.Action<CharacterData> callback)
     {
-        onTargetSelectedCallback = callback;
+        characterData = target;
+        onTargetSelected = callback;
         isActive = true;
 
-        if (targetButtonObject != null)
+        // Create a button in the UI panel
+        if (uiManager != null)
         {
-            targetButtonObject.SetActive(true);
-
-            if (targetButton != null && characterData != null)
-            {
-                targetButton.Initialize(characterData, OnTargetSelected);
-            }
+            uiManager.CreateTargetButton(characterData, OnTargetSelected);
         }
     }
 
     public void DisableTargeting()
     {
         isActive = false;
-        onTargetSelectedCallback = null;
-
-        if (targetButtonObject != null)
-            targetButtonObject.SetActive(false);
+        onTargetSelected = null;
     }
 
-    private void OnTargetSelected()
+    private void OnTargetSelected(CharacterData target)
     {
-        if (isActive && characterData != null && onTargetSelectedCallback != null)
+        if (isActive && onTargetSelected != null)
         {
-            onTargetSelectedCallback.Invoke(characterData);
+            onTargetSelected.Invoke(target);
         }
-    }
-
-    private void OnDestroy()
-    {
-        onTargetSelectedCallback = null;
     }
 }
