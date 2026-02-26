@@ -92,9 +92,18 @@ public class EncounterData : MonoBehaviour
         copy.attackGrowth = source.attackGrowth;
         copy.defenseGrowth = source.defenseGrowth;
 
-        copy.unlockableAttacks = new List<UnlockableAttack>(source.unlockableAttacks);
-        copy.availableAttacks = new List<AttackFile>(source.availableAttacks);
+        // CRITICAL: Copy the unlockable attacks list
+        copy.unlockableAttacks = new List<UnlockableAttack>();
+        foreach (var unlockable in source.unlockableAttacks)
+        {
+            copy.unlockableAttacks.Add(new UnlockableAttack
+            {
+                attack = unlockable.attack,
+                unlockLevel = unlockable.unlockLevel
+            });
+        }
 
+        // This will trigger PopulateAvailableAttacks()
         copy.CalculateStatsForLevel();
 
         return copy;

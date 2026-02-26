@@ -7,33 +7,30 @@ public class CombatUIManager : MonoBehaviour
     [Header("References")]
     public CombatSystem combatSystem;
 
-    [Header("UI Prefabs")]
-    public GameObject partyMemberUIPrefab;    // UI element for party display
-    public GameObject enemyUIPrefab;          // UI element for enemy display
-    public GameObject actionButtonPrefab;     // Button for actions
-    public GameObject targetButtonPrefab;     // Button for targeting
-
     [Header("UI Parents")]
-    public Transform partyUIParent;    // Where party UI elements go (Grid Layout Group)
-    public Transform enemyUIParent;     // Where enemy UI elements go (Grid Layout Group)
-    public Transform actionButtonParent;
-    public Transform targetButtonParent;
+    public Transform partyUIParent;
+    public Transform enemyUIParent;
+
+    [Header("Prefabs")]
+    public GameObject partyMemberUIPrefab; // Uses CharacterUI script
+    public GameObject enemyUIPrefab;        // Uses EnemyUI script
 
     [Header("Text Displays")]
     public TextMeshProUGUI turnText;
-    public TextMeshProUGUI apText;
     public TextMeshProUGUI statusText;
 
     [Header("Panels")]
-    public GameObject actionPanel;
-    public GameObject targetPanel;
     public GameObject waitPanel;
 
     private Dictionary<CharacterData, CharacterUI> partyUIDictionary = new Dictionary<CharacterData, CharacterUI>();
     private Dictionary<CharacterData, EnemyUI> enemyUIDictionary = new Dictionary<CharacterData, EnemyUI>();
+    private Dictionary<CharacterData, GameObject> partyVisualDictionary = new Dictionary<CharacterData, GameObject>();
+    private Dictionary<CharacterData, GameObject> enemyVisualDictionary = new Dictionary<CharacterData, GameObject>();
+
     private CharacterData currentCharacter;
     private AttackFile selectedAttack;
-    private List<CharacterData> currentTargets = new List<CharacterData>();
+    private int remainingTargetsToSelect = 0;
+    private List<CharacterData> selectedTargets = new List<CharacterData>();
 
     private void Start()
     {
@@ -44,7 +41,6 @@ public class CombatUIManager : MonoBehaviour
         combatSystem.onTurnStarted += OnTurnStarted;
         combatSystem.onCharacterUpdated += OnCharacterUpdated;
         combatSystem.onCombatEnded += OnCombatEnded;
-        combatSystem.onActionExecuted += OnActionExecuted;
 
         // Create UI for all characters
         CreateAllCharacterUI();
@@ -57,28 +53,212 @@ public class CombatUIManager : MonoBehaviour
         foreach (Transform child in enemyUIParent) Destroy(child.gameObject);
         partyUIDictionary.Clear();
         enemyUIDictionary.Clear();
+        partyVisualDictionary.Clear();
+        enemyVisualDictionary.Clear();
 
-        // Create party member UI
+        // Find all visual objects in the scene FIRST
+        FindAllVisualObjects();
+        // Create party member UI (using CharacterUI)
         foreach (var member in combatSystem.partyMembers)
         {
             if (member != null && member.currentHP > 0)
             {
+                Debug.Log($"Creating UI for party member: {member.characterName}");
+                Debug.Log($"  - HP: {member.currentHP}/{member.hp}");
+                Debug.Log($"  - AP: {member.currentAP}/{member.maxAP}");
+                Debug.Log($"  - Attacks: {member.availableAttacks.Count}");
+
+                foreach (var attack in member.availableAttacks)
+                {
+                    Debug.Log($"    * {attack.attackName} (AP: {attack.actionPointCost})");
+                }
+
                 GameObject uiObj = Instantiate(partyMemberUIPrefab, partyUIParent);
                 CharacterUI characterUI = uiObj.GetComponent<CharacterUI>();
-                characterUI.Initialize(member, true);
-                partyUIDictionary[member] = characterUI;
+
+                if (characterUI != null)
+                {
+                    // FIX: Only pass 2 arguments - CharacterData and CombatUIManager
+                    characterUI.Initialize(member, this);
+                    partyUIDictionary[member] = characterUI;
+                }
             }
         }
 
-        // Create enemy UI
+        // Create enemy UI (using EnemyUI)
         foreach (var enemy in combatSystem.enemies)
         {
             if (enemy != null && enemy.currentHP > 0)
             {
                 GameObject uiObj = Instantiate(enemyUIPrefab, enemyUIParent);
                 EnemyUI enemyUI = uiObj.GetComponent<EnemyUI>();
-                enemyUI.Initialize(enemy, true);
-                enemyUIDictionary[enemy] = enemyUI;
+
+                // Find the visual object for this enemy
+                GameObject visualObj = null;
+                if (enemyVisualDictionary.ContainsKey(enemy))
+                {
+                    visualObj = enemyVisualDictionary[enemy];
+                }
+
+                if (enemyUI != null)
+                {
+                    enemyUI.Initialize(enemy, visualObj);
+                    enemyUIDictionary[enemy] = enemyUI;
+                }
+            }
+        }
+    }
+
+    private void FindAllVisualObjects()
+    {
+        // Find all CharacterComponent objects in the scene
+        CharacterComponent[] allCharacters = FindObjectsByType<CharacterComponent>(FindObjectsSortMode.None);
+
+        Debug.Log($"Found {allCharacters.Length} CharacterComponents in scene");
+
+        foreach (var characterComp in allCharacters)
+        {
+            if (characterComp != null && characterComp.characterData != null)
+            {
+                CharacterData data = characterComp.characterData;
+                Debug.Log($"Found character: {data.characterName} on {characterComp.gameObject.name}");
+
+                // Check if this is a party member or enemy
+                if (combatSystem.partyMembers.Contains(data))
+                {
+                    partyVisualDictionary[data] = characterComp.gameObject;
+                    Debug.Log($" -> Added to party visuals");
+                }
+                else if (combatSystem.enemies.Contains(data))
+                {
+                    enemyVisualDictionary[data] = characterComp.gameObject;
+                    Debug.Log($" -> Added to enemy visuals");
+                }
+            }
+        }
+    }
+
+    // Public method for CharacterUI to call when an action is selected
+    public void OnActionSelected(AttackFile attack, CharacterData character)
+    {
+        if (character != currentCharacter) return;
+
+        selectedAttack = attack;
+        selectedTargets.Clear();
+
+        if (attack.effects.Count > 0)
+        {
+            TargetType targetType = attack.effects[0].targetType;
+            remainingTargetsToSelect = attack.effects[0].numberOfTargets;
+
+            statusText.text = $"Select {remainingTargetsToSelect} target(s)";
+
+            // Hide action buttons while targeting
+            if (partyUIDictionary.ContainsKey(character))
+                partyUIDictionary[character].HideActionButtons();
+
+            // Enable targeting on appropriate characters
+            if (targetType == TargetType.Ally)
+            {
+                EnableTargetingOnCharacters(combatSystem.partyMembers);
+            }
+            else
+            {
+                EnableTargetingOnCharacters(combatSystem.enemies);
+            }
+        }
+    }
+
+    private void EnableTargetingOnCharacters(List<CharacterData> characters)
+    {
+        foreach (var character in characters)
+        {
+            if (character.currentHP <= 0) continue;
+
+            // Find the TargetSelector on the character's visual GameObject
+            GameObject visualObj = null;
+            if (combatSystem.partyMembers.Contains(character) && partyVisualDictionary.ContainsKey(character))
+            {
+                visualObj = partyVisualDictionary[character];
+            }
+            else if (combatSystem.enemies.Contains(character) && enemyVisualDictionary.ContainsKey(character))
+            {
+                visualObj = enemyVisualDictionary[character];
+            }
+
+            if (visualObj != null)
+            {
+                TargetSelector selector = visualObj.GetComponent<TargetSelector>();
+                if (selector != null)
+                {
+                    selector.EnableTargeting(OnTargetSelected);
+                }
+                else
+                {
+                    Debug.LogWarning($"No TargetSelector on {visualObj.name}");
+                }
+            }
+        }
+    }
+
+    private void DisableAllTargeting()
+    {
+        foreach (var visualObj in partyVisualDictionary.Values)
+        {
+            if (visualObj != null)
+            {
+                TargetSelector selector = visualObj.GetComponent<TargetSelector>();
+                if (selector != null)
+                    selector.DisableTargeting();
+            }
+        }
+
+        foreach (var visualObj in enemyVisualDictionary.Values)
+        {
+            if (visualObj != null)
+            {
+                TargetSelector selector = visualObj.GetComponent<TargetSelector>();
+                if (selector != null)
+                    selector.DisableTargeting();
+            }
+        }
+    }
+
+    private void OnTargetSelected(CharacterData target)
+    {
+        if (!selectedTargets.Contains(target))
+        {
+            selectedTargets.Add(target);
+            remainingTargetsToSelect--;
+
+            statusText.text = $"Selected {selectedTargets.Count}. {remainingTargetsToSelect} more needed";
+
+            if (remainingTargetsToSelect <= 0)
+            {
+                // All targets selected, execute action
+                combatSystem.SelectPlayerAction(selectedAttack, selectedTargets);
+
+                // Disable targeting
+                DisableAllTargeting();
+
+                // Clear selection
+                selectedAttack = null;
+                selectedTargets.Clear();
+
+                // Update UI
+                OnCharacterUpdated(currentCharacter);
+
+                // If character still has AP, show actions again
+                if (currentCharacter.currentAP > 0)
+                {
+                    if (partyUIDictionary.ContainsKey(currentCharacter))
+                        partyUIDictionary[currentCharacter].ShowActionButtons();
+                }
+                else
+                {
+                    waitPanel.SetActive(true);
+                    statusText.text = "No AP remaining...";
+                }
             }
         }
     }
@@ -89,17 +269,32 @@ public class CombatUIManager : MonoBehaviour
 
         // Update turn text
         turnText.text = $"{character.characterName}'s Turn";
-        apText.text = $"AP: {character.currentAP}/{character.maxAP}";
 
-        // Show appropriate panel
+        // Hide all action buttons first (only party members have them)
+        HideAllActionButtons();
+
         if (combatSystem.partyMembers.Contains(character))
         {
-            ShowPlayerActions(character);
+            // It's player's turn - show action buttons on this character's UI
+            if (partyUIDictionary.ContainsKey(character))
+            {
+                partyUIDictionary[character].ShowActionButtons();
+                statusText.text = "Select an action";
+            }
+            waitPanel.SetActive(false);
         }
         else
         {
-            ShowEnemyTurn(character);
+            // It's enemy's turn
+            waitPanel.SetActive(true);
+            statusText.text = $"{character.characterName} is thinking...";
         }
+    }
+
+    private void HideAllActionButtons()
+    {
+        foreach (var ui in partyUIDictionary.Values)
+            ui.HideActionButtons();
     }
 
     private void OnCharacterUpdated(CharacterData character)
@@ -110,12 +305,6 @@ public class CombatUIManager : MonoBehaviour
         if (enemyUIDictionary.ContainsKey(character))
             enemyUIDictionary[character].UpdateDisplay();
 
-        // Update AP text if it's current character
-        if (character == currentCharacter)
-        {
-            apText.text = $"AP: {character.currentAP}/{character.maxAP}";
-        }
-
         // Check if character died
         if (character.currentHP <= 0)
         {
@@ -123,174 +312,21 @@ public class CombatUIManager : MonoBehaviour
                 partyUIDictionary[character].SetDefeated();
             if (enemyUIDictionary.ContainsKey(character))
                 enemyUIDictionary[character].SetDefeated();
-        }
-    }
 
-    private void ShowPlayerActions(CharacterData character)
-    {
-        Debug.Log($"=== Showing Player Actions for {character.characterName} ===");
-        Debug.Log($"Available attacks: {character.availableAttacks.Count}");
-        Debug.Log($"Current AP: {character.currentAP}/{character.maxAP}");
-
-        actionPanel.SetActive(true);
-        targetPanel.SetActive(false);
-        waitPanel.SetActive(false);
-
-        // Clear old buttons
-        foreach (Transform child in actionButtonParent)
-        {
-            Destroy(child.gameObject);
-        }
-
-        int buttonsCreated = 0;
-
-        // Create action buttons
-        foreach (var attack in character.availableAttacks)
-        {
-            if (attack == null)
+            // If it was the current character, disable targeting
+            if (character == currentCharacter)
             {
-                Debug.LogWarning("Null attack found in availableAttacks");
-                continue;
-            }
-
-            Debug.Log($"Checking attack: {attack.attackName}, AP cost: {attack.actionPointCost}, Current AP: {character.currentAP}");
-
-            if (attack.actionPointCost <= character.currentAP)
-            {
-                Debug.Log($"Creating button for: {attack.attackName}");
-
-                if (actionButtonPrefab == null)
-                {
-                    Debug.LogError("actionButtonPrefab is null!");
-                    return;
-                }
-
-                GameObject btnObj = Instantiate(actionButtonPrefab, actionButtonParent);
-                ActionButton btn = btnObj.GetComponent<ActionButton>();
-
-                if (btn == null)
-                {
-                    Debug.LogError("ActionButton component missing on prefab!");
-                    continue;
-                }
-
-                btn.Initialize(attack, () => OnActionSelected(attack));
-                buttonsCreated++;
+                DisableAllTargeting();
+                HideAllActionButtons();
             }
         }
-
-        Debug.Log($"Created {buttonsCreated} action buttons");
-
-        // Add Wait button
-        if (actionButtonPrefab != null)
-        {
-            GameObject waitBtn = Instantiate(actionButtonPrefab, actionButtonParent);
-            ActionButton waitBtnComponent = waitBtn.GetComponent<ActionButton>();
-            if (waitBtnComponent != null)
-            {
-                waitBtnComponent.InitializeAsWait(() => combatSystem.EndPlayerTurn());
-                Debug.Log("Created Wait button");
-            }
-        }
-    }
-
-    private void OnActionSelected(AttackFile attack)
-    {
-        selectedAttack = attack;
-        currentTargets.Clear();
-
-        if (attack.effects.Count > 0)
-        {
-            TargetType targetType = attack.effects[0].targetType;
-            ShowTargetSelection(targetType, attack.effects[0].numberOfTargets);
-        }
-    }
-
-    private void ShowTargetSelection(TargetType targetType, int numberOfTargets)
-    {
-        actionPanel.SetActive(false);
-        targetPanel.SetActive(true);
-        statusText.text = $"Select {numberOfTargets} target(s)";
-
-        // Clear old target buttons
-        foreach (Transform child in targetButtonParent)
-            Destroy(child.gameObject);
-
-        // Get valid targets
-        List<CharacterData> validTargets = targetType == TargetType.Ally
-            ? combatSystem.partyMembers
-            : combatSystem.enemies;
-        validTargets = validTargets.FindAll(t => t.currentHP > 0);
-
-        // Create target buttons
-        foreach (var target in validTargets)
-        {
-            GameObject btnObj = Instantiate(targetButtonPrefab, targetButtonParent);
-            TargetButton btn = btnObj.GetComponent<TargetButton>();
-            btn.Initialize(target, () => OnTargetSelected(target, numberOfTargets));
-        }
-
-        // Add cancel button
-        GameObject cancelBtn = Instantiate(targetButtonPrefab, targetButtonParent);
-        cancelBtn.GetComponent<TargetButton>().InitializeAsCancel(() => {
-            targetPanel.SetActive(false);
-            actionPanel.SetActive(true);
-            currentTargets.Clear();
-            statusText.text = "";
-        });
-    }
-
-    private void OnTargetSelected(CharacterData target, int maxTargets)
-    {
-        if (!currentTargets.Contains(target))
-            currentTargets.Add(target);
-
-        if (currentTargets.Count >= maxTargets)
-        {
-            combatSystem.SelectPlayerAction(selectedAttack, currentTargets);
-            currentTargets.Clear();
-            targetPanel.SetActive(false);
-
-            // Update UI
-            OnCharacterUpdated(currentCharacter);
-
-            // Show actions again if仍有 AP
-            if (currentCharacter.currentAP > 0)
-                ShowPlayerActions(currentCharacter);
-            else
-                waitPanel.SetActive(true);
-        }
-        else
-        {
-            statusText.text = $"Select {maxTargets - currentTargets.Count} more target(s)";
-        }
-    }
-
-    private void ShowEnemyTurn(CharacterData enemy)
-    {
-        actionPanel.SetActive(false);
-        targetPanel.SetActive(false);
-        waitPanel.SetActive(true);
-        statusText.text = $"{enemy.characterName} is thinking...";
-    }
-
-    private void OnActionExecuted(CharacterData user, AttackFile attack, List<CharacterData> targets)
-    {
-        StartCoroutine(ShowCombatFeedback(user, attack, targets));
-    }
-
-    private System.Collections.IEnumerator ShowCombatFeedback(CharacterData user, AttackFile attack, List<CharacterData> targets)
-    {
-        statusText.text = $"{user.characterName} used {attack.attackName}!";
-        yield return new WaitForSeconds(1f);
-        statusText.text = "";
     }
 
     private void OnCombatEnded(CombatState result)
     {
-        actionPanel.SetActive(false);
-        targetPanel.SetActive(false);
         waitPanel.SetActive(false);
+        HideAllActionButtons();
+        DisableAllTargeting();
 
         if (result == CombatState.VICTORY)
             statusText.text = "Victory!";
@@ -305,7 +341,6 @@ public class CombatUIManager : MonoBehaviour
             combatSystem.onTurnStarted -= OnTurnStarted;
             combatSystem.onCharacterUpdated -= OnCharacterUpdated;
             combatSystem.onCombatEnded -= OnCombatEnded;
-            combatSystem.onActionExecuted -= OnActionExecuted;
         }
     }
 }

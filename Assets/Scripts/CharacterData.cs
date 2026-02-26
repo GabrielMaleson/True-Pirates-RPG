@@ -50,8 +50,24 @@ public class CharacterData : ScriptableObject
     {
         CalculateStatsForLevel();
         ResetAP();
+
+        // Populate availableAttacks from unlockableAttacks based on current level
+        PopulateAvailableAttacks();
     }
 
+    private void PopulateAvailableAttacks()
+    {
+        availableAttacks.Clear();
+
+        foreach (var unlockable in unlockableAttacks)
+        {
+            if (unlockable.unlockLevel <= level && unlockable.attack != null)
+            {
+                availableAttacks.Add(unlockable.attack);
+                Debug.Log($"Added {unlockable.attack.attackName} to available attacks for {characterName}");
+            }
+        }
+    }
     public void ResetAP()
     {
         currentAP = maxAP;
@@ -70,8 +86,10 @@ public class CharacterData : ScriptableObject
         {
             currentHP = hp;
         }
-    }
 
+        // Make sure attacks are populated
+        PopulateAvailableAttacks();
+    }
     public void ModifyAttack(int amount)
     {
         attack += amount;
@@ -125,7 +143,8 @@ public class CharacterData : ScriptableObject
     {
         level++;
         CalculateStatsForLevel();
-        CheckForNewAttacks();
+        PopulateAvailableAttacks(); // Re-populate when leveling up
+        CheckForNewAttacks(); // Keep this for any special case logic
     }
 
     private void CheckForNewAttacks()

@@ -10,26 +10,24 @@ public class EnemyUI : MonoBehaviour
     public Image healthBar;
     public GameObject defeatedOverlay;
 
-    private CharacterData character;
-    private bool isParty;
-    private Color originalBorderColor;
+    private CharacterData characterData;
+    private GameObject characterVisualObject;
 
-    public void Initialize(CharacterData characterData, bool isPartyMember)
+    public void Initialize(CharacterData data, GameObject visualObject)
     {
-        character = characterData;
-        isParty = !isPartyMember;
-
-        nameText.text = characterData.characterName;
+        characterData = data;
+        characterVisualObject = visualObject;
+        nameText.text = data.characterName;
         UpdateDisplay();
     }
 
     public void UpdateDisplay()
     {
-        if (character != null)
+        if (characterData != null)
         {
-            hpText.text = $"{character.currentHP}/{character.hp}";
+            hpText.text = $"{characterData.currentHP}/{characterData.hp}";
             if (healthBar != null)
-                healthBar.fillAmount = (float)character.currentHP / character.hp;
+                healthBar.fillAmount = (float)characterData.currentHP / characterData.hp;
         }
     }
 
@@ -38,6 +36,7 @@ public class EnemyUI : MonoBehaviour
         if (defeatedOverlay != null)
             defeatedOverlay.SetActive(true);
 
+        // Gray out the background
         Image bg = GetComponent<Image>();
         if (bg != null)
             bg.color = Color.gray;

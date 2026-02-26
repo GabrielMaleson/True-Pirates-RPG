@@ -7,7 +7,6 @@ public class ActionButton : MonoBehaviour
     [Header("UI Elements")]
     public TextMeshProUGUI actionNameText;
     public TextMeshProUGUI apCostText;
-    public Image iconImage;
     public Button button;
 
     private AttackFile attack;
@@ -18,12 +17,8 @@ public class ActionButton : MonoBehaviour
         attack = attackFile;
         onClick = callback;
 
-        // Set UI elements
         actionNameText.text = attackFile.attackName;
         apCostText.text = $"AP: {attackFile.actionPointCost}";
-
-        // If you have icons in AttackFile, you can set them here
-        // iconImage.sprite = attackFile.icon;
 
         button.onClick.AddListener(OnClick);
     }

@@ -21,6 +21,4 @@ public class CharacterComponent : MonoBehaviour
         get => characterData != null ? characterData.level : 0;
         set { if (characterData != null) characterData.level = value; }
     }
-
-    // Add other pass-through properties as needed
 }
