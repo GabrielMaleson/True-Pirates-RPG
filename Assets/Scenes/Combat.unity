@@ -720,7 +720,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!212 &728052227
 SpriteRenderer:
   serializedVersion: 2
@@ -1034,11 +1034,13 @@ MonoBehaviour:
   combatSystem: {fileID: 1193013461}
   partyUIParent: {fileID: 566257891}
   enemyUIParent: {fileID: 408258831}
+  targetButtonParent: {fileID: 231679635}
   partyMemberUIPrefab: {fileID: 6974297528663458817, guid: 4bb7a5674260fa44b9075157c209fb14, type: 3}
   enemyUIPrefab: {fileID: 6974297528663458817, guid: 280190369e81ff14cac23d8f61d50442, type: 3}
   turnText: {fileID: 1614729115}
   statusText: {fileID: 1457075621}
   waitPanel: {fileID: 1702933563}
+  targetPanel: {fileID: 62530817}
 --- !u!1 &1314767329
 GameObject:
   m_ObjectHideFlags: 0

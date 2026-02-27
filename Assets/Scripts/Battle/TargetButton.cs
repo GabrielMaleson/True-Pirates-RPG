@@ -12,22 +12,20 @@ public class TargetButton : MonoBehaviour
     private CharacterData target;
     private System.Action onClick;
 
-    public void Initialize(CharacterData targetCharacter, System.Action callback)
+    private void Awake()
+    {
+        // Ensure button is set up
+        if (button != null)
+        {
+            button.onClick.AddListener(OnClick);
+        }
+    }
+
+    public void SetTarget(CharacterData targetCharacter, System.Action callback)
     {
         target = targetCharacter;
         onClick = callback;
-
         targetNameText.text = targetCharacter.characterName;
-
-        button.onClick.AddListener(OnClick);
-    }
-
-    public void InitializeAsCancel(System.Action callback)
-    {
-        targetNameText.text = "Cancel";
-        onClick = callback;
-
-        button.onClick.AddListener(OnClick);
     }
 
     private void OnClick()
@@ -37,6 +35,7 @@ public class TargetButton : MonoBehaviour
 
     private void OnDestroy()
     {
-        button.onClick.RemoveAllListeners();
+        if (button != null)
+            button.onClick.RemoveListener(OnClick);
     }
 }

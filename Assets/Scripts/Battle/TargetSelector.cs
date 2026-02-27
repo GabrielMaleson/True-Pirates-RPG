@@ -2,22 +2,24 @@ using UnityEngine;
 
 public class TargetSelector : MonoBehaviour
 {
-    private GameObject targetButtonPrefab;
-    private Transform targetButtonParent;
     private CombatUIManager uiManager;
     private System.Action<CharacterData> onTargetSelected;
     private CharacterData characterData;
     private bool isActive = false;
+    private EnemyUI enemyUI;
 
-    public void Initialize(GameObject prefab, Transform parent, CombatUIManager manager)
+    public void Initialize(CombatUIManager manager)
     {
-        targetButtonPrefab = prefab;
-        targetButtonParent = parent;
         uiManager = manager;
 
         CharacterComponent comp = GetComponent<CharacterComponent>();
         if (comp != null)
             characterData = comp.characterData;
+    }
+
+    public void SetEnemyUI(EnemyUI ui)
+    {
+        enemyUI = ui;
     }
 
     public void EnableTargeting(CharacterData target, System.Action<CharacterData> callback)
@@ -26,10 +28,10 @@ public class TargetSelector : MonoBehaviour
         onTargetSelected = callback;
         isActive = true;
 
-        // Create a button in the UI panel
-        if (uiManager != null)
+        // Tell the Enemy UI to show its target button
+        if (enemyUI != null)
         {
-            uiManager.CreateTargetButton(characterData, OnTargetSelected);
+            enemyUI.ShowTargetButton(this);
         }
     }
 
@@ -37,13 +39,19 @@ public class TargetSelector : MonoBehaviour
     {
         isActive = false;
         onTargetSelected = null;
+
+        // Tell the Enemy UI to hide its target button
+        if (enemyUI != null)
+        {
+            enemyUI.HideTargetButton();
+        }
     }
 
-    private void OnTargetSelected(CharacterData target)
+    public void OnTargetSelected()
     {
         if (isActive && onTargetSelected != null)
         {
-            onTargetSelected.Invoke(target);
+            onTargetSelected.Invoke(characterData);
         }
     }
 }

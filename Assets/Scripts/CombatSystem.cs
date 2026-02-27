@@ -41,7 +41,6 @@ public class CombatSystem : MonoBehaviour
     [Header("Combat State")]
     public CombatState currentState = CombatState.STARTING;
 
-    // Events for UI
     public System.Action<CharacterData> onTurnStarted;
     public System.Action<CharacterData> onCharacterUpdated;
     public System.Action<CharacterData, AttackFile, List<CharacterData>> onActionExecuted;
@@ -55,83 +54,47 @@ public class CombatSystem : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log("=== CombatSystem Started ===");
-
-        // Check if we have encounter data
         EncounterData encounterData = FindFirstObjectByType<EncounterData>();
         if (encounterData != null)
         {
-            Debug.Log($"Found EncounterData with file: {encounterData.encounterFile?.name}");
-            Debug.Log($"Party members in data: {encounterData.playerPartyMembers?.Count}");
-            Debug.Log($"Enemies in file: {encounterData.encounterFile?.enemies?.Count}");
-
             InitializeCombatWithData(encounterData);
         }
         else
         {
-            Debug.LogError("No EncounterData found! Using test data.");
             InitializeCombat();
         }
     }
 
     public void InitializeCombatWithData(EncounterData encounterData)
     {
-        Debug.Log("=== Initializing Combat With Data ===");
-
-        // Clear existing lists
         partyMembers.Clear();
         enemies.Clear();
 
-        // 1. Set up party members from player data
         if (encounterData.playerPartyMembers != null && encounterData.playerPartyMembers.Count > 0)
         {
-            Debug.Log($"Setting up {encounterData.playerPartyMembers.Count} party members");
-
             for (int i = 0; i < encounterData.playerPartyMembers.Count; i++)
             {
                 CharacterData memberData = encounterData.playerPartyMembers[i];
+                if (memberData == null) continue;
 
-                if (memberData == null)
+                if (i < partySpawnPoints.Count && partySpawnPoints[i] != null && partyMemberVisualPrefab != null)
                 {
-                    Debug.LogError($"Party member {i} is null!");
-                    continue;
-                }
+                    GameObject memberObj = Instantiate(partyMemberVisualPrefab, partySpawnPoints[i].position, Quaternion.identity);
+                    memberObj.name = $"Party_{memberData.characterName}";
 
-                Debug.Log($"Party member {i}: {memberData.characterName}");
+                    CharacterComponent comp = memberObj.GetComponent<CharacterComponent>();
+                    if (comp == null) comp = memberObj.AddComponent<CharacterComponent>();
+                    comp.characterData = memberData;
 
-                // Create visual representation
-                if (i < partySpawnPoints.Count && partySpawnPoints[i] != null)
-                {
-                    if (partyMemberVisualPrefab != null)
-                    {
-                        GameObject memberObj = Instantiate(partyMemberVisualPrefab, partySpawnPoints[i].position, Quaternion.identity);
-                        memberObj.name = $"Party_{memberData.characterName}";
-
-                        // Add CharacterComponent and assign data
-                        CharacterComponent comp = memberObj.GetComponent<CharacterComponent>();
-                        if (comp == null) comp = memberObj.AddComponent<CharacterComponent>();
-                        comp.characterData = memberData;
-
-                        // Set transform reference for animations
-                        memberData.transform = memberObj.transform;
-
-                        Debug.Log($"Spawned party member: {memberData.characterName}");
-                    }
-                    else
-                    {
-                        Debug.LogError("partyMemberVisualPrefab is null!");
-                    }
+                    memberData.transform = memberObj.transform;
                 }
 
                 partyMembers.Add(memberData);
             }
         }
 
-        // 2. Set up enemies from EncounterData (NOT from the file directly)
         if (encounterData.enemyCharacters != null && encounterData.enemyCharacters.Count > 0)
         {
-            Debug.Log($"Setting up {encounterData.enemyCharacters.Count} enemies from EncounterData");
-
             for (int i = 0; i < encounterData.enemyCharacters.Count; i++)
             {
                 CharacterData enemyData = encounterData.enemyCharacters[i];
@@ -139,27 +102,18 @@ public class CombatSystem : MonoBehaviour
                 int enemyLevel = i < encounterData.enemyLevels.Count ? encounterData.enemyLevels[i] : 1;
                 int overrideHP = i < encounterData.enemyOverrideHP.Count ? encounterData.enemyOverrideHP[i] : 0;
 
-                if (enemyData == null)
-                {
-                    Debug.LogError($"Enemy {i} character data is null!");
-                    continue;
-                }
+                if (enemyData == null) continue;
 
-                Debug.Log($"Enemy {i}: {enemyData.characterName}, Prefab: {enemyPrefab?.name}, Level: {enemyLevel}");
-
-                // Apply level (if different from base)
                 while (enemyData.level < enemyLevel)
                 {
                     enemyData.LevelUp();
                 }
 
-                // Override HP if specified
                 if (overrideHP > 0)
                 {
                     enemyData.currentHP = overrideHP;
                 }
 
-                // Create visual representation - USE ENEMY'S PREFAB FROM ENCOUNTERDATA
                 GameObject prefabToUse = enemyPrefab != null ? enemyPrefab : enemyVisualPrefab;
 
                 if (prefabToUse != null && i < enemySpawnPoints.Count && enemySpawnPoints[i] != null)
@@ -167,41 +121,22 @@ public class CombatSystem : MonoBehaviour
                     GameObject enemyObj = Instantiate(prefabToUse, enemySpawnPoints[i].position, Quaternion.identity);
                     enemyObj.name = $"Enemy_{enemyData.characterName}";
 
-                    // Add CharacterComponent and assign data
                     CharacterComponent comp = enemyObj.GetComponent<CharacterComponent>();
                     if (comp == null) comp = enemyObj.AddComponent<CharacterComponent>();
                     comp.characterData = enemyData;
 
-                    // Set transform reference for animations
                     enemyData.transform = enemyObj.transform;
 
-                    // Add ComplexAI for enemy behavior
                     if (enemyObj.GetComponent<ComplexAI>() == null)
                     {
                         enemyObj.AddComponent<ComplexAI>();
                     }
-
-                    Debug.Log($"Spawned enemy: {enemyData.characterName} using prefab: {prefabToUse.name}");
-                }
-                else
-                {
-                    Debug.LogError($"Cannot spawn enemy {i}: prefab null or spawn point missing");
-                    if (prefabToUse == null) Debug.LogError("  - prefabToUse is null");
-                    if (i >= enemySpawnPoints.Count) Debug.LogError($"  - enemySpawnPoints[{i}] doesn't exist");
-                    else if (enemySpawnPoints[i] == null) Debug.LogError($"  - enemySpawnPoints[{i}] is null");
                 }
 
                 enemies.Add(enemyData);
             }
         }
-        else
-        {
-            Debug.LogError("No enemy characters found in EncounterData!");
-        }
 
-        Debug.Log($"Final counts - Party: {partyMembers.Count}, Enemies: {enemies.Count}");
-
-        // Start combat
         InitializeCombat();
     }
 
@@ -233,7 +168,6 @@ public class CombatSystem : MonoBehaviour
 
     private void InitializeCombat()
     {
-        // Filter out any DOWNED characters at start
         partyMembers = partyMembers.Where(p => p.currentHP > 0).ToList();
         enemies = enemies.Where(e => e.currentHP > 0).ToList();
 
@@ -246,7 +180,6 @@ public class CombatSystem : MonoBehaviour
     {
         turnQueue.Clear();
 
-        // Party members go first in their current order
         foreach (var member in partyMembers)
         {
             if (member.currentHP > 0)
@@ -256,7 +189,6 @@ public class CombatSystem : MonoBehaviour
             }
         }
 
-        // Enemies go after
         foreach (var enemy in enemies)
         {
             if (enemy.currentHP > 0)
@@ -274,36 +206,28 @@ public class CombatSystem : MonoBehaviour
 
         if (turnQueue.Count == 0)
         {
-            // All characters have taken turns, rebuild queue for next round
             BuildTurnQueue();
         }
 
         currentCharacter = turnQueue.Dequeue();
 
-        // Skip DOWNED characters
         if (currentCharacter.currentHP <= 0)
         {
             StartNextTurn();
             return;
         }
 
-        Debug.Log($"Starting turn for: {currentCharacter.characterName}");
-
-        // Process status effects at start of turn
         currentCharacter.ProcessStatusEffectsOnTurnStart();
 
         if (!currentCharacter.CanAct())
         {
-            Debug.Log($"{currentCharacter.characterName} is unable to act!");
             onCharacterUpdated?.Invoke(currentCharacter);
             StartNextTurn();
             return;
         }
 
-        // Invoke turn started event
         onTurnStarted?.Invoke(currentCharacter);
 
-        // Determine turn type
         if (partyMembers.Contains(currentCharacter))
         {
             currentState = CombatState.PLAYER_TURN;
@@ -318,27 +242,23 @@ public class CombatSystem : MonoBehaviour
 
     private IEnumerator PlayerTurnRoutine()
     {
-        // Wait for player actions
         while (currentCharacter.currentAP > 0 && !isExecutingActions && !isAnimating)
         {
-            yield return null; // Player selects actions via UI
+            yield return null;
         }
 
-        // Process selected actions in order
         if (pendingActions.Count > 0)
         {
             ExecuteActionsInOrder();
         }
         else
         {
-            // End turn if no actions selected
             EndPlayerTurn();
         }
     }
 
     private IEnumerator EnemyTurnRoutine()
     {
-        // Use ComplexAI if available
         ComplexAI ai = currentCharacter.transform?.GetComponent<ComplexAI>();
         AttackFile selectedAction = null;
         List<CharacterData> targets = new List<CharacterData>();
@@ -351,7 +271,6 @@ public class CombatSystem : MonoBehaviour
         }
         else
         {
-            // Simple AI: select highest damage action
             selectedAction = GetHighestDamageAction(currentCharacter);
             if (selectedAction != null)
             {
@@ -362,15 +281,12 @@ public class CombatSystem : MonoBehaviour
 
         if (selectedAction != null && currentCharacter.currentAP >= selectedAction.actionPointCost)
         {
-            // Execute enemy action
             yield return StartCoroutine(ExecuteAttackWithAnimation(currentCharacter, selectedAction, targets));
             currentCharacter.currentAP -= selectedAction.actionPointCost;
             onCharacterUpdated?.Invoke(currentCharacter);
         }
 
-        yield return new WaitForSeconds(0.5f); // Brief pause between turns
-
-        // End enemy turn
+        yield return new WaitForSeconds(0.5f);
         StartNextTurn();
     }
 
@@ -382,12 +298,11 @@ public class CombatSystem : MonoBehaviour
         foreach (var attack in character.availableAttacks)
         {
             if (attack.partyMemberOnly && enemies.Contains(character))
-                continue; // Skip party-only attacks for enemies
+                continue;
 
             if (character.currentAP < attack.actionPointCost)
-                continue; // Skip if not enough AP
+                continue;
 
-            // Calculate total potential damage from all effects
             int totalDamage = 0;
             foreach (var effect in attack.effects)
             {
@@ -422,12 +337,12 @@ public class CombatSystem : MonoBehaviour
             currentCharacter.currentAP >= action.actionPointCost &&
             !isExecutingActions && !isAnimating)
         {
-            // Store the action with its targets
             pendingActions[action] = targets;
-            Debug.Log($"Selected: {action.attackName} with {targets.Count} targets");
 
             // Immediately deduct AP? Or wait until execution?
-            // currentCharacter.currentAP -= action.actionPointCost;
+            // Let's deduct now to prevent multiple selections
+            currentCharacter.currentAP -= action.actionPointCost;
+            onCharacterUpdated?.Invoke(currentCharacter);
         }
     }
 
@@ -435,7 +350,6 @@ public class CombatSystem : MonoBehaviour
     {
         isExecutingActions = true;
 
-        // Sort selected actions by AP cost (highest first)
         var orderedActions = pendingActions.Keys
             .OrderByDescending(a => a.actionPointCost)
             .ToList();
@@ -453,11 +367,9 @@ public class CombatSystem : MonoBehaviour
                 yield return StartCoroutine(ExecuteAttackWithAnimation(currentCharacter, action, targets));
                 currentCharacter.currentAP -= action.actionPointCost;
 
-                // Invoke action executed event
                 onActionExecuted?.Invoke(currentCharacter, action, targets);
                 onCharacterUpdated?.Invoke(currentCharacter);
 
-                // Check if target died
                 foreach (var target in targets)
                 {
                     if (target.currentHP <= 0)
@@ -473,16 +385,13 @@ public class CombatSystem : MonoBehaviour
         pendingActions.Clear();
         isExecutingActions = false;
 
-        // Check if character still has AP and can act
         if (currentCharacter.currentAP > 0 && currentCharacter.CanAct())
         {
-            // Still have AP, let them choose more actions
             currentState = CombatState.PLAYER_TURN;
             onTurnStarted?.Invoke(currentCharacter);
         }
         else
         {
-            // End turn
             EndPlayerTurn();
         }
     }
@@ -491,19 +400,14 @@ public class CombatSystem : MonoBehaviour
     {
         isAnimating = true;
 
-        Debug.Log($"{user.characterName} uses {attack.attackName}!");
-
-        // Play animation if available
         if (attack.battleAnimation != null)
         {
             yield return attack.battleAnimation.PlayAnimation(user, targets, () => {
-                // Apply effects after animation
                 ApplyAttackEffects(user, attack, targets);
             });
         }
         else
         {
-            // No animation, apply effects immediately
             ApplyAttackEffects(user, attack, targets);
             yield return null;
         }
@@ -513,17 +417,30 @@ public class CombatSystem : MonoBehaviour
 
     private void ApplyAttackEffects(CharacterData user, AttackFile attack, List<CharacterData> targets)
     {
+        Debug.Log($"=== Applying Attack Effects ===");
+        Debug.Log($"User: {user.characterName}");
+        Debug.Log($"Attack: {attack.attackName}");
+        Debug.Log($"Number of effects: {attack.effects.Count}");
+        Debug.Log($"Number of targets: {targets.Count}");
+
         foreach (var effect in attack.effects)
         {
-            // Roll for accuracy
+            Debug.Log($"Processing effect: {effect.effectType}, value={effect.value}, accuracy={effect.accuracy}");
+
             int accuracyRoll = Random.Range(0, 101);
             bool isSuccess = accuracyRoll <= effect.accuracy;
 
-            // Check if effect should trigger
+            Debug.Log($"Accuracy roll: {accuracyRoll}, Success: {isSuccess}");
+
             if ((isSuccess && effect.triggersOn == EffectTrigger.OnSuccess) ||
                 (!isSuccess && effect.triggersOn == EffectTrigger.OnMiss))
             {
+                Debug.Log($"Effect triggered! Applying to {targets.Count} targets");
                 ApplyEffect(user, targets, effect);
+            }
+            else
+            {
+                Debug.Log($"Effect did not trigger (triggerOn={effect.triggersOn})");
             }
         }
 
@@ -532,65 +449,56 @@ public class CombatSystem : MonoBehaviour
 
     private void ApplyEffect(CharacterData user, List<CharacterData> targets, EffectData effect)
     {
+        Debug.Log($"ApplyEffect: {effect.effectType} from {user.characterName}");
+
         foreach (var target in targets)
         {
             if (target == null || target.currentHP <= 0)
-                continue; // Skip dead targets
+            {
+                Debug.Log($"Target is null or dead, skipping");
+                continue;
+            }
+
+            Debug.Log($"Target: {target.characterName}, Current HP: {target.currentHP}, Defense: {target.defense}");
 
             switch (effect.effectType)
             {
                 case EffectType.Damage:
-                    // Calculate damage (base damage from effect + user attack - target defense)
                     int damage = Mathf.Max(1, effect.value + user.attack - target.defense);
+                    Debug.Log($"Damage calculation: {effect.value} + {user.attack} - {target.defense} = {damage}");
+
+                    int oldHP = target.currentHP;
                     target.TakeDamage(damage);
-                    Debug.Log($"{target.characterName} takes {damage} damage!");
+                    Debug.Log($"HP changed: {oldHP} -> {target.currentHP}");
 
-                    // Trigger update event
-                    onCharacterUpdated?.Invoke(target);
-                    break;
-
-                case EffectType.Heal:
-                    int healAmount = effect.value;
-                    target.Heal(healAmount);
-                    Debug.Log($"{target.characterName} heals for {healAmount} HP!");
-
-                    // Trigger update event
                     onCharacterUpdated?.Invoke(target);
                     break;
 
                 case EffectType.Attack:
-                    // Attack based on user's attack stat plus effect value
                     int attackDamage = Mathf.Max(1, user.attack + effect.value - target.defense);
-                    target.TakeDamage(attackDamage);
-                    Debug.Log($"{target.characterName} takes {attackDamage} damage from attack!");
+                    Debug.Log($"Attack damage calculation: {user.attack} + {effect.value} - {target.defense} = {attackDamage}");
 
-                    // Trigger update event
+                    int oldAttackHP = target.currentHP;
+                    target.TakeDamage(attackDamage);
+                    Debug.Log($"HP changed: {oldAttackHP} -> {target.currentHP}");
+
                     onCharacterUpdated?.Invoke(target);
                     break;
 
                 case EffectType.HP_Restore:
-                    // Restore HP (like a potion)
                     target.Heal(effect.value);
-                    Debug.Log($"{target.characterName} restores {effect.value} HP!");
-
-                    // Trigger update event
                     onCharacterUpdated?.Invoke(target);
                     break;
 
                 case EffectType.StatusEffect:
-                    // Apply status effect if we have StatusEffectData
                     if (effect.statusEffect != null)
                     {
                         target.AddStatusEffect(effect.statusEffect, user);
-                        Debug.Log($"{target.characterName} afflicted with {effect.statusEffect.nomeEfeito}!");
-
-                        // Trigger update event for status effect
                         onCharacterUpdated?.Invoke(target);
                     }
                     break;
 
                 case EffectType.Buff:
-                    // Apply buff (increase stats temporarily)
                     if (effect.statModifiers != null && effect.statModifiers.Count > 0)
                     {
                         foreach (var modifier in effect.statModifiers)
@@ -605,13 +513,11 @@ public class CombatSystem : MonoBehaviour
                                     break;
                             }
                         }
-                        Debug.Log($"{target.characterName} receives buff!");
                         onCharacterUpdated?.Invoke(target);
                     }
                     break;
 
                 case EffectType.Debuff:
-                    // Apply debuff (decrease stats temporarily)
                     if (effect.statModifiers != null && effect.statModifiers.Count > 0)
                     {
                         foreach (var modifier in effect.statModifiers)
@@ -626,49 +532,37 @@ public class CombatSystem : MonoBehaviour
                                     break;
                             }
                         }
-                        Debug.Log($"{target.characterName} receives debuff!");
                         onCharacterUpdated?.Invoke(target);
                     }
                     break;
 
                 case EffectType.ManaRestore:
-                    // Restore AP
                     target.currentAP = Mathf.Min(target.maxAP, target.currentAP + effect.value);
-                    Debug.Log($"{target.characterName} restores {effect.value} AP!");
                     onCharacterUpdated?.Invoke(target);
                     break;
 
                 case EffectType.Revive:
-                    // Revive a fallen character
                     if (target.currentHP <= 0)
                     {
                         target.currentHP = effect.value;
-                        Debug.Log($"{target.characterName} is revived with {effect.value} HP!");
                         onCharacterUpdated?.Invoke(target);
                     }
                     break;
 
                 case EffectType.MultiHit:
-                    // Multi-hit attack (hits multiple times)
                     for (int i = 0; i < effect.hitCount; i++)
                     {
                         int multiDamage = Mathf.Max(1, (effect.value + user.attack - target.defense) / effect.hitCount);
                         target.TakeDamage(multiDamage);
-                        Debug.Log($"{target.characterName} takes {multiDamage} damage from hit {i + 1}!");
 
                         if (target.currentHP <= 0)
-                            break; // Stop if target dies
+                            break;
                     }
                     onCharacterUpdated?.Invoke(target);
-                    break;
-
-                default:
-                    Debug.LogWarning($"Unhandled effect type: {effect.effectType}");
                     break;
             }
         }
 
-        // Check if all targets are dead and update battle state
         CheckBattleEnd();
     }
 
@@ -680,7 +574,6 @@ public class CombatSystem : MonoBehaviour
         if (potentialTargets.Count == 0)
             return new List<CharacterData>();
 
-        // Random selection
         List<CharacterData> selectedTargets = new List<CharacterData>();
         int targetsToSelect = Mathf.Min(numberOfTargets, potentialTargets.Count);
 
@@ -704,9 +597,6 @@ public class CombatSystem : MonoBehaviour
             currentState = CombatState.VICTORY;
             onCombatEnded?.Invoke(CombatState.VICTORY);
             AwardExperience();
-            Debug.Log("Victory! All enemies defeated!");
-
-            // Start coroutine to return to map
             StartCoroutine(ReturnToMapAfterDelay(2f));
             return true;
         }
@@ -714,9 +604,6 @@ public class CombatSystem : MonoBehaviour
         {
             currentState = CombatState.DEFEAT;
             onCombatEnded?.Invoke(CombatState.DEFEAT);
-            Debug.Log("Defeat! All party members are DOWNED!");
-
-            // Start coroutine to return to map
             StartCoroutine(ReturnToMapAfterDelay(2f));
             return true;
         }
@@ -728,24 +615,17 @@ public class CombatSystem : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
 
-        // Find EncounterData
         EncounterData encounterData = FindFirstObjectByType<EncounterData>();
-
-        // Get PreviousScene component
         PreviousScene previousScene = FindFirstObjectByType<PreviousScene>();
 
         if (previousScene != null)
         {
-            // If victory, apply rewards before returning
             if (currentState == CombatState.VICTORY && encounterData != null)
             {
                 encounterData.combatVictory = true;
             }
 
-            // Return to map scene
             previousScene.LoadScene();
-
-            // Unload combat scene
             SceneManager.UnloadSceneAsync("Combat");
         }
     }
@@ -764,16 +644,13 @@ public class CombatSystem : MonoBehaviour
         {
             member.GainExperience(totalExp);
         }
-        Debug.Log($"Party gained {totalExp} experience!");
     }
 
-    // Public method for UI to get current character
     public CharacterData GetCurrentCharacter()
     {
         return currentCharacter;
     }
 
-    // Public method to check if it's player's turn
     public bool IsPlayerTurn()
     {
         return currentState == CombatState.PLAYER_TURN;

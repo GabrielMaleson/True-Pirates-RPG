@@ -176,9 +176,10 @@ public class CharacterData : ScriptableObject
 
     public void TakeDamage(int damage)
     {
+        int oldHP = currentHP;
         currentHP = Mathf.Max(0, currentHP - damage);
+        Debug.Log($"TakeDamage: {characterName} took {damage} damage. HP: {oldHP} -> {currentHP}");
     }
-
     public void Heal(int amount)
     {
         currentHP = Mathf.Min(hp, currentHP + amount);

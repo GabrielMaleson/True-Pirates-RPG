@@ -93,7 +93,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   maxAP: 10
   unlockableAttacks:
-  - attack: {fileID: 11400000, guid: 0578df8de0ac7ff4a83971ff592ddf02, type: 2}
+  - attack: {fileID: 11400000, guid: 73ce6ecd6a556f54083e8a2f2ab10b24, type: 2}
     unlockLevel: 0
   activeStatusEffects: []
   equippedItems:
