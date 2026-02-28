@@ -11,7 +11,6 @@ public class CombatUIManager : MonoBehaviour
     [Header("UI Parents")]
     public Transform partyUIParent;
     public Transform enemyUIParent;
-    public Transform targetButtonParent;
 
     [Header("Prefabs")]
     public GameObject partyMemberUIPrefab;
@@ -23,7 +22,6 @@ public class CombatUIManager : MonoBehaviour
 
     [Header("Panels")]
     public GameObject waitPanel;
-    public GameObject targetPanel;
 
     private Dictionary<CharacterData, CharacterUI> partyUIDictionary = new Dictionary<CharacterData, CharacterUI>();
     private Dictionary<CharacterData, EnemyUI> enemyUIDictionary = new Dictionary<CharacterData, EnemyUI>();
@@ -146,18 +144,45 @@ public class CombatUIManager : MonoBehaviour
                 {
                     enemyVisualDictionary[data] = characterComp.gameObject;
 
-                    // Add TargetSelector to enemy if it doesn't have one
                     if (characterComp.GetComponent<TargetSelector>() == null)
                     {
                         TargetSelector selector = characterComp.gameObject.AddComponent<TargetSelector>();
-                        selector.Initialize(this); // Only pass the manager now
+                        selector.Initialize(this);
                     }
                 }
             }
         }
     }
 
-    // Update EnableTargetingOnCharacters to not create buttons
+    public void OnActionSelected(AttackFile attack, CharacterData character)
+    {
+        if (!isInitialized) return;
+        if (character != currentCharacter) return;
+
+        selectedAttack = attack;
+        selectedTargets.Clear();
+
+        if (attack.effects.Count > 0)
+        {
+            TargetType targetType = attack.effects[0].targetType;
+            remainingTargetsToSelect = attack.effects[0].numberOfTargets;
+
+            statusText.text = $"Select {remainingTargetsToSelect} target(s)";
+
+            if (partyUIDictionary.ContainsKey(character))
+                partyUIDictionary[character].HideActionButtons();
+
+            if (targetType == TargetType.Ally)
+            {
+                EnableTargetingOnCharacters(combatSystem.partyMembers);
+            }
+            else
+            {
+                EnableTargetingOnCharacters(combatSystem.enemies);
+            }
+        }
+    }
+
     private void EnableTargetingOnCharacters(List<CharacterData> characters)
     {
         foreach (var character in characters)
@@ -185,45 +210,8 @@ public class CombatUIManager : MonoBehaviour
         }
     }
 
-    // Remove ClearTargetButtons method
-    public void OnActionSelected(AttackFile attack, CharacterData character)
-    {
-        if (!isInitialized) return;
-        if (character != currentCharacter) return;
-
-        selectedAttack = attack;
-        selectedTargets.Clear();
-
-        if (attack.effects.Count > 0)
-        {
-            TargetType targetType = attack.effects[0].targetType;
-            remainingTargetsToSelect = attack.effects[0].numberOfTargets;
-
-            statusText.text = $"Select {remainingTargetsToSelect} target(s)";
-
-            if (partyUIDictionary.ContainsKey(character))
-                partyUIDictionary[character].HideActionButtons();
-
-            if (targetPanel != null)
-                targetPanel.SetActive(true);
-
-            if (targetType == TargetType.Ally)
-            {
-                EnableTargetingOnCharacters(combatSystem.partyMembers);
-            }
-            else
-            {
-                EnableTargetingOnCharacters(combatSystem.enemies);
-            }
-        }
-    }
-
     private void DisableAllTargeting()
     {
-
-        if (targetPanel != null)
-            targetPanel.SetActive(false);
-
         foreach (var visualObj in partyVisualDictionary.Values)
         {
             if (visualObj != null)
@@ -244,35 +232,27 @@ public class CombatUIManager : MonoBehaviour
             }
         }
     }
+
     private void OnTargetSelected(CharacterData target)
     {
-        Debug.Log($"CombatUIManager.OnTargetSelected for {target?.characterName}");
-
-        if (target == null)
-        {
-            Debug.LogError("Target is null!");
-            return;
-        }
-
         if (!selectedTargets.Contains(target))
         {
             selectedTargets.Add(target);
             remainingTargetsToSelect--;
 
-            Debug.Log($"Added target. Now have {selectedTargets.Count}, need {remainingTargetsToSelect} more");
-
             statusText.text = $"Selected {selectedTargets.Count}. {remainingTargetsToSelect} more needed";
 
             if (remainingTargetsToSelect <= 0)
             {
-                Debug.Log($"All targets selected! Executing attack: {selectedAttack?.attackName}");
-
                 if (selectedAttack != null && selectedTargets.Count > 0)
                 {
-                    combatSystem.SelectPlayerAction(selectedAttack, selectedTargets);
+                    AttackFile attackToUse = selectedAttack;
+                    List<CharacterData> targetsToUse = new List<CharacterData>(selectedTargets);
 
                     selectedAttack = null;
                     selectedTargets.Clear();
+
+                    combatSystem.SelectPlayerAction(attackToUse, targetsToUse);
 
                     DisableAllTargeting();
                     OnCharacterUpdated(currentCharacter);
@@ -288,15 +268,7 @@ public class CombatUIManager : MonoBehaviour
                         statusText.text = "No AP remaining...";
                     }
                 }
-                else
-                {
-                    Debug.LogError($"Cannot execute: selectedAttack={selectedAttack}, selectedTargets.Count={selectedTargets.Count}");
-                }
             }
-        }
-        else
-        {
-            Debug.Log($"Target {target.characterName} already selected");
         }
     }
 
@@ -375,23 +347,4 @@ public class CombatUIManager : MonoBehaviour
             combatSystem.onCombatEnded -= OnCombatEnded;
         }
     }
-
-    public void ForceShowButtonsForCharacter(string characterName)
-    {
-        Debug.Log($"ForceShowButtonsForCharacter: {characterName}");
-
-        foreach (var kvp in partyUIDictionary)
-        {
-            Debug.Log($"Checking {kvp.Key.characterName}");
-            if (kvp.Key.characterName == characterName)
-            {
-                Debug.Log($"Found match, calling ShowActionButtons");
-                kvp.Value.ShowActionButtons();
-                return;
-            }
-        }
-
-        Debug.LogError($"No character named {characterName} found in partyUIDictionary");
-    }
-
 }

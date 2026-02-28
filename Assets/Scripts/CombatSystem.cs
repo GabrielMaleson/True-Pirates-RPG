@@ -259,6 +259,7 @@ public class CombatSystem : MonoBehaviour
 
     private IEnumerator EnemyTurnRoutine()
     {
+        // Don't use pendingActions for enemies - execute immediately
         ComplexAI ai = currentCharacter.transform?.GetComponent<ComplexAI>();
         AttackFile selectedAction = null;
         List<CharacterData> targets = new List<CharacterData>();
@@ -281,9 +282,11 @@ public class CombatSystem : MonoBehaviour
 
         if (selectedAction != null && currentCharacter.currentAP >= selectedAction.actionPointCost)
         {
-            yield return StartCoroutine(ExecuteAttackWithAnimation(currentCharacter, selectedAction, targets));
+            // Execute enemy action immediately without going through pendingActions
             currentCharacter.currentAP -= selectedAction.actionPointCost;
             onCharacterUpdated?.Invoke(currentCharacter);
+
+            yield return StartCoroutine(ExecuteAttackWithAnimation(currentCharacter, selectedAction, targets));
         }
 
         yield return new WaitForSeconds(0.5f);
@@ -333,21 +336,37 @@ public class CombatSystem : MonoBehaviour
 
     public void SelectPlayerAction(AttackFile action, List<CharacterData> targets)
     {
+        // Only players should use this method
+        if (!partyMembers.Contains(currentCharacter))
+        {
+            Debug.LogWarning("SelectPlayerAction called for non-player character - ignoring");
+            return;
+        }
+
         if (currentState == CombatState.PLAYER_TURN &&
             currentCharacter.currentAP >= action.actionPointCost &&
             !isExecutingActions && !isAnimating)
         {
-            pendingActions[action] = targets;
+            if (pendingActions.ContainsKey(action))
+                return;
 
-            // Immediately deduct AP? Or wait until execution?
-            // Let's deduct now to prevent multiple selections
+            pendingActions[action] = new List<CharacterData>(targets);
+
             currentCharacter.currentAP -= action.actionPointCost;
             onCharacterUpdated?.Invoke(currentCharacter);
+
+            if (!isExecutingActions && pendingActions.Count == 1)
+            {
+                ExecuteActionsInOrder();
+            }
         }
     }
 
     private void ExecuteActionsInOrder()
     {
+        if (isExecutingActions)
+            return;
+
         isExecutingActions = true;
 
         var orderedActions = pendingActions.Keys
@@ -359,24 +378,27 @@ public class CombatSystem : MonoBehaviour
 
     private IEnumerator ExecuteActionQueue(List<AttackFile> actions)
     {
-        foreach (var action in actions)
+        var actionsToProcess = new List<AttackFile>(actions);
+
+        foreach (var action in actionsToProcess)
         {
-            if (currentCharacter.currentAP >= action.actionPointCost && pendingActions.ContainsKey(action))
+            if (!pendingActions.ContainsKey(action))
+                continue;
+
+            List<CharacterData> targets = pendingActions[action];
+
+            if (targets != null && targets.Count > 0)
             {
-                List<CharacterData> targets = pendingActions[action];
+                pendingActions.Remove(action);
+
                 yield return StartCoroutine(ExecuteAttackWithAnimation(currentCharacter, action, targets));
-                currentCharacter.currentAP -= action.actionPointCost;
 
                 onActionExecuted?.Invoke(currentCharacter, action, targets);
                 onCharacterUpdated?.Invoke(currentCharacter);
-
-                foreach (var target in targets)
-                {
-                    if (target.currentHP <= 0)
-                    {
-                        onCharacterUpdated?.Invoke(target);
-                    }
-                }
+            }
+            else
+            {
+                pendingActions.Remove(action);
             }
 
             yield return new WaitForSeconds(0.2f);
@@ -385,7 +407,8 @@ public class CombatSystem : MonoBehaviour
         pendingActions.Clear();
         isExecutingActions = false;
 
-        if (currentCharacter.currentAP > 0 && currentCharacter.CanAct())
+        // Only show action buttons again if it's a player character
+        if (currentCharacter.currentAP > 0 && currentCharacter.CanAct() && partyMembers.Contains(currentCharacter))
         {
             currentState = CombatState.PLAYER_TURN;
             onTurnStarted?.Invoke(currentCharacter);
@@ -395,7 +418,6 @@ public class CombatSystem : MonoBehaviour
             EndPlayerTurn();
         }
     }
-
     private IEnumerator ExecuteAttackWithAnimation(CharacterData user, AttackFile attack, List<CharacterData> targets)
     {
         isAnimating = true;
@@ -417,30 +439,15 @@ public class CombatSystem : MonoBehaviour
 
     private void ApplyAttackEffects(CharacterData user, AttackFile attack, List<CharacterData> targets)
     {
-        Debug.Log($"=== Applying Attack Effects ===");
-        Debug.Log($"User: {user.characterName}");
-        Debug.Log($"Attack: {attack.attackName}");
-        Debug.Log($"Number of effects: {attack.effects.Count}");
-        Debug.Log($"Number of targets: {targets.Count}");
-
         foreach (var effect in attack.effects)
         {
-            Debug.Log($"Processing effect: {effect.effectType}, value={effect.value}, accuracy={effect.accuracy}");
-
             int accuracyRoll = Random.Range(0, 101);
             bool isSuccess = accuracyRoll <= effect.accuracy;
-
-            Debug.Log($"Accuracy roll: {accuracyRoll}, Success: {isSuccess}");
 
             if ((isSuccess && effect.triggersOn == EffectTrigger.OnSuccess) ||
                 (!isSuccess && effect.triggersOn == EffectTrigger.OnMiss))
             {
-                Debug.Log($"Effect triggered! Applying to {targets.Count} targets");
                 ApplyEffect(user, targets, effect);
-            }
-            else
-            {
-                Debug.Log($"Effect did not trigger (triggerOn={effect.triggersOn})");
             }
         }
 
@@ -449,39 +456,28 @@ public class CombatSystem : MonoBehaviour
 
     private void ApplyEffect(CharacterData user, List<CharacterData> targets, EffectData effect)
     {
-        Debug.Log($"ApplyEffect: {effect.effectType} from {user.characterName}");
-
         foreach (var target in targets)
         {
             if (target == null || target.currentHP <= 0)
-            {
-                Debug.Log($"Target is null or dead, skipping");
                 continue;
-            }
-
-            Debug.Log($"Target: {target.characterName}, Current HP: {target.currentHP}, Defense: {target.defense}");
 
             switch (effect.effectType)
             {
                 case EffectType.Damage:
                     int damage = Mathf.Max(1, effect.value + user.attack - target.defense);
-                    Debug.Log($"Damage calculation: {effect.value} + {user.attack} - {target.defense} = {damage}");
-
-                    int oldHP = target.currentHP;
                     target.TakeDamage(damage);
-                    Debug.Log($"HP changed: {oldHP} -> {target.currentHP}");
+                    onCharacterUpdated?.Invoke(target);
+                    break;
 
+                case EffectType.Heal:
+                    int healAmount = effect.value;
+                    target.Heal(healAmount);
                     onCharacterUpdated?.Invoke(target);
                     break;
 
                 case EffectType.Attack:
                     int attackDamage = Mathf.Max(1, user.attack + effect.value - target.defense);
-                    Debug.Log($"Attack damage calculation: {user.attack} + {effect.value} - {target.defense} = {attackDamage}");
-
-                    int oldAttackHP = target.currentHP;
                     target.TakeDamage(attackDamage);
-                    Debug.Log($"HP changed: {oldAttackHP} -> {target.currentHP}");
-
                     onCharacterUpdated?.Invoke(target);
                     break;
 

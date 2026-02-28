@@ -14,7 +14,6 @@ public class TargetButton : MonoBehaviour
 
     private void Awake()
     {
-        // Ensure button is set up
         if (button != null)
         {
             button.onClick.AddListener(OnClick);

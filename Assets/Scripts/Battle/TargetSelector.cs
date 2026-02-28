@@ -28,7 +28,6 @@ public class TargetSelector : MonoBehaviour
         onTargetSelected = callback;
         isActive = true;
 
-        // Tell the Enemy UI to show its target button
         if (enemyUI != null)
         {
             enemyUI.ShowTargetButton(this);
@@ -40,7 +39,6 @@ public class TargetSelector : MonoBehaviour
         isActive = false;
         onTargetSelected = null;
 
-        // Tell the Enemy UI to hide its target button
         if (enemyUI != null)
         {
             enemyUI.HideTargetButton();

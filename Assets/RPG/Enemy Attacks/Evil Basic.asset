@@ -20,7 +20,7 @@ MonoBehaviour:
     targetType: 0
     numberOfTargets: 1
     value: 5
-    accuracy: 80
+    accuracy: 100
     triggersOn: 0
     statusEffect: {fileID: 0}
     statModifiers: []

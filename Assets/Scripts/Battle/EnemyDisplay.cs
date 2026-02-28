@@ -11,8 +11,8 @@ public class EnemyUI : MonoBehaviour
     public GameObject defeatedOverlay;
 
     [Header("Target Button")]
-    public GameObject targetButtonObject; // Already exists in hierarchy, starts inactive
-    public TargetButton targetButton; // Reference to the TargetButton component
+    public GameObject targetButtonObject;
+    public TargetButton targetButton;
 
     private CharacterData characterData;
     private GameObject characterVisualObject;
@@ -25,7 +25,6 @@ public class EnemyUI : MonoBehaviour
         nameText.text = data.characterName;
         UpdateDisplay();
 
-        // Find the TargetSelector on the visual object and tell it about this UI
         if (characterVisualObject != null)
         {
             targetSelector = characterVisualObject.GetComponent<TargetSelector>();
@@ -35,7 +34,6 @@ public class EnemyUI : MonoBehaviour
             }
         }
 
-        // Ensure target button starts inactive
         if (targetButtonObject != null)
         {
             targetButtonObject.SetActive(false);
@@ -56,7 +54,7 @@ public class EnemyUI : MonoBehaviour
     {
         if (targetButtonObject != null && targetButton != null)
         {
-            // Update the button's target (in case it changed)
+            targetSelector = selector;
             targetButton.SetTarget(characterData, selector.OnTargetSelected);
             targetButtonObject.SetActive(true);
         }
