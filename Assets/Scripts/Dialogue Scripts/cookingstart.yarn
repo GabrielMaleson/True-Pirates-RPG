@@ -1,0 +1,148 @@
+﻿title: cookingstart
+---
+<<declare $start_cooking = true as bool>>
+
+<<darken>>
+<<disappear>>
+<<sprite lucy.happy gings>>
+Lucinha: Ahh! Bom dia Clar-! 
+<<sprite lucy.forgot gings lucyforgot>>
+Lucinha: Quem é você?! O que você tá fazendo aqui de uniforme?! 
+<<sprite lucy.sad gings lucysad>>
+Lucinha: Oh meu deus… Agora que eu me lembrei… A Clara me avisou hoje mais cedo que chegaria uma funcionária nova… Mil desculpas, meu anjo… 
+Valentina: Sem problemas senhora! Meu nome é Valentina, muito prazer!
+<<sprite lucy.happy gings>>
+Lucinha: O prazer é todo meu, querida. Meu nome é Lucinha, sou uma das residentes mais antigas daqui.
+-> Você disse que precisa de ajuda?
+    Valentina: Então... Você disse que precisava de ajuda?
+    <<set $start_cooking to true>>
+-> Depois falo com você.
+    Valentina: Tenho que fazer algumas coisinhas agora, Luci. Dá pra ser depois?
+    Luci: Ah... tudo bem.
+    <<set $start_cooking to false>>
+
+<<if $start_cooking>>
+    Lucinha: Sim! Adoraria um pouco de ajuda a terminar minha sopa pro meu amigo ingrato, Amerício…
+    <<sprite lucy.forgot gings lucyforgot>>
+    Lucinha: Surpreendentemente, ele parece estar de pior humor do que o normal.
+    <<sprite lucy.sad gings lucysad>>
+    Lucinha: Também se sobrar, acho que seria bom o Euclides comer alguma coisa… 
+    Lucinha: Aquele doce era tão carinhoso… Não sei o que deu na cabeça dele nos últimos tempos pra ele ficar tão fechado assim…
+    <<sprite lucy.happy gings>>
+    Lucinha: Estou usando meu livro de receitas que herdei da minha família, mas eu sei a receita de cor!
+    Lucinha: Querida, encontra o bacon na cozinha pra mim enquanto eu mexo a sopa, por favor?
+    Valentina: Pode deixar, Luci! Vou ir lá!
+    <<removesprite gings>>
+    <<startcooking Timer>>
+    <<progress Cooking>>
+    <<objective "Achar Bacon na cozinha">>
+<<else>>
+    Luci: Vou estar esperando aqui. Só vou precisar de algumas coisas se quiser me ajudar depois!
+    <<removesprite gings>>
+<<endif>>
+<<reappear>>
+<<brighten>>
+===
+
+title: lucibacon
+---
+<<darken>>
+<<disappear>>
+<<sprite lucy.forgot gings lucyforgot>>
+Lucinha: Não, espera... não está certo, bacon não combina... será que precisa da [b]pimenta[/b]...?
+Lucinha: Valentina, vai procurar lá por favor?
+Valentina: Ok, Luci! Vou pegar.
+Narração: Objetivo atualizado.
+<<removesprite gings>>
+<<reappear>>
+<<objective "Encontrar a Pimenta">>
+<<brighten>>
+===
+
+title: lucipepper
+---
+<<darken>>
+<<disappear>>
+<<sprite lucy.forgot gings lucyforgot>>
+Lucinha: Espera, nem me dá isso! Pimenta vai queimar a língua do coitado! Mas qual que era o ingrediente que eu estava faltando...?
+Lucinha: Ah, lembrei! É a salsicha!
+Lucinha: Valentina, você pode ir lá pegar?
+Valentina: Tudo bem, Luci!
+Narração: Objetivo atualizado.
+<<removesprite gings>>
+<<reappear>>
+<<objective "Encontrar a Salsicha">>
+<<brighten>>
+===
+
+title: lucisausage
+---
+<<darken>>
+<<disappear>>
+<<sprite lucy.forgot gings lucyforgot>>
+Lucinha: Não, não, não! Está tudo errado! Não é a salsicha... nem pimenta... credo, qual era esse último ingrediente...?
+Lucinha: Clara, eu preciso da sua ajuda. Por favor...
+Valentina: Luci, eu sou a Valentina...
+<<sprite lucy.sad gings lucysad>>
+Lucinha: Ah... é mesmo... 
+Lucinha: Nossa... como que eu queria lembrar esse último ingrediente... mas eu nem lembro onde deixo minhas receitas...
+Lucinha: Ermm… Valentina... pode olhar a receita, por favor?
+Valentina: Não se preocupa, Luci! Vou achar!
+Valentina: (Se ela tem receitas, será que ela deixou no quarto?)
+Narração: Objetivo atualizado...?
+<<removesprite gings>>
+<<reappear>>
+<<objective "Encontrar o último ingrediente">>
+<<brighten>>
+===
+
+title: luciwrong
+---
+<<darken>>
+<<disappear>>
+<<sprite lucy.forgot gings lucyforgot>>
+Lucinha: Não, esse ingrediente não é parte da sopa! Não quero!
+<<removesprite gings>>
+<<reappear>>
+<<brighten>>
+===
+
+title: wincooking
+---
+
+<<darken>>
+<<disappear>>
+<<sprite lucy.forgot gings lucyforgot>>
+Lucinha: Não, esse ingrediente não é parte da sopa! Não quero!
+Valentina: Mas Luci, a receita do seu livro está dizendo que é...
+<<sprite lucy.sad gings lucysad>>
+Lucinha: Espera... o quê?!
+<<sprite lucy.forgot gings>>
+Lucinha: Hum... Agora que penso um pouquinho mais...
+<<sprite lucy.happy gings>>
+Lucinha: Clara, você é genial! O último ingrediente era [b]Cebola![/b]
+Valentina: Sou a Valentina, Luci. Mas estou sempre feliz em lhe ajudar! De nada!
+<<sprite lucy.sad gings lucysad>>
+Lucinha: Essa é a receita favorita do Joaquim… Poxa, a quanto tempo que eu não vejo aquele doce… Se você encontrar ele pela casa, me faz um favor e avise ele que eu fiz essa sopa? 
+Valentina: Claro que vou, Luci! Só vou falar com o Amerício antes, ok?
+Lucinha: Amém! Eu bem que estava querendo fazer uma sopa pra ele...
+Valentina: ...
+<<removesprite gings>>
+<<progress "Did Cooking">>
+<<reappear>>
+Narração: Objetivo atualizado.
+<<objective "Entregar a sopa para o Amerício">>
+<<brighten>>
+===
+
+title: luciintro
+---
+
+<<darken>>
+?????: Queriiida! Vem me ajudar aqui rapidinho!
+Valentina: ...? (Não sei quem é, mas parece importante...)
+Narração: Objetivo atualizado.
+<<progress "Luci Intro">>
+<<objective "Ir para a Cozinha">>
+<<brighten>>
+===

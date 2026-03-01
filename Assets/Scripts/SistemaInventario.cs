@@ -6,6 +6,8 @@ public class SistemaInventario : MonoBehaviour
 {
     public List<SlotInventario> inventario = new List<SlotInventario>();
 
+    public static SistemaInventario Instance { get; private set; }
+
     [Header("Economy")]
     public int moedas = 0;
 
@@ -18,11 +20,15 @@ public class SistemaInventario : MonoBehaviour
     // Event that indicates inventory changes
     public event Action onInventarioMudou;
 
+    public List<string> gameProgress = new List<string>();
+
     // Store original CharacterData references
     private Dictionary<CharacterData, CharacterData> originalCharacterData = new Dictionary<CharacterData, CharacterData>();
 
     private void Start()
     {
+
+        Instance = this;
         // Store references to original CharacterData for each party member
         foreach (var member in partyMembers)
         {
@@ -189,4 +195,20 @@ public class SistemaInventario : MonoBehaviour
             }
         }
     }
+
+    public List<string> GetGameProgress()
+    {
+        return new List<string>(gameProgress);
+    }
+
+
+    public void AddProgress(string thing)
+    {
+        gameProgress.Add(thing);
+    }
+    public void RemoveProgress(string thing)
+    {
+        gameProgress.Remove(thing);
+    }
+
 }

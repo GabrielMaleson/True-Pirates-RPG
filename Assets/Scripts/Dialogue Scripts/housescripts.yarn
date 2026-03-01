@@ -1,0 +1,96 @@
+﻿title: houseintro
+---
+<<introdarken>>
+Valentina: (Nossa, que casa bonitinha! Não é a toa que demorou tanto tempo pra chegar aqui... é tão remota.) 
+Valentina: (Bem, melhor entrar e ver o que tem!)
+Tutorial: Use o seu Mouse para interagir com o cenário.
+Tutorial: Aperte o botão da [b]mochila[/b] para abrir seu Inventário.
+Tutorial: Para usar itens do seu inventário, abra seu Inventário, e [b]arraste[/b] o item para fora.
+Tutorial: O botão de Objetivos (representado pelo alvo) mostra seu objetivo atual.
+<<objective "Entrar na Casa Serena">>
+<<brighten>>
+
+===	
+
+title: euclidesintro
+---
+<<introdarken>>
+Valentina: Bom dia! Meu nome é Valentina e sou a nova cuidadora da casa. Qual o seu nome, senhor...?
+<<disappear>>
+<<sprite euclides.idle gings>>
+??????: ......
+Valentina: H-Hm… Eu notei que o seu quarto é separado dos outros…  
+Valentina: Você poderia me dizer o porquê?
+<<disappear>>
+<<sprite euclides.mad gings>>
+??????: ......
+Valentina: O-Ok… Desculpe o incômodo…
+<<removesprite gings>>
+<<reappear>>
+Valentina: (Que estranho... o que houve com ele?)
+<<progress "euclidesintro">>
+<<sceneload "Intro Living Room">>
+
+===
+
+title: lucinothere
+---
+<<introdarken>>
+Valentina: (Hm... não tem ninguém aqui. Será que ela está na cozinha...?)
+<<brighten>>
+<<sceneload "Hallway">>
+
+===
+
+title: lucibothered
+---
+<<darken>>
+Valentina: (Melhor não ir pra lá agora... a Luci parece que precisa de um tempo sozinha.)
+<<brighten>>
+
+===
+
+title: livingroomnah
+---
+<<darken>>
+Valentina: Melhor não ir pra lá agora... tenho que conhecer esses idosos.
+<<brighten>>
+===
+
+title: clarification
+---
+<<introdarken>>
+Valentina: (Nossa... que início ruim.)
+Clara: Valentina! Valentina!
+Valentina: Hã? Clara, que que foi--
+<<playsound run>>
+Narração: Quando você olha pra trás, a Clara sai correndo na sua direção e quase bate em você!
+Valentina: AH!
+<<sprite clara.happy gings>>
+Clara: Que bom ver você! 
+<<sprite clara.think gings>>
+Clara: Desculpa sair correndo assim, mas eu vi você entrando no quarto do Sr. Euclides...
+Clara: Eu estava tão animada com você entrando na nossa equipe, que eu nem pensei sobre isso... mas você não sabe nada dele, né?
+-> Sei que ele é bem quietinho...
+	Valentina: Sei que ele é bem quietinho... nem ouvi a voz dele.
+	Clara: Poucos de nós ouvimos. Ele não fala muito com... bem, nenhum de nós.
+-> Sei que ele já não gosta de mim.
+	Valentina: Sei que ele já não gosta de mim. Ele me olhou com uma cara muito feia!
+	Clara: É... O Euclides é assim, mesmo.
+Clara: Me desculpa não te informar sobre ele… 
+Clara: Ele é um dos nossos residentes mais peculiares…
+Clara: Eu trabalho aqui a quase 5 anos, e nunca conseguir decifrar ele, mesmo tentando descobrir sobre sua personalidade pelas seus amigos…
+Clara: Tinha uma amizade grande com a Lucinha e o Amerício... E um terceiro amigo, mas...
+Clara: No nome me foge agora - conheci ele muito pouco antes dele sair do asilo.
+Valentina: Tudo bem! Eu fui um pouco intrometida, estava animada para conhecer os residentes.
+<<sprite clara.happy gings>>
+Clara: Sem problemas, fique a vontade!
+<<removesprite gings>>
+Valentina: (Tudo bem que ela é um pouco desastrada, mas se nem a Clara conseguiu falar com ele, que esperança eu vou ter?)
+Valentina: (Mas mesmo assim... eu deveria pelo menos tentar.)
+Narração: Objetivo atualizado.
+<<objective "Conhecer a Lucinha e o Amerício">>
+<<progress "clarification">>
+<<brighten>>
+
+===
