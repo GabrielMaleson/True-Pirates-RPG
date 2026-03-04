@@ -234,6 +234,7 @@ public class CombatUIManager : MonoBehaviour
             {
                 Destroy(child.gameObject);
             }
+            attackButtonGrid.gameObject.SetActive(false);
         }
 
         // Clear item buttons
@@ -243,15 +244,21 @@ public class CombatUIManager : MonoBehaviour
             {
                 Destroy(child.gameObject);
             }
+            itemButtonGrid.gameObject.SetActive(false);
         }
     }
-
     private void OnAttacksSelected()
     {
         if (currentCharacter == null) return;
 
         // Hide action menu
         actionMenuPanel.SetActive(false);
+
+        // Show attack grid, hide item grid
+        if (attackButtonGrid != null)
+            attackButtonGrid.gameObject.SetActive(true);
+        if (itemButtonGrid != null)
+            itemButtonGrid.gameObject.SetActive(false);
 
         // Clear old attack buttons
         if (attackButtonGrid != null)
@@ -288,6 +295,12 @@ public class CombatUIManager : MonoBehaviour
         // Hide action menu
         actionMenuPanel.SetActive(false);
 
+        // Show item grid, hide attack grid
+        if (itemButtonGrid != null)
+            itemButtonGrid.gameObject.SetActive(true);
+        if (attackButtonGrid != null)
+            attackButtonGrid.gameObject.SetActive(false);
+
         // Clear old item buttons
         if (itemButtonGrid != null)
         {
@@ -316,13 +329,22 @@ public class CombatUIManager : MonoBehaviour
         }
     }
 
+
     private void OnDefendSelected()
     {
         if (currentCharacter == null) return;
 
+        // Hide action menu and both grids
+        actionMenuPanel.SetActive(false);
+        if (attackButtonGrid != null)
+            attackButtonGrid.gameObject.SetActive(false);
+        if (itemButtonGrid != null)
+            itemButtonGrid.gameObject.SetActive(false);
+
         // Defend action: triple defense for this turn, use all AP
         StartCoroutine(ExecuteDefend());
     }
+
 
     private IEnumerator ExecuteDefend()
     {
@@ -364,6 +386,11 @@ public class CombatUIManager : MonoBehaviour
                 {
                     Destroy(child.gameObject);
                 }
+                // Hide both grids
+                if (attackButtonGrid != null)
+                    attackButtonGrid.gameObject.SetActive(false);
+                if (itemButtonGrid != null)
+                    itemButtonGrid.gameObject.SetActive(false);
                 // Show action menu again
                 actionMenuPanel.SetActive(true);
             });
@@ -529,6 +556,12 @@ public class CombatUIManager : MonoBehaviour
         selectedAttack = null;
         selectedItem = null;
         selectedTargets.Clear();
+
+        // Hide both grids
+        if (attackButtonGrid != null)
+            attackButtonGrid.gameObject.SetActive(false);
+        if (itemButtonGrid != null)
+            itemButtonGrid.gameObject.SetActive(false);
 
         // Call the method properly
         if (currentCharacter != null)
