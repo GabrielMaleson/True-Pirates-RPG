@@ -6,7 +6,8 @@ public class TargetSelector : MonoBehaviour
     private System.Action<CharacterData> onTargetSelected;
     private CharacterData characterData;
     private bool isActive = false;
-    private EnemyUI enemyUI;
+    private CharacterUI characterUI; // For party members
+    private EnemyUI enemyUI; // For enemies
 
     public void Initialize(CombatUIManager manager)
     {
@@ -15,6 +16,11 @@ public class TargetSelector : MonoBehaviour
         CharacterComponent comp = GetComponent<CharacterComponent>();
         if (comp != null)
             characterData = comp.characterData;
+    }
+
+    public void SetCharacterUI(CharacterUI ui)
+    {
+        characterUI = ui;
     }
 
     public void SetEnemyUI(EnemyUI ui)
@@ -28,7 +34,12 @@ public class TargetSelector : MonoBehaviour
         onTargetSelected = callback;
         isActive = true;
 
-        if (enemyUI != null)
+        // Show target indicator on the appropriate UI
+        if (characterUI != null)
+        {
+            characterUI.ShowTargetIndicator(this);
+        }
+        else if (enemyUI != null)
         {
             enemyUI.ShowTargetButton(this);
         }
@@ -39,7 +50,12 @@ public class TargetSelector : MonoBehaviour
         isActive = false;
         onTargetSelected = null;
 
-        if (enemyUI != null)
+        // Hide target indicator
+        if (characterUI != null)
+        {
+            characterUI.HideTargetIndicator();
+        }
+        else if (enemyUI != null)
         {
             enemyUI.HideTargetButton();
         }

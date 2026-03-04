@@ -16,7 +16,10 @@ public class EncounterStarter : MonoBehaviour
         {
             Debug.Log($"Player triggered encounter: {encounterFile?.name}");
 
-            playerInventory = FindAnyObjectByType<SistemaInventario>();
+            // Find inventory if not assigned
+            if (playerInventory == null)
+                playerInventory = FindFirstObjectByType<SistemaInventario>();
+
             StartEncounter();
         }
     }
@@ -59,6 +62,12 @@ public class EncounterStarter : MonoBehaviour
 
         // Store player inventory
         encounterData.playerInventory = playerInventory;
+
+        // Make sure inventory persists
+        if (playerInventory != null)
+        {
+            DontDestroyOnLoad(playerInventory.gameObject);
+        }
 
         // LOAD THE ENCOUNTER FILE INTO ENCOUNTER DATA
         encounterData.LoadEncounterFromFile(encounterFile);

@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CombatUIManager : MonoBehaviour
 {
     [Header("References")]
     public CombatSystem combatSystem;
+    public SistemaInventario playerInventory;
 
     [Header("UI Parents")]
     public Transform partyUIParent;
@@ -15,6 +17,17 @@ public class CombatUIManager : MonoBehaviour
     [Header("Prefabs")]
     public GameObject partyMemberUIPrefab;
     public GameObject enemyUIPrefab;
+    public GameObject actionButtonPrefab;
+
+    [Header("Action Menu Panels - Scene Based")]
+    public GameObject actionMenuPanel;        // Main menu with Attacks/Items/Defend
+    public Transform attackButtonGrid;        // Grid in scene where attack buttons spawn
+    public Transform itemButtonGrid;          // Grid in scene where item buttons spawn
+
+    [Header("Action Menu Buttons")]
+    public Button attacksMenuButton;
+    public Button itemsMenuButton;
+    public Button defendMenuButton;
 
     [Header("Text Displays")]
     public TextMeshProUGUI turnText;
@@ -30,14 +43,19 @@ public class CombatUIManager : MonoBehaviour
 
     private CharacterData currentCharacter;
     private AttackFile selectedAttack;
+    private DadosItem selectedItem;
     private int remainingTargetsToSelect = 0;
     private List<CharacterData> selectedTargets = new List<CharacterData>();
     private bool isInitialized = false;
+    private bool isTargeting = false;
 
     private void Start()
     {
         if (combatSystem == null)
             combatSystem = FindFirstObjectByType<CombatSystem>();
+
+        if (playerInventory == null)
+            playerInventory = FindFirstObjectByType<SistemaInventario>();
 
         if (combatSystem != null)
         {
@@ -45,6 +63,16 @@ public class CombatUIManager : MonoBehaviour
             combatSystem.onCharacterUpdated += OnCharacterUpdated;
             combatSystem.onCombatEnded += OnCombatEnded;
         }
+
+        // Set up menu button listeners
+        if (attacksMenuButton != null)
+            attacksMenuButton.onClick.AddListener(OnAttacksSelected);
+
+        if (itemsMenuButton != null)
+            itemsMenuButton.onClick.AddListener(OnItemsSelected);
+
+        if (defendMenuButton != null)
+            defendMenuButton.onClick.AddListener(OnDefendSelected);
 
         StartCoroutine(InitializeAfterCombatSystem());
     }
@@ -65,11 +93,20 @@ public class CombatUIManager : MonoBehaviour
         CreateAllCharacterUI();
         isInitialized = true;
 
+        // Hide all action panels initially
+        HideAllActionPanels();
+
         CharacterData currentChar = combatSystem.GetCurrentCharacter();
         if (currentChar != null)
         {
             OnTurnStarted(currentChar);
         }
+    }
+
+    private void HideAllActionPanels()
+    {
+        if (actionMenuPanel != null) actionMenuPanel.SetActive(false);
+        if (waitPanel != null) waitPanel.SetActive(false);
     }
 
     private void CreateAllCharacterUI()
@@ -139,6 +176,13 @@ public class CombatUIManager : MonoBehaviour
                 if (combatSystem.partyMembers.Contains(data))
                 {
                     partyVisualDictionary[data] = characterComp.gameObject;
+
+                    // Add TargetSelector to party members too (for ally targeting)
+                    if (characterComp.GetComponent<TargetSelector>() == null)
+                    {
+                        TargetSelector selector = characterComp.gameObject.AddComponent<TargetSelector>();
+                        selector.Initialize(this);
+                    }
                 }
                 else if (combatSystem.enemies.Contains(data))
                 {
@@ -154,32 +198,246 @@ public class CombatUIManager : MonoBehaviour
         }
     }
 
-    public void OnActionSelected(AttackFile attack, CharacterData character)
+    private void OnTurnStarted(CharacterData character)
     {
+        currentCharacter = character;
+        turnText.text = $"{character.characterName}'s Turn";
+
+        // Hide all targeting and action panels
+        DisableAllTargeting();
+        HideAllActionPanels();
+        ClearAllButtons();
+
         if (!isInitialized) return;
-        if (character != currentCharacter) return;
 
-        selectedAttack = attack;
-        selectedTargets.Clear();
-
-        if (attack.effects.Count > 0)
+        if (combatSystem.partyMembers.Contains(character))
         {
-            TargetType targetType = attack.effects[0].targetType;
-            remainingTargetsToSelect = attack.effects[0].numberOfTargets;
+            // Show action menu for player characters
+            actionMenuPanel.SetActive(true);
+            statusText.text = "Choose an action";
+            waitPanel.SetActive(false);
+        }
+        else
+        {
+            // Enemy turn
+            waitPanel.SetActive(true);
+            statusText.text = $"{character.characterName} is thinking...";
+        }
+    }
 
-            statusText.text = $"Select {remainingTargetsToSelect} target(s)";
-
-            if (partyUIDictionary.ContainsKey(character))
-                partyUIDictionary[character].HideActionButtons();
-
-            if (targetType == TargetType.Ally)
+    private void ClearAllButtons()
+    {
+        // Clear attack buttons
+        if (attackButtonGrid != null)
+        {
+            foreach (Transform child in attackButtonGrid)
             {
-                EnableTargetingOnCharacters(combatSystem.partyMembers);
+                Destroy(child.gameObject);
             }
-            else
+        }
+
+        // Clear item buttons
+        if (itemButtonGrid != null)
+        {
+            foreach (Transform child in itemButtonGrid)
             {
-                EnableTargetingOnCharacters(combatSystem.enemies);
+                Destroy(child.gameObject);
             }
+        }
+    }
+
+    private void OnAttacksSelected()
+    {
+        if (currentCharacter == null) return;
+
+        // Hide action menu
+        actionMenuPanel.SetActive(false);
+
+        // Clear old attack buttons
+        if (attackButtonGrid != null)
+        {
+            foreach (Transform child in attackButtonGrid)
+            {
+                Destroy(child.gameObject);
+            }
+
+            // Create attack buttons for current character
+            foreach (var attack in currentCharacter.availableAttacks)
+            {
+                if (attack == null) continue;
+                if (attack.actionPointCost <= currentCharacter.currentAP)
+                {
+                    GameObject btnObj = Instantiate(actionButtonPrefab, attackButtonGrid);
+                    ActionButton btn = btnObj.GetComponent<ActionButton>();
+                    if (btn != null)
+                    {
+                        btn.Initialize(attack, () => OnAttackSelected(attack));
+                    }
+                }
+            }
+
+            // Add back button
+            CreateBackButton(attackButtonGrid);
+        }
+    }
+
+    private void OnItemsSelected()
+    {
+        if (playerInventory == null) return;
+
+        // Hide action menu
+        actionMenuPanel.SetActive(false);
+
+        // Clear old item buttons
+        if (itemButtonGrid != null)
+        {
+            foreach (Transform child in itemButtonGrid)
+            {
+                Destroy(child.gameObject);
+            }
+
+            // Create item buttons from inventory (only usable in battle)
+            foreach (var slot in playerInventory.inventario)
+            {
+                if (slot.dadosDoItem != null && slot.quantidade > 0 &&
+                    slot.dadosDoItem.usavelEmBatalha && slot.dadosDoItem.ehConsumivel)
+                {
+                    GameObject btnObj = Instantiate(actionButtonPrefab, itemButtonGrid);
+                    ActionButton btn = btnObj.GetComponent<ActionButton>();
+                    if (btn != null)
+                    {
+                        btn.Initialize(slot.dadosDoItem, () => OnItemSelected(slot.dadosDoItem));
+                    }
+                }
+            }
+
+            // Add back button
+            CreateBackButton(itemButtonGrid);
+        }
+    }
+
+    private void OnDefendSelected()
+    {
+        if (currentCharacter == null) return;
+
+        // Defend action: triple defense for this turn, use all AP
+        StartCoroutine(ExecuteDefend());
+    }
+
+    private IEnumerator ExecuteDefend()
+    {
+        // Hide action menu
+        actionMenuPanel.SetActive(false);
+
+        // Store original defense
+        int originalDefense = currentCharacter.defense;
+
+        // Triple defense
+        currentCharacter.defense *= 3;
+        OnCharacterUpdated(currentCharacter);
+
+        statusText.text = $"{currentCharacter.characterName} defends!";
+
+        // Use all AP
+        currentCharacter.currentAP = 0;
+        OnCharacterUpdated(currentCharacter);
+
+        yield return new WaitForSeconds(1f);
+
+        // Restore defense
+        currentCharacter.defense = originalDefense;
+        OnCharacterUpdated(currentCharacter);
+
+        // End turn
+        combatSystem.EndPlayerTurn();
+    }
+
+    private void CreateBackButton(Transform parentGrid)
+    {
+        GameObject backBtnObj = Instantiate(actionButtonPrefab, parentGrid);
+        ActionButton backBtn = backBtnObj.GetComponent<ActionButton>();
+        if (backBtn != null)
+        {
+            backBtn.InitializeAsBack(() => {
+                // Clear this grid
+                foreach (Transform child in parentGrid)
+                {
+                    Destroy(child.gameObject);
+                }
+                // Show action menu again
+                actionMenuPanel.SetActive(true);
+            });
+        }
+    }
+
+    private void OnAttackSelected(AttackFile attack)
+    {
+        selectedAttack = attack;
+        selectedItem = null;
+
+        // Clear attack buttons
+        if (attackButtonGrid != null)
+        {
+            foreach (Transform child in attackButtonGrid)
+            {
+                Destroy(child.gameObject);
+            }
+        }
+
+        StartTargeting(attack);
+    }
+
+    private void OnItemSelected(DadosItem item)
+    {
+        selectedItem = item;
+        selectedAttack = null;
+
+        // Clear item buttons
+        if (itemButtonGrid != null)
+        {
+            foreach (Transform child in itemButtonGrid)
+            {
+                Destroy(child.gameObject);
+            }
+        }
+
+        if (item.efeitos != null && item.efeitos.Count > 0)
+        {
+            // Use first effect to determine targeting
+            var effect = item.efeitos[0];
+            TargetType targetType = effect.targetType;
+            int numberOfTargets = effect.numberOfTargets;
+
+            StartTargeting(targetType, numberOfTargets, isItem: true);
+        }
+    }
+
+    private void StartTargeting(AttackFile attack)
+    {
+        if (attack.effects.Count == 0) return;
+
+        TargetType targetType = attack.effects[0].targetType;
+        int numberOfTargets = attack.effects[0].numberOfTargets;
+
+        StartTargeting(targetType, numberOfTargets, isItem: false);
+    }
+
+    private void StartTargeting(TargetType targetType, int numberOfTargets, bool isItem)
+    {
+        remainingTargetsToSelect = numberOfTargets;
+        selectedTargets.Clear();
+        isTargeting = true;
+
+        statusText.text = $"Select {remainingTargetsToSelect} target(s)";
+
+        // Enable targeting on appropriate characters
+        if (targetType == TargetType.Ally)
+        {
+            EnableTargetingOnCharacters(combatSystem.partyMembers);
+        }
+        else
+        {
+            EnableTargetingOnCharacters(combatSystem.enemies);
         }
     }
 
@@ -212,6 +470,8 @@ public class CombatUIManager : MonoBehaviour
 
     private void DisableAllTargeting()
     {
+        isTargeting = false;
+
         foreach (var visualObj in partyVisualDictionary.Values)
         {
             if (visualObj != null)
@@ -235,6 +495,8 @@ public class CombatUIManager : MonoBehaviour
 
     private void OnTargetSelected(CharacterData target)
     {
+        if (!isTargeting) return;
+
         if (!selectedTargets.Contains(target))
         {
             selectedTargets.Add(target);
@@ -244,62 +506,104 @@ public class CombatUIManager : MonoBehaviour
 
             if (remainingTargetsToSelect <= 0)
             {
-                if (selectedAttack != null && selectedTargets.Count > 0)
-                {
-                    AttackFile attackToUse = selectedAttack;
-                    List<CharacterData> targetsToUse = new List<CharacterData>(selectedTargets);
-
-                    selectedAttack = null;
-                    selectedTargets.Clear();
-
-                    combatSystem.SelectPlayerAction(attackToUse, targetsToUse);
-
-                    DisableAllTargeting();
-                    OnCharacterUpdated(currentCharacter);
-
-                    if (currentCharacter.currentAP > 0)
-                    {
-                        if (partyUIDictionary.ContainsKey(currentCharacter))
-                            partyUIDictionary[currentCharacter].ShowActionButtons();
-                    }
-                    else
-                    {
-                        waitPanel.SetActive(true);
-                        statusText.text = "No AP remaining...";
-                    }
-                }
+                ExecuteSelectedAction();
             }
         }
     }
 
-    private void OnTurnStarted(CharacterData character)
+    private void ExecuteSelectedAction()
     {
-        currentCharacter = character;
-        turnText.text = $"{character.characterName}'s Turn";
-        HideAllActionButtons();
+        isTargeting = false;
+        DisableAllTargeting();
 
-        if (!isInitialized) return;
-
-        if (combatSystem.partyMembers.Contains(character))
+        if (selectedAttack != null && selectedTargets.Count > 0)
         {
-            if (partyUIDictionary.ContainsKey(character))
-            {
-                partyUIDictionary[character].ShowActionButtons();
-                statusText.text = "Select an action";
-            }
-            waitPanel.SetActive(false);
+            combatSystem.SelectPlayerAction(selectedAttack, selectedTargets);
+        }
+        else if (selectedItem != null && selectedTargets.Count > 0)
+        {
+            // Use item on targets
+            UseItemOnTargets(selectedItem, selectedTargets);
+        }
+
+        selectedAttack = null;
+        selectedItem = null;
+        selectedTargets.Clear();
+
+        // Call the method properly
+        if (currentCharacter != null)
+        {
+            OnCharacterUpdated(currentCharacter);
+        }
+
+        // Return to action menu if character still has AP
+        if (currentCharacter != null && currentCharacter.currentAP > 0)
+        {
+            actionMenuPanel.SetActive(true);
         }
         else
         {
             waitPanel.SetActive(true);
-            statusText.text = $"{character.characterName} is thinking...";
+            statusText.text = "No AP remaining...";
         }
     }
 
-    private void HideAllActionButtons()
+    private void UseItemOnTargets(DadosItem item, List<CharacterData> targets)
     {
-        foreach (var ui in partyUIDictionary.Values)
-            ui.HideActionButtons();
+        if (playerInventory == null) return;
+
+        foreach (var target in targets)
+        {
+            if (target == null || target.currentHP <= 0) continue;
+
+            foreach (var effect in item.efeitos)
+            {
+                // Check accuracy
+                int accuracyRoll = Random.Range(0, 101);
+                bool isSuccess = accuracyRoll <= effect.accuracy;
+
+                if ((isSuccess && effect.triggersOn == EffectTrigger.OnSuccess) ||
+                    (!isSuccess && effect.triggersOn == EffectTrigger.OnMiss))
+                {
+                    // Apply item effects
+                    switch (effect.tipoEfeito)
+                    {
+                        case EffectType.Heal:
+                        case EffectType.HP_Restore:
+                            target.Heal(effect.valor);
+                            break;
+
+                        case EffectType.ManaRestore:
+                            target.currentAP = Mathf.Min(target.maxAP, target.currentAP + effect.valor);
+                            break;
+
+                        case EffectType.Revive:
+                            if (target.currentHP <= 0)
+                            {
+                                target.currentHP = effect.valor;
+                            }
+                            break;
+
+                        case EffectType.StatusEffect:
+                            if (effect.statusEffect != null)
+                            {
+                                target.AddStatusEffect(effect.statusEffect, combatSystem.GetCurrentCharacter());
+                            }
+                            break;
+                    }
+                }
+            }
+
+            // Update UI for this target
+            OnCharacterUpdated(target);
+        }
+
+        // Remove item from inventory
+        if (playerInventory != null)
+        {
+            playerInventory.RemoverItem(item, 1);
+            statusText.text = $"Used {item.nomeDoItem}!";
+        }
     }
 
     private void OnCharacterUpdated(CharacterData character)
@@ -321,7 +625,7 @@ public class CombatUIManager : MonoBehaviour
             if (character == currentCharacter)
             {
                 DisableAllTargeting();
-                HideAllActionButtons();
+                HideAllActionPanels();
             }
         }
     }
@@ -329,8 +633,9 @@ public class CombatUIManager : MonoBehaviour
     private void OnCombatEnded(CombatState result)
     {
         waitPanel.SetActive(false);
-        HideAllActionButtons();
         DisableAllTargeting();
+        HideAllActionPanels();
+        ClearAllButtons();
 
         if (result == CombatState.VICTORY)
             statusText.text = "Victory!";
@@ -346,5 +651,12 @@ public class CombatUIManager : MonoBehaviour
             combatSystem.onCharacterUpdated -= OnCharacterUpdated;
             combatSystem.onCombatEnded -= OnCombatEnded;
         }
+
+        if (attacksMenuButton != null)
+            attacksMenuButton.onClick.RemoveListener(OnAttacksSelected);
+        if (itemsMenuButton != null)
+            itemsMenuButton.onClick.RemoveListener(OnItemsSelected);
+        if (defendMenuButton != null)
+            defendMenuButton.onClick.RemoveListener(OnDefendSelected);
     }
 }

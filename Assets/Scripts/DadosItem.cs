@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-[CreateAssetMenu(fileName = "Novo Item", menuName = "RPG/Item")]
+[CreateAssetMenu(fileName = "Novo Item", menuName = "Sistema RPG/Item")]
 public class DadosItem : ScriptableObject
 {
     [Header("Identificação")]
@@ -39,7 +39,26 @@ public class DadosItem : ScriptableObject
     public bool usavelNoMapa = true;
 
     [Header("Efeitos (para Consumíveis)")]
-    public List<EfeitoItem> efeitos;
+    public List<ItemEffectData> efeitos; // Changed from EfeitoItem to ItemEffectData
+}
+
+// New class for item effects that matches AttackFile's EffectData
+[System.Serializable]
+public class ItemEffectData
+{
+    public EffectType tipoEfeito;
+    public int valor;
+    public int duracao; // Para efeitos de status
+
+    // Targeting properties (match AttackFile's EffectData)
+    public TargetType targetType = TargetType.Ally; // Default to ally for items
+    public int numberOfTargets = 1;
+    [Range(0, 100)]
+    public int accuracy = 100;
+    public EffectTrigger triggersOn = EffectTrigger.OnSuccess;
+
+    // Status effect reference (optional)
+    public StatusEffectData statusEffect;
 }
 
 // Supporting enums and classes
@@ -88,12 +107,4 @@ public enum ModifierType
 {
     Fixo,        // +5 Attack
     Percentual   // +10% Attack
-}
-
-[System.Serializable]
-public class EfeitoItem
-{
-    public EffectType tipoEfeito;
-    public int valor;
-    public int duracao; // Para efeitos de status
 }

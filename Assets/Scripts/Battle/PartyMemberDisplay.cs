@@ -1,7 +1,6 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections.Generic;
 
 public class CharacterUI : MonoBehaviour
 {
@@ -13,14 +12,12 @@ public class CharacterUI : MonoBehaviour
     public Image apBar;
     public GameObject defeatedOverlay;
 
-    [Header("Action Button Panel")]
-    public Transform actionButtonPanel;
-    public GameObject actionButtonPrefab;
+    [Header("Target Indicator")]
+    public GameObject targetIndicator; // Visual indicator when this character is targetable
 
     private CharacterData characterData;
     private GameObject characterVisualObject;
     private CombatUIManager uiManager;
-    private List<GameObject> activeActionButtons = new List<GameObject>();
 
     public void Initialize(CharacterData data, GameObject visualObject, CombatUIManager manager)
     {
@@ -30,6 +27,20 @@ public class CharacterUI : MonoBehaviour
 
         nameText.text = data.characterName;
         UpdateDisplay();
+
+        // Hide target indicator initially
+        if (targetIndicator != null)
+            targetIndicator.SetActive(false);
+
+        // Connect to TargetSelector on visual object
+        if (characterVisualObject != null)
+        {
+            TargetSelector selector = characterVisualObject.GetComponent<TargetSelector>();
+            if (selector != null)
+            {
+                selector.SetCharacterUI(this);
+            }
+        }
     }
 
     public void UpdateDisplay()
@@ -47,67 +58,19 @@ public class CharacterUI : MonoBehaviour
         }
     }
 
-    public void ShowActionButtons()
+    public void ShowTargetIndicator(TargetSelector selector)
     {
-        ClearActionButtons();
-
-        if (actionButtonPanel == null || actionButtonPrefab == null || characterData == null)
-            return;
-
-        foreach (var attack in characterData.availableAttacks)
+        if (targetIndicator != null)
         {
-            if (attack == null) continue;
-
-            if (attack.actionPointCost <= characterData.currentAP)
-            {
-                GameObject btnObj = Instantiate(actionButtonPrefab, actionButtonPanel);
-                ActionButton btn = btnObj.GetComponent<ActionButton>();
-
-                if (btn != null)
-                {
-                    btn.Initialize(attack, () => OnActionSelected(attack));
-                    activeActionButtons.Add(btnObj);
-                }
-            }
-        }
-
-        if (actionButtonPrefab != null)
-        {
-            GameObject waitBtn = Instantiate(actionButtonPrefab, actionButtonPanel);
-            ActionButton waitBtnComponent = waitBtn.GetComponent<ActionButton>();
-            if (waitBtnComponent != null)
-            {
-                waitBtnComponent.InitializeAsWait(() => {
-                    if (uiManager != null && uiManager.combatSystem != null)
-                        uiManager.combatSystem.EndPlayerTurn();
-                });
-                activeActionButtons.Add(waitBtn);
-            }
+            targetIndicator.SetActive(true);
         }
     }
 
-    public void HideActionButtons()
+    public void HideTargetIndicator()
     {
-        foreach (var btn in activeActionButtons)
+        if (targetIndicator != null)
         {
-            btn.SetActive(false);
-        }
-    }
-
-    public void ClearActionButtons()
-    {
-        foreach (var btn in activeActionButtons)
-        {
-            Destroy(btn);
-        }
-        activeActionButtons.Clear();
-    }
-
-    private void OnActionSelected(AttackFile attack)
-    {
-        if (uiManager != null)
-        {
-            uiManager.OnActionSelected(attack, characterData);
+            targetIndicator.SetActive(false);
         }
     }
 
@@ -120,6 +83,6 @@ public class CharacterUI : MonoBehaviour
         if (bg != null)
             bg.color = Color.gray;
 
-        HideActionButtons();
+        HideTargetIndicator();
     }
 }

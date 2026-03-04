@@ -23,6 +23,14 @@ public class PreviousScene : MonoBehaviour
         // Store references to all scene objects
         foreach (GameObject obj in rootObjects)
         {
+            // Skip objects with "Inventory" tag
+            if (obj.CompareTag("Inventory"))
+            {
+                Debug.Log($"Preserving Inventory object: {obj.name}");
+                DontDestroyOnLoad(obj);
+                continue;
+            }
+
             // Skip the EncounterData object and this manager
             if (obj != this.gameObject &&
                 obj != encounterData?.gameObject)
