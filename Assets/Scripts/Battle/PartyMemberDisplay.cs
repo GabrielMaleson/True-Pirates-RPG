@@ -18,6 +18,8 @@ public class CharacterUI : MonoBehaviour
     private CharacterData characterData;
     private GameObject characterVisualObject;
     private CombatUIManager uiManager;
+    private TargetSelector selector;
+    public TargetButton targetButton;
 
     public void Initialize(CharacterData data, GameObject visualObject, CombatUIManager manager)
     {
@@ -62,6 +64,7 @@ public class CharacterUI : MonoBehaviour
     {
         if (targetIndicator != null)
         {
+            targetButton.SetTarget(characterData, selector.OnTargetSelected);
             targetIndicator.SetActive(true);
         }
     }

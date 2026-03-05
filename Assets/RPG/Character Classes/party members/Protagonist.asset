@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Protagonist
   m_EditorClassIdentifier: Assembly-CSharp::CharacterData
   characterName: Protagonist
-  level: 1
-  currentHP: 21
+  level: 2
+  currentHP: 20
   expValue: 50
   baseHP: 20
   baseAttack: 5

@@ -18,3 +18,22 @@ MonoBehaviour:
   descricao: "Po\xE7\xE3o m\xE1gica que restaura 50 pontos de vida do jogador."
   valorEmOuro: 5
   ehEmpilhavel: 1
+  ehEquipavel: 0
+  slotEquipamento: 0
+  ehDuasMaos: 0
+  modificadoresStats: []
+  nivelRequerido: 0
+  classeRequerida: 
+  ehConsumivel: 1
+  tipoConsumivel: 0
+  usavelEmBatalha: 1
+  usavelNoMapa: 1
+  efeitos:
+  - tipoEfeito: 1
+    valor: 15
+    duracao: 0
+    targetType: 0
+    numberOfTargets: 1
+    accuracy: 100
+    triggersOn: 0
+    statusEffect: {fileID: 0}
