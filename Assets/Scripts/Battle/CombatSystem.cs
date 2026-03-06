@@ -360,11 +360,7 @@ public class CombatSystem : MonoBehaviour
             currentCharacter.currentAP >= action.actionPointCost &&
             !isExecutingActions && !isAnimating)
         {
-            // Check for duplicate
-            if (pendingActions.ContainsKey(action))
-                return;
-
-            // Store the action with its targets
+            string uniqueKey = $"{action.name}_{pendingActions.Count}";
             pendingActions[action] = new List<CharacterData>(targets);
 
             // Store last action for undo
@@ -378,7 +374,6 @@ public class CombatSystem : MonoBehaviour
             Debug.Log($"Action queued: {action.attackName}. Remaining AP: {currentCharacter.currentAP}");
         }
     }
-
     public void UndoLastAction()
     {
         if (!partyMembers.Contains(currentCharacter) || currentState != CombatState.PLAYER_TURN)
