@@ -421,29 +421,23 @@ public class CombatUIManager : MonoBehaviour
             statusText.text = $"AP: {currentCharacter.currentAP}/{currentCharacter.maxAP} - Choose another action or Wait";
         }
     }
-
     private IEnumerator ExecuteDefend()
     {
-        // Store original defense
-        int originalDefense = currentCharacter.defense;
-
-        // Triple defense
-        currentCharacter.defense *= 3;
-        OnCharacterUpdated(currentCharacter);
+        // Hide action menu
+        actionMenuPanel.SetActive(false);
 
         statusText.text = $"{currentCharacter.characterName} defends!";
 
-        // Use ALL AP (set to 0)
+        // Apply defend bonus through combat system
+        combatSystem.ApplyDefendBonus(currentCharacter);
+
+        // Use all AP
         currentCharacter.currentAP = 0;
         OnCharacterUpdated(currentCharacter);
 
         yield return new WaitForSeconds(1f);
 
-        // Restore defense
-        currentCharacter.defense = originalDefense;
-        OnCharacterUpdated(currentCharacter);
-
-        // End turn and execute any queued actions (though AP is 0 so probably none)
+        // End turn (defense bonus will be removed at start of next turn)
         combatSystem.EndTurnAndExecuteActions();
     }
 

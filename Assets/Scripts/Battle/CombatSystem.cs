@@ -30,6 +30,10 @@ public class CombatSystem : MonoBehaviour
     public List<CharacterData> partyMembers = new List<CharacterData>();
     public List<CharacterData> enemies = new List<CharacterData>();
 
+    // Add at the top with other variables
+    private Dictionary<CharacterData, int> defendingCharacters = new Dictionary<CharacterData, int>();
+    private Dictionary<CharacterData, int> originalDefenseValues = new Dictionary<CharacterData, int>();
+
     [Header("Spawn Points")]
     public List<Transform> partySpawnPoints;
     public List<Transform> enemySpawnPoints;
@@ -202,7 +206,6 @@ public class CombatSystem : MonoBehaviour
             }
         }
     }
-
     private void StartNextTurn()
     {
         if (CheckBattleEnd())
@@ -211,6 +214,14 @@ public class CombatSystem : MonoBehaviour
         if (turnQueue.Count == 0)
         {
             BuildTurnQueue();
+        }
+
+        CharacterData nextCharacter = turnQueue.Peek(); // Look at next character without removing
+
+        // Remove defend bonus from previous character when their turn ends
+        if (currentCharacter != null && defendingCharacters.ContainsKey(currentCharacter))
+        {
+            RemoveDefendBonus(currentCharacter);
         }
 
         currentCharacter = turnQueue.Dequeue();
@@ -492,7 +503,6 @@ public class CombatSystem : MonoBehaviour
 
         CheckBattleEnd();
     }
-
     private void ApplyEffect(CharacterData user, List<CharacterData> targets, EffectData effect)
     {
         foreach (var target in targets)
@@ -604,7 +614,48 @@ public class CombatSystem : MonoBehaviour
 
         return selectedTargets;
     }
+    public void ApplyDefendBonus(CharacterData character)
+    {
+        if (character == null) return;
 
+        // Store original defense
+        if (!originalDefenseValues.ContainsKey(character))
+        {
+            originalDefenseValues[character] = character.defense;
+        }
+
+        // Triple defense
+        character.defense = originalDefenseValues[character] * 3;
+        defendingCharacters[character] = character.defense;
+
+        onCharacterUpdated?.Invoke(character);
+        Debug.Log($"{character.characterName} defends! Defense tripled to {character.defense}");
+    }
+
+    public void RemoveDefendBonus(CharacterData character)
+    {
+        if (character == null) return;
+
+        if (originalDefenseValues.ContainsKey(character))
+        {
+            // Restore original defense
+            character.defense = originalDefenseValues[character];
+            originalDefenseValues.Remove(character);
+        }
+
+        if (defendingCharacters.ContainsKey(character))
+        {
+            defendingCharacters.Remove(character);
+        }
+
+        onCharacterUpdated?.Invoke(character);
+        Debug.Log($"{character.characterName} is no longer defending. Defense restored to {character.defense}");
+    }
+
+    public bool IsDefending(CharacterData character)
+    {
+        return defendingCharacters.ContainsKey(character);
+    }
     private bool CheckBattleEnd()
     {
         bool allPartyDowned = partyMembers.All(p => p.currentHP <= 0);
