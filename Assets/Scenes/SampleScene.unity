@@ -2633,6 +2633,7 @@ MonoBehaviour:
   moedas: 0
   partyMembers:
   - {fileID: 1954456082905731064}
+  - {fileID: 1954456082905731064}
   maxInventorySize: 30
   gameProgress: []
 --- !u!114 &1337405899

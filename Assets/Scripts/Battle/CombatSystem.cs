@@ -242,24 +242,21 @@ public class CombatSystem : MonoBehaviour
 
     private IEnumerator PlayerTurnRoutine()
     {
+        // Wait for player to end turn (either by using all AP or clicking Wait)
         while (currentCharacter.currentAP > 0 && !isExecutingActions && !isAnimating)
         {
             yield return null;
         }
 
-        if (pendingActions.Count > 0)
+        // If there are pending actions when the turn ends, execute them
+        if (pendingActions.Count > 0 && !isExecutingActions)
         {
             ExecuteActionsInOrder();
-        }
-        else
-        {
-            EndPlayerTurn();
         }
     }
 
     private IEnumerator EnemyTurnRoutine()
     {
-        // Don't use pendingActions for enemies - execute immediately
         ComplexAI ai = currentCharacter.transform?.GetComponent<ComplexAI>();
         AttackFile selectedAction = null;
         List<CharacterData> targets = new List<CharacterData>();
@@ -282,7 +279,7 @@ public class CombatSystem : MonoBehaviour
 
         if (selectedAction != null && currentCharacter.currentAP >= selectedAction.actionPointCost)
         {
-            // Execute enemy action immediately without going through pendingActions
+            // Enemies execute immediately, not queued
             currentCharacter.currentAP -= selectedAction.actionPointCost;
             onCharacterUpdated?.Invoke(currentCharacter);
 
@@ -326,12 +323,24 @@ public class CombatSystem : MonoBehaviour
         return highestDamageAction;
     }
 
-    public void EndPlayerTurn()
+    public void EndTurnAndExecuteActions()
     {
         if (currentState == CombatState.PLAYER_TURN && !isExecutingActions && !isAnimating)
         {
-            StartNextTurn();
+            if (pendingActions.Count > 0)
+            {
+                ExecuteActionsInOrder();
+            }
+            else
+            {
+                StartNextTurn();
+            }
         }
+    }
+
+    public void EndPlayerTurn()
+    {
+        EndTurnAndExecuteActions();
     }
 
     public void SelectPlayerAction(AttackFile action, List<CharacterData> targets)
@@ -347,18 +356,18 @@ public class CombatSystem : MonoBehaviour
             currentCharacter.currentAP >= action.actionPointCost &&
             !isExecutingActions && !isAnimating)
         {
+            // Check for duplicate
             if (pendingActions.ContainsKey(action))
                 return;
 
+            // Store the action with its targets
             pendingActions[action] = new List<CharacterData>(targets);
 
+            // Deduct AP immediately
             currentCharacter.currentAP -= action.actionPointCost;
             onCharacterUpdated?.Invoke(currentCharacter);
 
-            if (!isExecutingActions && pendingActions.Count == 1)
-            {
-                ExecuteActionsInOrder();
-            }
+            Debug.Log($"Action queued: {action.attackName}. Remaining AP: {currentCharacter.currentAP}");
         }
     }
 
@@ -407,17 +416,10 @@ public class CombatSystem : MonoBehaviour
         pendingActions.Clear();
         isExecutingActions = false;
 
-        // Only show action buttons again if it's a player character
-        if (currentCharacter.currentAP > 0 && currentCharacter.CanAct() && partyMembers.Contains(currentCharacter))
-        {
-            currentState = CombatState.PLAYER_TURN;
-            onTurnStarted?.Invoke(currentCharacter);
-        }
-        else
-        {
-            EndPlayerTurn();
-        }
+        // After executing all actions, end the turn
+        StartNextTurn();
     }
+
     private IEnumerator ExecuteAttackWithAnimation(CharacterData user, AttackFile attack, List<CharacterData> targets)
     {
         isAnimating = true;
@@ -470,8 +472,8 @@ public class CombatSystem : MonoBehaviour
                     break;
 
                 case EffectType.Heal:
-                    int healAmount = effect.value;
-                    target.Heal(healAmount);
+                case EffectType.HP_Restore:
+                    target.Heal(effect.value);
                     onCharacterUpdated?.Invoke(target);
                     break;
 
@@ -481,9 +483,17 @@ public class CombatSystem : MonoBehaviour
                     onCharacterUpdated?.Invoke(target);
                     break;
 
-                case EffectType.HP_Restore:
-                    target.Heal(effect.value);
+                case EffectType.ManaRestore:
+                    target.currentAP = Mathf.Min(target.maxAP, target.currentAP + effect.value);
                     onCharacterUpdated?.Invoke(target);
+                    break;
+
+                case EffectType.Revive:
+                    if (target.currentHP <= 0)
+                    {
+                        target.currentHP = effect.value;
+                        onCharacterUpdated?.Invoke(target);
+                    }
                     break;
 
                 case EffectType.StatusEffect:
@@ -530,31 +540,6 @@ public class CombatSystem : MonoBehaviour
                         }
                         onCharacterUpdated?.Invoke(target);
                     }
-                    break;
-
-                case EffectType.ManaRestore:
-                    target.currentAP = Mathf.Min(target.maxAP, target.currentAP + effect.value);
-                    onCharacterUpdated?.Invoke(target);
-                    break;
-
-                case EffectType.Revive:
-                    if (target.currentHP <= 0)
-                    {
-                        target.currentHP = effect.value;
-                        onCharacterUpdated?.Invoke(target);
-                    }
-                    break;
-
-                case EffectType.MultiHit:
-                    for (int i = 0; i < effect.hitCount; i++)
-                    {
-                        int multiDamage = Mathf.Max(1, (effect.value + user.attack - target.defense) / effect.hitCount);
-                        target.TakeDamage(multiDamage);
-
-                        if (target.currentHP <= 0)
-                            break;
-                    }
-                    onCharacterUpdated?.Invoke(target);
                     break;
             }
         }

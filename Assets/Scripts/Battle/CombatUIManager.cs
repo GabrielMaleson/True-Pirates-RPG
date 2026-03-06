@@ -543,13 +543,14 @@ public class CombatUIManager : MonoBehaviour
         isTargeting = false;
         DisableAllTargeting();
 
+        // Don't execute here - just pass to combat system for queueing
         if (selectedAttack != null && selectedTargets.Count > 0)
         {
             combatSystem.SelectPlayerAction(selectedAttack, selectedTargets);
         }
         else if (selectedItem != null && selectedTargets.Count > 0)
         {
-            // Use item on targets
+            // Use item on targets (items execute immediately)
             UseItemOnTargets(selectedItem, selectedTargets);
         }
 
@@ -563,7 +564,7 @@ public class CombatUIManager : MonoBehaviour
         if (itemButtonGrid != null)
             itemButtonGrid.gameObject.SetActive(false);
 
-        // Call the method properly
+        // Update UI
         if (currentCharacter != null)
         {
             OnCharacterUpdated(currentCharacter);
@@ -573,11 +574,14 @@ public class CombatUIManager : MonoBehaviour
         if (currentCharacter != null && currentCharacter.currentAP > 0)
         {
             actionMenuPanel.SetActive(true);
+            statusText.text = "Select another action or Wait";
         }
         else
         {
+            // No AP left, automatically end turn and execute queued actions
             waitPanel.SetActive(true);
             statusText.text = "No AP remaining...";
+            combatSystem.EndTurnAndExecuteActions();
         }
     }
 

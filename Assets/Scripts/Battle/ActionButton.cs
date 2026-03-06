@@ -49,7 +49,7 @@ public class ActionButton : MonoBehaviour
 
     public void InitializeAsWait(System.Action callback)
     {
-        actionNameText.text = "Defend";
+        actionNameText.text = "Wait";
         apCostText.text = "";
         apCostText.gameObject.SetActive(false);
         onClick = callback;
