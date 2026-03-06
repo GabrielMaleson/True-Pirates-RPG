@@ -52,6 +52,10 @@ public class CombatSystem : MonoBehaviour
     private bool isAnimating = false;
     private Dictionary<AttackFile, List<CharacterData>> pendingActions = new Dictionary<AttackFile, List<CharacterData>>();
 
+    // Track the last action for undo functionality
+    private KeyValuePair<AttackFile, List<CharacterData>>? lastAction = null;
+    private int lastActionAPCost = 0;
+
     private void Start()
     {
         EncounterData encounterData = FindFirstObjectByType<EncounterData>();
@@ -363,12 +367,43 @@ public class CombatSystem : MonoBehaviour
             // Store the action with its targets
             pendingActions[action] = new List<CharacterData>(targets);
 
+            // Store last action for undo
+            lastAction = new KeyValuePair<AttackFile, List<CharacterData>>(action, new List<CharacterData>(targets));
+            lastActionAPCost = action.actionPointCost;
+
             // Deduct AP immediately
             currentCharacter.currentAP -= action.actionPointCost;
             onCharacterUpdated?.Invoke(currentCharacter);
 
             Debug.Log($"Action queued: {action.attackName}. Remaining AP: {currentCharacter.currentAP}");
         }
+    }
+
+    public void UndoLastAction()
+    {
+        if (!partyMembers.Contains(currentCharacter) || currentState != CombatState.PLAYER_TURN)
+            return;
+
+        if (lastAction.HasValue && pendingActions.ContainsKey(lastAction.Value.Key))
+        {
+            // Remove from pending actions
+            pendingActions.Remove(lastAction.Value.Key);
+
+            // Refund AP
+            currentCharacter.currentAP += lastActionAPCost;
+
+            // Clear last action
+            lastAction = null;
+            lastActionAPCost = 0;
+
+            Debug.Log($"Undid last action. AP restored to: {currentCharacter.currentAP}");
+            onCharacterUpdated?.Invoke(currentCharacter);
+        }
+    }
+
+    public bool HasPendingActions()
+    {
+        return pendingActions.Count > 0;
     }
 
     private void ExecuteActionsInOrder()
@@ -399,6 +434,13 @@ public class CombatSystem : MonoBehaviour
             if (targets != null && targets.Count > 0)
             {
                 pendingActions.Remove(action);
+
+                // Clear last action if this is the one being executed
+                if (lastAction.HasValue && lastAction.Value.Key == action)
+                {
+                    lastAction = null;
+                    lastActionAPCost = 0;
+                }
 
                 yield return StartCoroutine(ExecuteAttackWithAnimation(currentCharacter, action, targets));
 
