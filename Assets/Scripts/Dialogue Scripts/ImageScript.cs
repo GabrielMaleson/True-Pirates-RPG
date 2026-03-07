@@ -5,9 +5,8 @@ using System.Collections;
 using Yarn.Unity;
 using TMPro;
 using UnityEngine.SceneManagement;
-using UnityEngine.Audio;
 
-public class StaticImageTagManager : MonoBehaviour
+public class DialogueManager : MonoBehaviour
 {
     [System.Serializable]
     public class PositionData
@@ -25,58 +24,63 @@ public class StaticImageTagManager : MonoBehaviour
         public bool loop = false;
     }
 
-    [Tooltip("TextMeshProUGUI component for objectives")]
-    private TextMeshProUGUI ObjectiveObj;
-
-    private GameObject objective;
-
+    [Header("UI References")]
+    public GameObject dialogueCanvas;
+    public Button continueButton;
+    public GraphicRaycaster graphicRaycaster;
+    public TextMeshProUGUI objectiveText;
+    public GameObject objectivePanel;
     public GameObject blackScreen;
 
-    private GameObject objectivePanel;
-
-    public Image disappearCharacter; // Reference to the character image that will disappear/reappear
-
-    public Button continueButton;
-
-    public GraphicRaycaster graphicRaycaster;
-
-    [Tooltip("List of Sprites to use for images")]
+    [Header("Image Display")]
     public List<Sprite> sprites = new List<Sprite>();
-
-    [Tooltip("List of tags corresponding to each sprite")]
     public List<string> spriteTags = new List<string>();
-
-    [Tooltip("List of Image Prefabs to use for different image types")]
     public List<Image> imagePrefabs = new List<Image>();
-
-    [Tooltip("Default Image Prefab to use if no specific prefab is specified")]
     public Image defaultImagePrefab;
-
-    [Tooltip("List of positions where images can be placed")]
     public List<PositionData> positions = new List<PositionData>();
 
-    [Tooltip("List of sounds that can be played")]
+    [Header("Audio")]
     public List<SoundData> sounds = new List<SoundData>();
-
-    [Tooltip("AudioSource to play sounds")]
     public AudioSource audioSource;
 
-    private static StaticImageTagManager instance;
+    [Header("Fade Settings")]
+    public float defaultFadeDuration = 0.5f;
+
+    private static DialogueManager instance;
     private static Dictionary<string, Image> activeImages = new Dictionary<string, Image>();
+    private DialogueRunner dialogueRunner;
 
     private void Awake()
     {
-        ObjectiveStart();
-        instance = this;
-        continueButton = instance.GetComponentInChildren<Button>();
-    }
+        // Singleton pattern
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
 
-    private void ObjectiveStart()
-    {
-        objectivePanel = GameObject.FindGameObjectWithTag("Objective Panel");
-        objective = GameObject.FindGameObjectWithTag("Objective");
-        ObjectiveObj = objective.GetComponent<TextMeshProUGUI>();
-        objectivePanel.GetComponent<CanvasGroup>().alpha = 0f;
+            // Tag as Inventory to persist through scene unloading
+            gameObject.tag = "Inventory";
+
+            // Find references if not assigned
+            if (dialogueCanvas == null)
+                dialogueCanvas = gameObject;
+
+            if (continueButton == null)
+                continueButton = GetComponentInChildren<Button>();
+
+            if (graphicRaycaster == null)
+                graphicRaycaster = GetComponent<GraphicRaycaster>();
+
+            if (objectivePanel != null)
+                objectivePanel.GetComponent<CanvasGroup>().alpha = 0f;
+
+            // Get DialogueRunner
+            dialogueRunner = GetComponent<DialogueRunner>();
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     private void OnValidate()
@@ -93,85 +97,12 @@ public class StaticImageTagManager : MonoBehaviour
         }
     }
 
-    private void FixDialogueRunner()
+    private void EnsureContinueButtonInteractable()
     {
-        continueButton.interactable = true;
-        continueButton.enabled = true;
-    }
-
-    [YarnCommand("disappear")]
-    public static void DisappearCharacter(string targetName = "")
-    {
-        GameObject targetObject;
-
-        if (string.IsNullOrEmpty(targetName))
+        if (continueButton != null)
         {
-            if (instance.disappearCharacter == null)
-            {
-                Debug.LogError("No target specified and no default disappearCharacter set!");
-                return;
-            }
-            targetObject = instance.disappearCharacter.gameObject;
-        }
-        else
-        {
-            // Try to find the target by name
-            targetObject = GameObject.Find(targetName);
-            if (targetObject == null)
-            {
-                Debug.LogError($"No GameObject found with name: {targetName}");
-                return;
-            }
-        }
-
-        Image image = targetObject.GetComponent<Image>();
-        if (image != null)
-        {
-            Color color = image.color;
-            color.a = 0f;
-            image.color = color;
-        }
-        else
-        {
-            Debug.LogError($"No Image component found on target: {targetObject.name}");
-        }
-    }
-
-    [YarnCommand("reappear")]
-    public static void ReappearCharacter(string targetName = "")
-    {
-        GameObject targetObject;
-
-        if (string.IsNullOrEmpty(targetName))
-        {
-            if (instance.disappearCharacter == null)
-            {
-                Debug.LogError("No target specified and no default disappearCharacter set!");
-                return;
-            }
-            targetObject = instance.disappearCharacter.gameObject;
-        }
-        else
-        {
-            // Try to find the target by name
-            targetObject = GameObject.Find(targetName);
-            if (targetObject == null)
-            {
-                Debug.LogError($"No GameObject found with name: {targetName}");
-                return;
-            }
-        }
-
-        Image image = targetObject.GetComponent<Image>();
-        if (image != null)
-        {
-            Color color = image.color;
-            color.a = 1f; // Use 1f instead of 255f (alpha is 0-1, not 0-255)
-            image.color = color;
-        }
-        else
-        {
-            Debug.LogError($"No Image component found on target: {targetObject.name}");
+            continueButton.interactable = true;
+            continueButton.enabled = true;
         }
     }
 
@@ -180,7 +111,7 @@ public class StaticImageTagManager : MonoBehaviour
     {
         if (instance == null)
         {
-            Debug.LogError("No StaticImageTagManager instance found in scene!");
+            Debug.LogError("No DialogueManager instance found in scene!");
             return;
         }
 
@@ -258,188 +189,152 @@ public class StaticImageTagManager : MonoBehaviour
         }
     }
 
-    [YarnCommand("progress")]
-    public static void ProgressUpdate(string text)
+    [YarnCommand("fadein")]
+    public static void FadeInImage(string positionName, float fadeDuration = -1f)
     {
-        SistemaInventario.Instance.AddProgress(text);
-    }
+        if (fadeDuration < 0) fadeDuration = instance.defaultFadeDuration;
 
-    [YarnCommand("objective")]
-    public static void ObjectiveUpdate(string objectivetext)
-    {
-        if (instance.ObjectiveObj == null)
+        if (activeImages.TryGetValue(positionName, out Image image))
         {
-            Debug.LogError("StaticImageTagManager instance or ObjectiveObj not found!");
-            return;
+            instance.StartCoroutine(instance.FadeImageRoutine(image, 0f, 1f, fadeDuration));
         }
-        instance.ObjectiveObj.text = objectivetext;
     }
 
-    // Add these at the top with other class variables
-    public event System.Action OnDialogueDarken;
-    public event System.Action OnDialogueSuperDarken;
-    public event System.Action OnDialogueBrighten;
+    [YarnCommand("fadeout")]
+    public static void FadeOutImage(string positionName, float fadeDuration = -1f)
+    {
+        if (fadeDuration < 0) fadeDuration = instance.defaultFadeDuration;
 
-    // Modify the existing YarnCommand methods to trigger the events:
+        if (activeImages.TryGetValue(positionName, out Image image))
+        {
+            instance.StartCoroutine(instance.FadeImageRoutine(image, 1f, 0f, fadeDuration));
+        }
+    }
+
+    private IEnumerator FadeImageRoutine(Image image, float startAlpha, float targetAlpha, float duration)
+    {
+        Color color = image.color;
+        color.a = startAlpha;
+        image.color = color;
+
+        float elapsedTime = 0f;
+
+        while (elapsedTime < duration)
+        {
+            elapsedTime += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsedTime / duration);
+
+            color.a = Mathf.Lerp(startAlpha, targetAlpha, t);
+            image.color = color;
+
+            yield return null;
+        }
+
+        color.a = targetAlpha;
+        image.color = color;
+    }
+
+    [YarnCommand("progress")]
+    public static void AddProgress(string progressID)
+    {
+        if (SistemaInventario.Instance != null)
+        {
+            SistemaInventario.Instance.AddProgress(progressID);
+        }
+    }
+
+    [YarnCommand("removeprogress")]
+    public static void RemoveProgress(string progressID)
+    {
+        if (SistemaInventario.Instance != null)
+        {
+            SistemaInventario.Instance.RemoveProgress(progressID);
+        }
+    }
+
+    [YarnFunction("hasprogress")]
+    public static bool HasProgress(string progressID)
+    {
+        if (SistemaInventario.Instance != null)
+        {
+            return SistemaInventario.Instance.GetGameProgress().Contains(progressID);
+        }
+        return false;
+    }
+    [YarnCommand("objective")]
+    public static void SetObjective(string objective)
+    {
+        if (instance.objectiveText != null)
+        {
+            instance.objectiveText.text = objective;
+
+            if (instance.objectivePanel != null)
+            {
+                CanvasGroup canvasGroup = instance.objectivePanel.GetComponent<CanvasGroup>();
+                if (canvasGroup != null)
+                {
+                    canvasGroup.alpha = 1f;
+                }
+            }
+        }
+    }
+
+    [YarnCommand("clearobjective")]
+    public static void ClearObjective()
+    {
+        if (instance.objectiveText != null)
+        {
+            instance.objectiveText.text = "";
+
+            if (instance.objectivePanel != null)
+            {
+                CanvasGroup canvasGroup = instance.objectivePanel.GetComponent<CanvasGroup>();
+                if (canvasGroup != null)
+                {
+                    canvasGroup.alpha = 0f;
+                }
+            }
+        }
+    }
 
     [YarnCommand("darken")]
-    public static void DialogueDarken()
+    public static void DarkenScreen(float alpha = 0.67f, float duration = 0.5f)
     {
-        instance.blackScreen.SetActive(true);
-        instance.StartCoroutine(instance.FadeToBlack());
-        instance.FixDialogueRunner();
-        instance.OnDialogueDarken?.Invoke(); // Add this line
-    }
-
-    [YarnCommand("introdarken")]
-    public static void DialogueSuperDarken()
-    {
-        instance.blackScreen.SetActive(true);
-        instance.StartCoroutine(instance.FadeToUltraBlack());
-        instance.FixDialogueRunner();
-        instance.OnDialogueSuperDarken?.Invoke(); // Add this line
+        if (instance.blackScreen != null)
+        {
+            instance.blackScreen.SetActive(true);
+            instance.StartCoroutine(instance.FadeScreenRoutine(alpha, duration));
+            instance.EnsureContinueButtonInteractable();
+        }
     }
 
     [YarnCommand("brighten")]
-    public static void DialogueBrighten()
+    public static void BrightenScreen(float duration = 0.5f)
     {
-        instance.StartCoroutine(instance.FadeToWhite());
-        instance.DisableRaycaster();
-        instance.OnDialogueBrighten?.Invoke(); // Add this line
-    }
-    private IEnumerator FadeToBlack()
-    {
-        Image blackScreenImage = blackScreen.GetComponent<Image>();
-        Color currentColor = blackScreenImage.color;
-
-        Color targetColor = new Color(currentColor.r, currentColor.g, currentColor.b, 170f / 255);
-
-        float duration = 0.5f;
-        float elapsedTime = 0f;
-
-        while (elapsedTime < duration)
+        if (instance.blackScreen != null)
         {
-            elapsedTime += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsedTime / duration);
-
-            // Lerp from current color to semi-transparent black
-            blackScreenImage.color = Color.Lerp(currentColor, targetColor, t);
-            yield return null;
+            instance.StartCoroutine(instance.FadeScreenRoutine(0f, duration, true));
         }
-        instance.EnableRaycaster();
-    }
-    private IEnumerator FadeToUltraBlack()
-    {
-        Image blackScreenImage = blackScreen.GetComponent<Image>();
-        Color currentColor = blackScreenImage.color;
-
-        Color targetColor = new Color(currentColor.r, currentColor.g, currentColor.b, 170f / 255);
-
-        float duration = 1.0f;
-        float elapsedTime = 0f;
-
-        while (elapsedTime < duration)
-        {
-            elapsedTime += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsedTime / duration);
-
-            // Lerp from current color to semi-transparent black
-            blackScreenImage.color = Color.Lerp(currentColor, targetColor, t);
-            yield return null;
-        }
-        instance.EnableRaycaster();
-    }
-
-    private IEnumerator FadeToWhite()
-    {
-        Image blackScreenImage = blackScreen.GetComponent<Image>();
-        Color currentColor = blackScreenImage.color;
-        Color targetColor = new Color(currentColor.r, currentColor.g, currentColor.b, 0f);
-        float duration = 0.5f;
-        float elapsedTime = 0f;
-
-        while (elapsedTime < duration)
-        {
-            elapsedTime += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsedTime / duration);
-
-            blackScreenImage.color = Color.Lerp(currentColor, targetColor, t);
-            yield return null;
-        }
-        instance.blackScreen.SetActive(false);
-    }
-
-    [YarnCommand("sceneload")]
-    public static void DialogueScene(string scenetext)
-    {
-        SceneManager.LoadScene(scenetext);
     }
 
     [YarnCommand("blackout")]
     public static void Blackout(float duration = 1.0f)
     {
-        instance.blackScreen.SetActive(true);
-        instance.StartCoroutine(instance.BlackoutEffect(duration));
-        instance.FixDialogueRunner();
+        if (instance.blackScreen != null)
+        {
+            instance.blackScreen.SetActive(true);
+            instance.StartCoroutine(instance.BlackoutRoutine(duration));
+            instance.EnsureContinueButtonInteractable();
+        }
     }
 
-    private IEnumerator BlackoutEffect(float duration)
+    private IEnumerator FadeScreenRoutine(float targetAlpha, float duration, bool deactivateAtEnd = false)
     {
         Image blackScreenImage = blackScreen.GetComponent<Image>();
-        Color startColor = new Color(0f, 0f, 0f, 0f); // Start completely transparent
-        Color targetColor = new Color(0f, 0f, 0f, 1f); // End completely opaque black
+        if (blackScreenImage == null) yield break;
 
-        // Fade to black (first half of duration)
-        float elapsedTime = 0f;
-        float halfDuration = duration / 2f;
-
-        while (elapsedTime < halfDuration)
-        {
-            elapsedTime += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsedTime / halfDuration);
-            blackScreenImage.color = Color.Lerp(startColor, targetColor, t);
-            yield return null;
-        }
-
-        // Ensure we reach full black
-        blackScreenImage.color = targetColor;
-
-        // Wait at full black for a moment (optional, you can remove this if you want immediate brightening)
-        yield return new WaitForSeconds(0.1f);
-
-        // Fade back to transparent (second half of duration)
-        elapsedTime = 0f;
-        while (elapsedTime < halfDuration)
-        {
-            elapsedTime += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsedTime / halfDuration);
-            blackScreenImage.color = Color.Lerp(targetColor, startColor, t);
-            yield return null;
-        }
-
-        // Ensure we reach full transparency
-        blackScreenImage.color = startColor;
-        blackScreen.SetActive(false);
-        instance.DisableRaycaster();
-    }
-
-    [YarnCommand("fadein")]
-    public static void FadeInImage(string positionName, float fadeDuration = 1.0f)
-    {
-        if (activeImages.TryGetValue(positionName, out Image image))
-        {
-            instance.StartCoroutine(instance.FadeImage(image, 0f, 1f, fadeDuration));
-        }
-    }
-
-    private IEnumerator FadeImage(Image image, float startAlpha, float targetAlpha, float duration)
-    {
-        // Store original color
-        Color originalColor = image.color;
-
-        // Set starting alpha
-        originalColor.a = startAlpha;
-        image.color = originalColor;
+        Color startColor = blackScreenImage.color;
+        Color targetColor = new Color(startColor.r, startColor.g, startColor.b, targetAlpha);
 
         float elapsedTime = 0f;
 
@@ -448,23 +343,61 @@ public class StaticImageTagManager : MonoBehaviour
             elapsedTime += Time.deltaTime;
             float t = Mathf.Clamp01(elapsedTime / duration);
 
-            // Lerp the alpha value
-            Color newColor = image.color;
-            newColor.a = Mathf.Lerp(startAlpha, targetAlpha, t);
-            image.color = newColor;
-
+            blackScreenImage.color = Color.Lerp(startColor, targetColor, t);
             yield return null;
         }
 
-        // Ensure final alpha is set exactly
-        Color finalColor = image.color;
-        finalColor.a = targetAlpha;
-        image.color = finalColor;
+        blackScreenImage.color = targetColor;
+
+        if (deactivateAtEnd && targetAlpha <= 0f)
+        {
+            blackScreen.SetActive(false);
+        }
+    }
+
+    private IEnumerator BlackoutRoutine(float duration)
+    {
+        Image blackScreenImage = blackScreen.GetComponent<Image>();
+        if (blackScreenImage == null) yield break;
+
+        Color transparent = new Color(0f, 0f, 0f, 0f);
+        Color opaque = new Color(0f, 0f, 0f, 1f);
+
+        // Fade to black
+        float halfDuration = duration / 2f;
+        float elapsedTime = 0f;
+
+        while (elapsedTime < halfDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsedTime / halfDuration);
+            blackScreenImage.color = Color.Lerp(transparent, opaque, t);
+            yield return null;
+        }
+
+        blackScreenImage.color = opaque;
+        yield return new WaitForSeconds(0.1f);
+
+        // Fade back to transparent
+        elapsedTime = 0f;
+        while (elapsedTime < halfDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsedTime / halfDuration);
+            blackScreenImage.color = Color.Lerp(opaque, transparent, t);
+            yield return null;
+        }
+
+        blackScreenImage.color = transparent;
+        blackScreen.SetActive(false);
+        EnableRaycaster();
     }
 
     [YarnCommand("playsound")]
     public static void PlaySound(string soundName)
     {
+        if (instance.audioSource == null) return;
+
         SoundData foundSound = null;
         foreach (var sound in instance.sounds)
         {
@@ -487,56 +420,38 @@ public class StaticImageTagManager : MonoBehaviour
         }
     }
 
-    public void EnableRaycaster()
+    [YarnCommand("stopsound")]
+    public static void StopSound()
     {
-        graphicRaycaster.enabled = true;
-    }
-
-    public void DisableRaycaster()
-    {
-        graphicRaycaster.enabled = false;
-    }
-
-
-    [YarnCommand("finalereappear")]
-    public static IEnumerator FinalReappearCharacter(string targetName = "")
-    {
-        // Wait for 5 seconds
-        yield return new WaitForSeconds(5f);
-
-        GameObject targetObject;
-
-        if (string.IsNullOrEmpty(targetName))
+        if (instance.audioSource != null)
         {
-            if (instance.disappearCharacter == null)
-            {
-                Debug.LogError("No target specified and no default disappearCharacter set!");
-                yield break;
-            }
-            targetObject = instance.disappearCharacter.gameObject;
-        }
-        else
-        {
-            // Try to find the target by name
-            targetObject = GameObject.Find(targetName);
-            if (targetObject == null)
-            {
-                Debug.LogError($"No GameObject found with name: {targetName}");
-                yield break;
-            }
-        }
-
-        Image image = targetObject.GetComponent<Image>();
-        if (image != null)
-        {
-            Color color = image.color;
-            color.a = 1f; // Use 1f instead of 255f (alpha is 0-1, not 0-255)
-            image.color = color;
-        }
-        else
-        {
-            Debug.LogError($"No Image component found on target: {targetObject.name}");
+            instance.audioSource.Stop();
         }
     }
 
+    [YarnCommand("sceneload")]
+    public static void LoadScene(string sceneName)
+    {
+        SceneManager.LoadScene(sceneName);
+    }
+
+    [YarnCommand("enableraycaster")]
+    public static void EnableRaycaster()
+    {
+        if (instance.graphicRaycaster != null)
+            instance.graphicRaycaster.enabled = true;
+    }
+
+    [YarnCommand("disableraycaster")]
+    public static void DisableRaycaster()
+    {
+        if (instance.graphicRaycaster != null)
+            instance.graphicRaycaster.enabled = false;
+    }
+
+    [YarnCommand("wait")]
+    public static IEnumerator Wait(float seconds)
+    {
+        yield return new WaitForSeconds(seconds);
+    }
 }
