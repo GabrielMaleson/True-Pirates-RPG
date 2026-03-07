@@ -35,7 +35,6 @@ public class DialogueManager : MonoBehaviour
     [Header("Image Display")]
     public List<Sprite> sprites = new List<Sprite>();
     public List<string> spriteTags = new List<string>();
-    public List<Image> imagePrefabs = new List<Image>();
     public Image defaultImagePrefab;
     public List<PositionData> positions = new List<PositionData>();
 
@@ -154,18 +153,6 @@ public class DialogueManager : MonoBehaviour
         // Find the appropriate image prefab
         Image imagePrefabToUse = instance.defaultImagePrefab;
 
-        if (!string.IsNullOrEmpty(prefabName))
-        {
-            foreach (var prefab in instance.imagePrefabs)
-            {
-                if (prefab.name == prefabName)
-                {
-                    imagePrefabToUse = prefab;
-                    break;
-                }
-            }
-        }
-
         // Create a new UI Image at the target position
         Image newImage = Instantiate(imagePrefabToUse, positionTransform);
         newImage.sprite = foundSprite;
@@ -261,6 +248,7 @@ public class DialogueManager : MonoBehaviour
         }
         return false;
     }
+
     [YarnCommand("objective")]
     public static void SetObjective(string objective)
     {

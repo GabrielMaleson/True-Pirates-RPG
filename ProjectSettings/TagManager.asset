@@ -8,6 +8,9 @@ TagManager:
   - Enemy
   - MainThing
   - Inventory
+  - Objective
+  - Objective Panel
+  - TitleScreen
   layers:
   - Default
   - TransparentFX
