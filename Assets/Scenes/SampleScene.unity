@@ -3288,7 +3288,6 @@ MonoBehaviour:
   moedas: 0
   partyMembers:
   - {fileID: 1954456082905731064}
-  - {fileID: 1954456082905731064}
   maxInventorySize: 30
   gameProgress: []
 --- !u!114 &1337405899
@@ -3339,6 +3338,8 @@ MonoBehaviour:
   containerGrid: {fileID: 847840208}
   prefabSlot: {fileID: 159576471053939692, guid: d047e5f734bdc8646bbea9cca78834f7, type: 3}
   textoMoedas: {fileID: 1763060594}
+  normalColor: {r: 1, g: 1, b: 1, a: 1}
+  highlightedColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!114 &1337405902
 MonoBehaviour:
   m_ObjectHideFlags: 0
