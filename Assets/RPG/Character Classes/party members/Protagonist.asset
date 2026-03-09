@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CharacterData
   characterName: Protagonist
   level: 2
-  currentHP: 20
+  currentHP: 0
   expValue: 50
   baseHP: 20
   baseAttack: 5
@@ -94,8 +94,8 @@ MonoBehaviour:
   maxAP: 10
   unlockableAttacks:
   - attack: {fileID: 11400000, guid: 0578df8de0ac7ff4a83971ff592ddf02, type: 2}
-    unlockLevel: 0
-  - attack: {fileID: 11400000, guid: 6396cf591bac14b4eb74ccabad1bd2ea, type: 2}
     unlockLevel: 1
+  - attack: {fileID: 11400000, guid: 6396cf591bac14b4eb74ccabad1bd2ea, type: 2}
+    unlockLevel: 2
   activeStatusEffects: []
   equippedItems: []

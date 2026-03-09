@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AttackFile
   attackName: BasicAttack
   partyMemberOnly: 1
-  actionPointCost: 2
+  actionPointCost: 3
   effects:
   - effectType: 0
     targetType: 1
     numberOfTargets: 1
-    value: 1
+    value: 5
     accuracy: 100
     triggersOn: 0
     statusEffect: {fileID: 0}
