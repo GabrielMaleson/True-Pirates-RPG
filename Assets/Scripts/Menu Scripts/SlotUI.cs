@@ -12,25 +12,16 @@ public class SlotUI : MonoBehaviour
     public Image highlightBorder;
 
     [Header("Item Details")]
-    public GameObject itemDetailsPrefab; // Reference to the ItemDetails prefab
-    public Transform detailsParent; // Where to spawn details (usually the canvas)
+    public GameObject itemDetailsPrefab;
+    public Transform detailsParent;
+
+    // References set by PartyMenuManager
+    [HideInInspector] public PartyMenuManager partyMenuManager;
 
     private SlotInventario slotData;
-    private InterfaceInventario inventoryInterface;
-    private PartyMenuManager partyMenuManager;
 
     private void Start()
     {
-        // Find references if not set
-        if (inventoryInterface == null)
-            inventoryInterface = GetComponentInParent<InterfaceInventario>();
-
-        if (partyMenuManager == null)
-            partyMenuManager = FindFirstObjectByType<PartyMenuManager>();
-
-        if (detailsParent == null)
-            detailsParent = GameObject.Find("Canvas")?.transform; // Default to canvas
-
         if (button != null)
             button.onClick.AddListener(OnClick);
 
@@ -59,7 +50,6 @@ public class SlotUI : MonoBehaviour
         }
         else
         {
-            // Empty slot (shouldn't happen but just in case)
             if (itemIcon != null)
                 itemIcon.gameObject.SetActive(false);
 
@@ -76,9 +66,9 @@ public class SlotUI : MonoBehaviour
         if (slotData != null && slotData.dadosDoItem != null)
         {
             // Highlight this slot
-            if (inventoryInterface != null)
+            if (partyMenuManager != null)
             {
-                inventoryInterface.HighlightSlot(this);
+                partyMenuManager.HighlightSlot(this);
             }
 
             // Spawn item details
@@ -88,18 +78,11 @@ public class SlotUI : MonoBehaviour
 
     private void SpawnItemDetails()
     {
-        if (itemDetailsPrefab == null || detailsParent == null) return;
+        if (itemDetailsPrefab == null) return;
 
-        // Check if details for this item already exist (optional)
-        ItemDetails[] existingDetails = detailsParent.GetComponentsInChildren<ItemDetails>();
-        foreach (var details in existingDetails)
-        {
-            // If details for same item exist, just return or activate them
-            // This is optional behavior
-        }
+        Transform parent = detailsParent != null ? detailsParent : transform.root;
 
-        // Spawn new details
-        GameObject detailsObj = Instantiate(itemDetailsPrefab, detailsParent);
+        GameObject detailsObj = Instantiate(itemDetailsPrefab, parent);
         ItemDetails itemDetails = detailsObj.GetComponent<ItemDetails>();
 
         if (itemDetails != null)

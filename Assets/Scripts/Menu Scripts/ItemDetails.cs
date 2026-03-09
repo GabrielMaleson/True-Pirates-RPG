@@ -105,10 +105,10 @@ public class ItemDetails : MonoBehaviour
         {
             inventory.RemoverItem(currentItem, 1);
 
-            // Refresh inventory UI
-            InterfaceInventario inventoryUI = FindFirstObjectByType<InterfaceInventario>();
-            if (inventoryUI != null)
-                inventoryUI.AtualizarInterface();
+            // Find and refresh PartyMenuManager
+            PartyMenuManager menuManager = FindFirstObjectByType<PartyMenuManager>();
+            if (menuManager != null)
+                menuManager.RefreshInventoryDisplay();
 
             // Close if item is gone
             if (currentSlot.quantidade <= 0)
@@ -134,6 +134,7 @@ public class ItemDetails : MonoBehaviour
         if (currentItem.nivelRequerido > currentCharacter.level)
         {
             Debug.Log($"Cannot equip {currentItem.nomeDoItem} - requires level {currentItem.nivelRequerido}");
+            // You could show a message to the player here
             return;
         }
 
@@ -144,10 +145,26 @@ public class ItemDetails : MonoBehaviour
         {
             inventory.RemoverItem(currentItem, 1);
 
-            // Refresh displays
-            InterfaceInventario inventoryUI = FindFirstObjectByType<InterfaceInventario>();
-            if (inventoryUI != null)
-                inventoryUI.AtualizarInterface();
+            // Find and refresh PartyMenuManager
+            PartyMenuManager menuManager = FindFirstObjectByType<PartyMenuManager>();
+            if (menuManager != null)
+            {
+                menuManager.RefreshInventoryDisplay();
+                menuManager.UpdateEquipmentDisplay();
+
+                // Update stats display (stats may change from equipment)
+                CharacterData currentChar = menuManager.GetCurrentSelectedCharacter();
+                if (currentChar != null)
+                {
+                    // Find and update the stats display
+                    PartyMemberStatsDisplay[] displays = FindObjectsOfType<PartyMemberStatsDisplay>();
+                    foreach (var display in displays)
+                    {
+                        // You might need a better way to find the correct display
+                        display.UpdateDisplay();
+                    }
+                }
+            }
 
             // Close if item is gone
             if (currentSlot.quantidade <= 0)
@@ -164,10 +181,10 @@ public class ItemDetails : MonoBehaviour
         // Remove item from inventory
         inventory.RemoverItem(currentItem, 1);
 
-        // Refresh inventory display
-        InterfaceInventario inventoryUI = FindFirstObjectByType<InterfaceInventario>();
-        if (inventoryUI != null)
-            inventoryUI.AtualizarInterface();
+        // Find and refresh PartyMenuManager
+        PartyMenuManager menuManager = FindFirstObjectByType<PartyMenuManager>();
+        if (menuManager != null)
+            menuManager.RefreshInventoryDisplay();
 
         // Close this details panel
         Destroy(gameObject);

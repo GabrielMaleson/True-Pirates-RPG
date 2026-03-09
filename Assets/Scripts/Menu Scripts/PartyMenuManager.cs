@@ -32,19 +32,32 @@ public class PartyMenuManager : MonoBehaviour
     private Dictionary<EquipmentSlot, EquipmentSlotUI> equipmentSlots =
         new Dictionary<EquipmentSlot, EquipmentSlotUI>();
 
+    [Header("Inventory Display")]
+    public Transform inventoryGrid; // Grid where item slots will be instantiated
+    public GameObject itemSlotPrefab; // SlotUI prefab
+    public TextMeshProUGUI goldText; // For displaying gold
+    private List<SlotUI> inventorySlots = new List<SlotUI>();
+
+    [Header("Item Details")]
+    public GameObject itemDetailsPrefab;
+    public Transform detailsParent; // Usually the canvas
+
     [Header("References")]
     public SistemaInventario inventory;
-    public InterfaceInventario inventoryUI;
 
     private CharacterData currentSelectedCharacter;
+    private SlotUI currentlyHighlightedSlot;
 
     private void Start()
     {
         if (inventory == null)
             inventory = FindFirstObjectByType<SistemaInventario>();
 
-        if (inventoryUI == null)
-            inventoryUI = FindFirstObjectByType<InterfaceInventario>();
+        // Subscribe to inventory change events
+        if (inventory != null)
+        {
+            inventory.onInventarioMudou += RefreshInventoryDisplay;
+        }
 
         // Initially hide all panels
         HideAllPanels();
@@ -156,11 +169,8 @@ public class PartyMenuManager : MonoBehaviour
         HideAllPanels();
         itemsPanel.SetActive(true);
 
-        // Refresh the inventory UI
-        if (inventoryUI != null)
-        {
-            inventoryUI.AtualizarInterface();
-        }
+        // Refresh the inventory display
+        RefreshInventoryDisplay();
     }
 
     public void ShowEquipment()
@@ -195,7 +205,7 @@ public class PartyMenuManager : MonoBehaviour
         }
     }
 
-    private void UpdateEquipmentDisplay()
+    public void UpdateEquipmentDisplay()
     {
         // Clear existing
         foreach (Transform child in equipmentSlotParent)
@@ -228,6 +238,60 @@ public class PartyMenuManager : MonoBehaviour
         }
     }
 
+    // New method to refresh inventory display (replaces InterfaceInventario.AtualizarInterface)
+    public void RefreshInventoryDisplay()
+    {
+        if (inventory == null) return;
+
+        // Update gold
+        if (goldText != null)
+        {
+            goldText.text = "Ouro: " + inventory.moedas.ToString();
+        }
+
+        // Clear the grid
+        foreach (Transform child in inventoryGrid)
+        {
+            Destroy(child.gameObject);
+        }
+        inventorySlots.Clear();
+
+        // Build the inventory
+        foreach (SlotInventario slot in inventory.inventario)
+        {
+            GameObject newSlot = Instantiate(itemSlotPrefab, inventoryGrid);
+            SlotUI slotUI = newSlot.GetComponent<SlotUI>();
+
+            // Set up references
+            slotUI.partyMenuManager = this;
+            slotUI.itemDetailsPrefab = itemDetailsPrefab;
+            slotUI.detailsParent = detailsParent != null ? detailsParent : transform;
+
+            slotUI.ConfigurarSlot(slot);
+            inventorySlots.Add(slotUI);
+        }
+
+        // Clear highlight
+        currentlyHighlightedSlot = null;
+    }
+
+    // New method to handle slot highlighting
+    public void HighlightSlot(SlotUI selectedSlot)
+    {
+        // Unhighlight previous slot
+        if (currentlyHighlightedSlot != null)
+        {
+            currentlyHighlightedSlot.SetHighlight(false);
+        }
+
+        // Highlight new slot
+        currentlyHighlightedSlot = selectedSlot;
+        if (currentlyHighlightedSlot != null)
+        {
+            currentlyHighlightedSlot.SetHighlight(true);
+        }
+    }
+
     public void UnequipItem(DadosItem item, EquipmentSlot slot)
     {
         if (currentSelectedCharacter == null) return;
@@ -239,9 +303,8 @@ public class PartyMenuManager : MonoBehaviour
         {
             inventory.AdicionarItem(item, 1);
 
-            // Refresh inventory UI
-            if (inventoryUI != null)
-                inventoryUI.AtualizarInterface();
+            // Refresh inventory display
+            RefreshInventoryDisplay();
         }
 
         UpdateEquipmentDisplay();
@@ -257,6 +320,7 @@ public class PartyMenuManager : MonoBehaviour
 
         // Refresh displays
         CreatePartyMemberDisplays();
+        RefreshInventoryDisplay(); // Refresh inventory when opening menu
     }
 
     public void CloseMenu()
@@ -267,5 +331,13 @@ public class PartyMenuManager : MonoBehaviour
     public CharacterData GetCurrentSelectedCharacter()
     {
         return currentSelectedCharacter;
+    }
+
+    private void OnDestroy()
+    {
+        if (inventory != null)
+        {
+            inventory.onInventarioMudou -= RefreshInventoryDisplay;
+        }
     }
 }
