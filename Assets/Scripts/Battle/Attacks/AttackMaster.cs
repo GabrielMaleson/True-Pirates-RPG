@@ -20,12 +20,18 @@ public enum EffectType
 public class AttackFile : ScriptableObject
 {
     public string attackName;
+
+    [TextArea(3, 5)] // Makes a multi-line text field in inspector
+    public string description; // Attack description
+
+    public Sprite icon; // NEW: Icon for the attack
+
     public bool partyMemberOnly = true;
     public int actionPointCost = 2;
     public List<EffectData> effects = new List<EffectData>();
 
     [Header("Animation")]
-    public BattleAnimationData battleAnimation; // Add this directly to AttackFile
+    public BattleAnimationData battleAnimation;
 }
 
 [System.Serializable]

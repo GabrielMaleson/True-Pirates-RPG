@@ -6,8 +6,6 @@ public class PartyMemberButton : MonoBehaviour
 {
     [Header("UI Elements")]
     public TextMeshProUGUI nameText;
-    public TextMeshProUGUI hpText;
-    public Image healthBar;
     public Button button;
     public Image highlightBorder;
 
@@ -20,23 +18,12 @@ public class PartyMemberButton : MonoBehaviour
         menuManager = manager;
 
         nameText.text = character.characterName;
-        UpdateHealthDisplay();
 
         button.onClick.AddListener(OnClick);
 
         // Initially not highlighted
         if (highlightBorder != null)
             highlightBorder.gameObject.SetActive(false);
-    }
-
-    private void UpdateHealthDisplay()
-    {
-        if (characterData != null)
-        {
-            hpText.text = $"{characterData.currentHP}/{characterData.hp}";
-            if (healthBar != null)
-                healthBar.fillAmount = (float)characterData.currentHP / characterData.hp;
-        }
     }
 
     private void OnClick()
@@ -56,15 +43,6 @@ public class PartyMemberButton : MonoBehaviour
     public CharacterData GetCharacterData()
     {
         return characterData;
-    }
-
-    private void Update()
-    {
-        // Continuously update for real-time changes
-        if (characterData != null)
-        {
-            UpdateHealthDisplay();
-        }
     }
 
     private void OnDestroy()
