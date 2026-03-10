@@ -107,7 +107,7 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
                 }
 
                 // Initialize with item data
-                CharacterData currentCharacter = partyMenuManager?.GetCurrentSelectedCharacter();
+                PartyMemberState currentCharacter = partyMenuManager?.GetCurrentSelectedMember();
                 details.Initialize(slotData.dadosDoItem, slotData, currentCharacter);
             }
         }
@@ -173,18 +173,18 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         // Create party member buttons
         foreach (var member in partyMenuManager.inventory.partyMembers)
         {
-            if (member != null && member.characterData != null)
+            if (member != null)
             {
                 GameObject btnObj = Instantiate(partyMemberButtonPrefab, buttonContainer);
                 PartyMemberButton btn = btnObj.GetComponent<PartyMemberButton>();
 
                 if (btn != null)
                 {
-                    CharacterData characterData = member.characterData;
-                    btn.Initialize(characterData, partyMenuManager);
+                    PartyMemberState memberState = member;
+                    btn.Initialize(memberState, partyMenuManager);
 
                     // Check if character can use this item
-                    bool canUse = CanUseOnCharacter(characterData);
+                    bool canUse = CanUseOnCharacter(memberState);
 
                     Button uiButton = btnObj.GetComponent<Button>();
                     if (uiButton != null)
@@ -193,12 +193,12 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
                         if (canUse)
                         {
-                            uiButton.onClick.AddListener(() => OnPartyMemberSelected(characterData));
+                            uiButton.onClick.AddListener(() => OnPartyMemberSelected(memberState));
 
                             // Reset any visual changes
                             TextMeshProUGUI nameText = btnObj.GetComponentInChildren<TextMeshProUGUI>();
                             if (nameText != null)
-                                nameText.text = characterData.characterName;
+                                nameText.text = memberState.CharacterName;
                         }
                         else
                         {
@@ -210,9 +210,9 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
                             if (nameText != null)
                             {
                                 if (slotData.dadosDoItem.ehEquipavel)
-                                    nameText.text = $"{characterData.characterName} (Lv {slotData.dadosDoItem.nivelRequerido} req)";
+                                    nameText.text = $"{memberState.CharacterName} (Lv {slotData.dadosDoItem.nivelRequerido} req)";
                                 else
-                                    nameText.text = characterData.characterName;
+                                    nameText.text = memberState.CharacterName;
                             }
                         }
                     }
@@ -244,7 +244,7 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         }
     }
 
-    private bool CanUseOnCharacter(CharacterData character)
+    private bool CanUseOnCharacter(PartyMemberState character)
     {
         if (slotData.dadosDoItem.ehConsumivel)
         {
@@ -257,7 +257,7 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         return false;
     }
 
-    private void OnPartyMemberSelected(CharacterData selectedCharacter)
+    private void OnPartyMemberSelected(PartyMemberState selectedCharacter)
     {
         DadosItem item = slotData.dadosDoItem;
 
@@ -274,7 +274,15 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         }
         else if (item.ehEquipavel)
         {
-            bool equipped = selectedCharacter.EquipItem(item);
+            bool equipped = false;
+            if (item.slotEquipamento == EquipmentSlot.Arma)
+            {
+                equipped = selectedCharacter.EquipWeapon(item);
+            }
+            else if (item.slotEquipamento == EquipmentSlot.Armadura)
+            {
+                equipped = selectedCharacter.EquipArmor(item);
+            }
 
             if (equipped)
             {

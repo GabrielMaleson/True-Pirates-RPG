@@ -10,11 +10,11 @@ public class PartyMemberStatsDisplay : MonoBehaviour
     public TextMeshProUGUI levelText;
 
     [Header("HP Display")]
-    public Image hpBarFill; // Image with fill method
+    public Image hpBarFill;
     public TextMeshProUGUI hpText;
 
     [Header("AP Display")]
-    public Image apBarFill; // Image with fill method
+    public Image apBarFill;
     public TextMeshProUGUI apText;
 
     [Header("Stats")]
@@ -22,72 +22,87 @@ public class PartyMemberStatsDisplay : MonoBehaviour
     public TextMeshProUGUI defenseText;
 
     [Header("EXP Display")]
-    public Image expBarFill; // Image with fill method
+    public Image expBarFill;
     public TextMeshProUGUI expText;
+
+    [Header("Equipment Display")]
+    public TextMeshProUGUI weaponText;
+    public TextMeshProUGUI armorText;
 
     [Header("Colors")]
     public Color hpColor = Color.red;
     public Color apColor = Color.blue;
     public Color expColor = Color.green;
 
-    private CharacterData characterData;
+    private PartyMemberState memberState;
 
-    public void Initialize(CharacterData character)
+    public void Initialize(PartyMemberState state)
     {
-        characterData = character;
+        memberState = state;
 
-        // Set name and level
-        if (nameText != null)
-            nameText.text = character.characterName;
-
-        if (levelText != null)
-            levelText.text = $"Lv. {character.level}";
+        // Set portrait
+        if (portraitImage != null)
+        {
+            if (state.BattlePortrait != null)
+                portraitImage.sprite = state.BattlePortrait;
+            else if (state.PartyIcon != null)
+                portraitImage.sprite = state.PartyIcon;
+        }
 
         // Set bar colors
         if (hpBarFill != null) hpBarFill.color = hpColor;
         if (apBarFill != null) apBarFill.color = apColor;
         if (expBarFill != null) expBarFill.color = expColor;
 
-        // Initial update
         UpdateDisplay();
     }
 
     public void UpdateDisplay()
     {
-        if (characterData == null) return;
+        if (memberState == null) return;
 
-        // Update HP
-        float hpPercent = (float)characterData.currentHP / characterData.hp;
+        // Basic info
+        if (nameText != null)
+            nameText.text = memberState.CharacterName;
+
+        if (levelText != null)
+            levelText.text = $"Lv. {memberState.level}";
+
+        // HP
+        float hpPercent = (float)memberState.currentHP / memberState.MaxHP;
         if (hpBarFill != null)
             hpBarFill.fillAmount = Mathf.Clamp01(hpPercent);
         if (hpText != null)
-            hpText.text = $"{characterData.currentHP}/{characterData.hp}";
+            hpText.text = $"{memberState.currentHP}/{memberState.MaxHP}";
 
-        // Update AP
-        float apPercent = (float)characterData.currentAP / characterData.maxAP;
+        // AP
+        float apPercent = (float)memberState.currentAP / memberState.MaxAP;
         if (apBarFill != null)
             apBarFill.fillAmount = Mathf.Clamp01(apPercent);
         if (apText != null)
-            apText.text = $"{characterData.currentAP}/{characterData.maxAP}";
+            apText.text = $"{memberState.currentAP}/{memberState.MaxAP}";
 
-        // Update stats
+        // Stats
         if (attackText != null)
-            attackText.text = $"ATK: {characterData.attack}";
+            attackText.text = $"ATK: {memberState.Attack}";
         if (defenseText != null)
-            defenseText.text = $"DEF: {characterData.defense}";
+            defenseText.text = $"DEF: {memberState.Defense}";
 
-        // Update EXP
-        int nextLevelExp = characterData.level * 100;
-        float expPercent = (float)characterData.currentExperience / nextLevelExp;
-        if (expBarFill != null)
-            expBarFill.fillAmount = Mathf.Clamp01(expPercent);
-        if (expText != null)
-            expText.text = $"{characterData.currentExperience}/{nextLevelExp}";
-    }
+        // EXP
+        if (memberState.template != null)
+        {
+            int nextLevelExp = memberState.template.GetExpForLevel(memberState.level);
+            float expPercent = (float)memberState.currentExperience / nextLevelExp;
+            if (expBarFill != null)
+                expBarFill.fillAmount = Mathf.Clamp01(expPercent);
+            if (expText != null)
+                expText.text = $"{memberState.currentExperience}/{nextLevelExp}";
+        }
 
-    private void Update()
-    {
-        // Continuously update for real-time changes (healing, damage, etc.)
-        UpdateDisplay();
+        // Equipment
+        if (weaponText != null)
+            weaponText.text = memberState.weapon != null ? memberState.weapon.nomeDoItem : "None";
+        if (armorText != null)
+            armorText.text = memberState.armor != null ? memberState.armor.nomeDoItem : "None";
     }
 }

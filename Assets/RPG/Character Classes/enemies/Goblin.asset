@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CharacterData
   characterName: Topeira
   level: 1
-  currentHP: 21
+  currentHP: 20
   expValue: 50
   baseHP: 20
   baseAttack: 5

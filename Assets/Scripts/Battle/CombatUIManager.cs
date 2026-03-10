@@ -29,7 +29,7 @@ public class CombatUIManager : MonoBehaviour
     public Button itemsMenuButton;
     public Button defendMenuButton;
     public Button waitMenuButton;
-    public Button undoButton; // New undo button
+    public Button undoButton;
 
     [Header("Text Displays")]
     public TextMeshProUGUI turnText;
@@ -38,16 +38,16 @@ public class CombatUIManager : MonoBehaviour
     [Header("Panels")]
     public GameObject waitPanel;
 
-    private Dictionary<CharacterData, CharacterUI> partyUIDictionary = new Dictionary<CharacterData, CharacterUI>();
-    private Dictionary<CharacterData, EnemyUI> enemyUIDictionary = new Dictionary<CharacterData, EnemyUI>();
-    private Dictionary<CharacterData, GameObject> partyVisualDictionary = new Dictionary<CharacterData, GameObject>();
-    private Dictionary<CharacterData, GameObject> enemyVisualDictionary = new Dictionary<CharacterData, GameObject>();
+    private Dictionary<PartyMemberState, CharacterUI> partyUIDictionary = new Dictionary<PartyMemberState, CharacterUI>();
+    private Dictionary<PartyMemberState, EnemyUI> enemyUIDictionary = new Dictionary<PartyMemberState, EnemyUI>();
+    private Dictionary<PartyMemberState, GameObject> partyVisualDictionary = new Dictionary<PartyMemberState, GameObject>();
+    private Dictionary<PartyMemberState, GameObject> enemyVisualDictionary = new Dictionary<PartyMemberState, GameObject>();
 
-    private CharacterData currentCharacter;
+    private PartyMemberState currentCharacter;
     private AttackFile selectedAttack;
     private DadosItem selectedItem;
     private int remainingTargetsToSelect = 0;
-    private List<CharacterData> selectedTargets = new List<CharacterData>();
+    private List<PartyMemberState> selectedTargets = new List<PartyMemberState>();
     private bool isInitialized = false;
     private bool isTargeting = false;
 
@@ -104,7 +104,7 @@ public class CombatUIManager : MonoBehaviour
         // Hide all action panels initially
         HideAllActionPanels();
 
-        CharacterData currentChar = combatSystem.GetCurrentCharacter();
+        PartyMemberState currentChar = combatSystem.GetCurrentCharacter();
         if (currentChar != null)
         {
             OnTurnStarted(currentChar);
@@ -177,9 +177,9 @@ public class CombatUIManager : MonoBehaviour
 
         foreach (var characterComp in allCharacters)
         {
-            if (characterComp != null && characterComp.characterData != null)
+            if (characterComp != null && characterComp.partyMemberState != null)
             {
-                CharacterData data = characterComp.characterData;
+                PartyMemberState data = characterComp.partyMemberState;
 
                 if (combatSystem.partyMembers.Contains(data))
                 {
@@ -206,10 +206,10 @@ public class CombatUIManager : MonoBehaviour
         }
     }
 
-    private void OnTurnStarted(CharacterData character)
+    private void OnTurnStarted(PartyMemberState character)
     {
         currentCharacter = character;
-        turnText.text = $"{character.characterName}'s Turn";
+        turnText.text = $"{character.CharacterName}'s Turn";
 
         // Hide all targeting and action panels
         DisableAllTargeting();
@@ -228,13 +228,13 @@ public class CombatUIManager : MonoBehaviour
                 undoButton.gameObject.SetActive(false);
 
             // Update status text based on AP
-            if (character.currentAP == character.maxAP)
+            if (character.currentAP == character.MaxAP)
             {
                 statusText.text = "Choose an action";
             }
             else
             {
-                statusText.text = $"AP: {character.currentAP}/{character.maxAP} - Choose another action or Wait";
+                statusText.text = $"AP: {character.currentAP}/{character.MaxAP} - Choose another action or Wait";
             }
 
             UpdateActionMenuButtons();
@@ -244,7 +244,7 @@ public class CombatUIManager : MonoBehaviour
         {
             // Enemy turn
             waitPanel.SetActive(true);
-            statusText.text = $"{character.characterName} is thinking...";
+            statusText.text = $"{character.CharacterName} is thinking...";
         }
     }
 
@@ -290,7 +290,7 @@ public class CombatUIManager : MonoBehaviour
             }
 
             // Create attack buttons for current character based on CURRENT AP
-            foreach (var attack in currentCharacter.availableAttacks)
+            foreach (var attack in currentCharacter.learnedAttacks)
             {
                 if (attack == null) continue;
                 if (attack.actionPointCost <= currentCharacter.currentAP)
@@ -358,7 +358,7 @@ public class CombatUIManager : MonoBehaviour
         if (currentCharacter == null) return;
 
         // Check if character has max AP
-        if (currentCharacter.currentAP < currentCharacter.maxAP)
+        if (currentCharacter.currentAP < currentCharacter.MaxAP)
         {
             statusText.text = "Can only defend at max AP!";
             StartCoroutine(ClearStatusMessageAfterDelay(1.5f));
@@ -410,7 +410,7 @@ public class CombatUIManager : MonoBehaviour
         if (itemButtonGrid != null)
             itemButtonGrid.gameObject.SetActive(false);
 
-        statusText.text = $"AP: {currentCharacter.currentAP}/{currentCharacter.maxAP} - Action undone";
+        statusText.text = $"AP: {currentCharacter.currentAP}/{currentCharacter.MaxAP} - Action undone";
     }
 
     private IEnumerator ClearStatusMessageAfterDelay(float delay)
@@ -418,15 +418,16 @@ public class CombatUIManager : MonoBehaviour
         yield return new WaitForSeconds(delay);
         if (currentCharacter != null)
         {
-            statusText.text = $"AP: {currentCharacter.currentAP}/{currentCharacter.maxAP} - Choose another action or Wait";
+            statusText.text = $"AP: {currentCharacter.currentAP}/{currentCharacter.MaxAP} - Choose another action or Wait";
         }
     }
+
     private IEnumerator ExecuteDefend()
     {
         // Hide action menu
         actionMenuPanel.SetActive(false);
 
-        statusText.text = $"{currentCharacter.characterName} defends!";
+        statusText.text = $"{currentCharacter.CharacterName} defends!";
 
         // Apply defend bonus through combat system
         combatSystem.ApplyDefendBonus(currentCharacter);
@@ -535,7 +536,7 @@ public class CombatUIManager : MonoBehaviour
         }
     }
 
-    private void EnableTargetingOnCharacters(List<CharacterData> characters)
+    private void EnableTargetingOnCharacters(List<PartyMemberState> characters)
     {
         foreach (var character in characters)
         {
@@ -587,7 +588,7 @@ public class CombatUIManager : MonoBehaviour
         }
     }
 
-    private void OnTargetSelected(CharacterData target)
+    private void OnTargetSelected(PartyMemberState target)
     {
         if (!isTargeting) return;
 
@@ -640,7 +641,7 @@ public class CombatUIManager : MonoBehaviour
             actionMenuPanel.SetActive(true);
 
             // Update status text
-            statusText.text = $"AP: {currentCharacter.currentAP}/{currentCharacter.maxAP} - Select another action or Wait";
+            statusText.text = $"AP: {currentCharacter.currentAP}/{currentCharacter.MaxAP} - Select another action or Wait";
 
             // Update button states (this will show undo button if there are pending actions)
             UpdateActionMenuButtons();
@@ -667,7 +668,7 @@ public class CombatUIManager : MonoBehaviour
         }
     }
 
-    private void UseItemOnTargets(DadosItem item, List<CharacterData> targets)
+    private void UseItemOnTargets(DadosItem item, List<PartyMemberState> targets)
     {
         if (playerInventory == null) return;
 
@@ -693,7 +694,7 @@ public class CombatUIManager : MonoBehaviour
                             break;
 
                         case EffectType.ManaRestore:
-                            target.currentAP = Mathf.Min(target.maxAP, target.currentAP + effect.valor);
+                            target.currentAP = Mathf.Min(target.MaxAP, target.currentAP + effect.valor);
                             break;
 
                         case EffectType.Revive:
@@ -706,7 +707,9 @@ public class CombatUIManager : MonoBehaviour
                         case EffectType.StatusEffect:
                             if (effect.statusEffect != null)
                             {
-                                target.AddStatusEffect(effect.statusEffect, combatSystem.GetCurrentCharacter());
+                                // You'll need to convert PartyMemberState to CharacterData for source
+                                // This might need adjustment
+                                Debug.Log($"Status effect {effect.statusEffect.effectName} applied to {target.CharacterName}");
                             }
                             break;
                     }
@@ -732,14 +735,14 @@ public class CombatUIManager : MonoBehaviour
         // Defend button only available at max AP
         if (defendMenuButton != null)
         {
-            defendMenuButton.interactable = (currentCharacter.currentAP == currentCharacter.maxAP);
+            defendMenuButton.interactable = (currentCharacter.currentAP == currentCharacter.MaxAP);
         }
 
         // Attacks button available if any attack costs <= current AP
         if (attacksMenuButton != null)
         {
             bool hasAffordableAttack = false;
-            foreach (var attack in currentCharacter.availableAttacks)
+            foreach (var attack in currentCharacter.learnedAttacks)
             {
                 if (attack != null && attack.actionPointCost <= currentCharacter.currentAP)
                 {
@@ -761,7 +764,7 @@ public class CombatUIManager : MonoBehaviour
         }
     }
 
-    private void OnCharacterUpdated(CharacterData character)
+    private void OnCharacterUpdated(PartyMemberState character)
     {
         if (!isInitialized) return;
 

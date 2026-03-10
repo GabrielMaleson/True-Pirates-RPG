@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class CharacterComponent : MonoBehaviour
 {
-    public CharacterData characterData;
+    public PartyMemberState partyMemberState; // Changed from CharacterData
 
     [Header("Runtime Stats (Read Only)")]
     [SerializeField] private int currentLevel;
@@ -13,119 +13,101 @@ public class CharacterComponent : MonoBehaviour
 
     private void Start()
     {
-        if (characterData != null)
+        if (partyMemberState != null)
         {
-            // Initialize runtime stats
             UpdateRuntimeStats();
         }
     }
 
     private void UpdateRuntimeStats()
     {
-        if (characterData != null)
+        if (partyMemberState != null)
         {
-            currentLevel = characterData.level;
-            currentHP = characterData.currentHP;
-            currentAP = characterData.currentAP;
-            currentEXP = characterData.currentExperience;
-            nextLevelEXP = characterData.level * 100; // Simple formula, adjust as needed
+            currentLevel = partyMemberState.level;
+            currentHP = partyMemberState.currentHP;
+            currentAP = partyMemberState.currentAP;
+            currentEXP = partyMemberState.currentExperience;
+            nextLevelEXP = partyMemberState.template != null ?
+                partyMemberState.template.GetExpForLevel(partyMemberState.level) : 100;
         }
     }
 
-    // Call this after any changes to character data
     public void RefreshStats()
     {
         UpdateRuntimeStats();
     }
 
-    // Public methods to access character data safely
     public string GetCharacterName()
     {
-        return characterData != null ? characterData.characterName : "Unknown";
+        return partyMemberState != null ? partyMemberState.CharacterName : "Unknown";
     }
 
     public int GetLevel()
     {
-        return characterData != null ? characterData.level : 1;
+        return partyMemberState != null ? partyMemberState.level : 1;
     }
 
     public int GetCurrentHP()
     {
-        return characterData != null ? characterData.currentHP : 0;
+        return partyMemberState != null ? partyMemberState.currentHP : 0;
     }
 
     public int GetMaxHP()
     {
-        return characterData != null ? characterData.hp : 0;
+        return partyMemberState != null ? partyMemberState.MaxHP : 0;
     }
 
     public float GetHealthPercent()
     {
-        if (characterData == null || characterData.hp == 0) return 0;
-        return (float)characterData.currentHP / characterData.hp;
+        if (partyMemberState == null) return 0;
+        return (float)partyMemberState.currentHP / partyMemberState.MaxHP;
     }
 
     public int GetCurrentAP()
     {
-        return characterData != null ? characterData.currentAP : 0;
+        return partyMemberState != null ? partyMemberState.currentAP : 0;
     }
 
     public int GetMaxAP()
     {
-        return characterData != null ? characterData.maxAP : 0;
+        return partyMemberState != null ? partyMemberState.MaxAP : 0;
     }
 
     public float GetAPPercent()
     {
-        if (characterData == null || characterData.maxAP == 0) return 0;
-        return (float)characterData.currentAP / characterData.maxAP;
+        if (partyMemberState == null) return 0;
+        return (float)partyMemberState.currentAP / partyMemberState.MaxAP;
     }
 
     public int GetCurrentEXP()
     {
-        return characterData != null ? characterData.currentExperience : 0;
+        return partyMemberState != null ? partyMemberState.currentExperience : 0;
     }
 
     public int GetNextLevelEXP()
     {
-        if (characterData == null) return 100;
-        return characterData.level * 100; // Simple formula
+        if (partyMemberState?.template == null) return 100;
+        return partyMemberState.template.GetExpForLevel(partyMemberState.level);
     }
 
     public float GetEXPPercent()
     {
-        if (characterData == null) return 0;
+        if (partyMemberState?.template == null) return 0;
         int nextLevel = GetNextLevelEXP();
         if (nextLevel == 0) return 0;
-        return (float)characterData.currentExperience / nextLevel;
+        return (float)partyMemberState.currentExperience / nextLevel;
     }
 
-    public void GainExperience(int amount)
-    {
-        if (characterData != null)
-        {
-            int oldLevel = characterData.level;
-            characterData.GainExperience(amount);
-            UpdateRuntimeStats();
-
-            // Log level up
-            if (characterData.level > oldLevel)
-            {
-                Debug.Log($"{characterData.characterName} leveled up to {characterData.level}!");
-            }
-        }
-    }
-
-    // Called by Unity Editor to update Inspector display
     private void OnValidate()
     {
-        if (characterData != null)
+        if (partyMemberState != null)
         {
-            currentLevel = characterData.level;
-            currentHP = characterData.currentHP;
-            currentAP = characterData.currentAP;
-            currentEXP = characterData.currentExperience;
-            nextLevelEXP = characterData.level * 100;
+            currentLevel = partyMemberState.level;
+            currentHP = partyMemberState.currentHP;
+            currentAP = partyMemberState.currentAP;
+            currentEXP = partyMemberState.currentExperience;
+            nextLevelEXP = partyMemberState.template != null ?
+                partyMemberState.template.GetExpForLevel(partyMemberState.level) : 100;
         }
     }
 }

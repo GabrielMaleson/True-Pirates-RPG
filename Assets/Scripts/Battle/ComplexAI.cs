@@ -1,13 +1,11 @@
+using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
-using static Unity.Burst.Intrinsics.X86.Avx;
 
 public class ComplexAI : MonoBehaviour
 {
-    public CharacterComponent comp;
     [Header("AI Configuration")]
-    private CharacterData controlledCharacter;
+    public PartyMemberState controlledCharacter;
     public AIStrategy currentStrategy = AIStrategy.Balanced;
 
     [Header("Behavior Weights")]
@@ -19,15 +17,16 @@ public class ComplexAI : MonoBehaviour
     public bool focusLowestHP = true;
     public bool focusHighestThreat = false;
 
-    private Dictionary<CharacterData, float> threatLevels = new Dictionary<CharacterData, float>();
+    private Dictionary<PartyMemberState, float> threatLevels = new Dictionary<PartyMemberState, float>();
 
     private void Start()
     {
-        comp = GetComponent<CharacterComponent>();
-        controlledCharacter = comp.characterData;
+        CharacterComponent comp = GetComponent<CharacterComponent>();
+        if (comp != null)
+            controlledCharacter = comp.partyMemberState;
     }
 
-    public AIDecision MakeDecision(List<CharacterData> partyMembers, List<CharacterData> enemies)
+    public AIDecision MakeDecision(List<PartyMemberState> partyMembers, List<PartyMemberState> enemies)
     {
         var decision = new AIDecision();
 
@@ -46,25 +45,25 @@ public class ComplexAI : MonoBehaviour
         return decision;
     }
 
-    private BattleEvaluation EvaluateBattleState(List<CharacterData> partyMembers, List<CharacterData> enemies)
+    private BattleEvaluation EvaluateBattleState(List<PartyMemberState> partyMembers, List<PartyMemberState> enemies)
     {
         var evaluation = new BattleEvaluation();
 
         // Calculate party health percentage
         evaluation.partyHealthPercentage = partyMembers
-            .Average(p => (float)p.currentHP / p.hp);
+            .Average(p => (float)p.currentHP / p.MaxHP);
 
         // Calculate enemy health percentage
         evaluation.enemyHealthPercentage = enemies
             .Where(e => e != null)
-            .Average(e => (float)e.currentHP / e.hp);
+            .Average(e => (float)e.currentHP / e.MaxHP);
 
         // Count active enemies
         evaluation.activeEnemyCount = enemies.Count(e => e.currentHP > 0);
 
         // Check for low HP allies
         evaluation.lowHPAllies = partyMembers
-            .Where(p => (float)p.currentHP / p.hp < 0.3f)
+            .Where(p => (float)p.currentHP / p.MaxHP < 0.3f)
             .ToList();
 
         return evaluation;
@@ -98,12 +97,12 @@ public class ComplexAI : MonoBehaviour
         }
     }
 
-    private AttackFile SelectAction(List<CharacterData> enemies)
+    private AttackFile SelectAction(List<PartyMemberState> enemies)
     {
-        if (controlledCharacter == null || controlledCharacter.availableAttacks == null)
+        if (controlledCharacter == null || controlledCharacter.learnedAttacks == null)
             return null;
 
-        List<AttackFile> availableActions = controlledCharacter.availableAttacks
+        List<AttackFile> availableActions = controlledCharacter.learnedAttacks
             .Where(a => a != null && a.actionPointCost <= controlledCharacter.currentAP)
             .ToList();
 
@@ -131,7 +130,7 @@ public class ComplexAI : MonoBehaviour
             if (action.effects.Any(e => e.targetType == TargetType.Ally))
             {
                 float healPotential = action.effects
-                    .Where(e => e.effectType == EffectType.Heal)
+                    .Where(e => e.effectType == EffectType.Heal || e.effectType == EffectType.HP_Restore)
                     .Sum(e => e.value);
 
                 score += healPotential * (defensiveWeight + supportiveWeight);
@@ -148,16 +147,16 @@ public class ComplexAI : MonoBehaviour
         return actionScores.OrderByDescending(kvp => kvp.Value).First().Key;
     }
 
-    private List<CharacterData> SelectTargets(AttackFile action, List<CharacterData> partyMembers, List<CharacterData> enemies)
+    private List<PartyMemberState> SelectTargets(AttackFile action, List<PartyMemberState> partyMembers, List<PartyMemberState> enemies)
     {
-        List<CharacterData> targets = new List<CharacterData>();
+        List<PartyMemberState> targets = new List<PartyMemberState>();
 
         if (action == null || action.effects.Count == 0)
             return targets;
 
         foreach (var effect in action.effects)
         {
-            List<CharacterData> potentialTargets = effect.targetType == TargetType.Ally
+            List<PartyMemberState> potentialTargets = effect.targetType == TargetType.Ally
                 ? partyMembers.Where(p => p.currentHP > 0).ToList()
                 : enemies.Where(e => e.currentHP > 0).ToList();
 
@@ -186,9 +185,10 @@ public class ComplexAI : MonoBehaviour
                     break;
 
                 case EffectType.Heal:
+                case EffectType.HP_Restore:
                     // Target lowest HP ally
                     var healTarget = potentialTargets
-                        .OrderBy(t => (float)t.currentHP / t.hp)
+                        .OrderBy(t => (float)t.currentHP / t.MaxHP)
                         .FirstOrDefault();
                     if (healTarget != null) targets.Add(healTarget);
                     break;
@@ -214,13 +214,13 @@ public class BattleEvaluation
     public float partyHealthPercentage;
     public float enemyHealthPercentage;
     public int activeEnemyCount;
-    public List<CharacterData> lowHPAllies = new List<CharacterData>();
+    public List<PartyMemberState> lowHPAllies = new List<PartyMemberState>();
 }
 
 public class AIDecision
 {
     public AttackFile selectedAction;
-    public List<CharacterData> targets = new List<CharacterData>();
+    public List<PartyMemberState> targets = new List<PartyMemberState>();
 }
 
 public enum AIStrategy

@@ -72,9 +72,7 @@ public class EquipmentSlotUI : MonoBehaviour
 
     private void OnSlotClicked()
     {
-        // This could open a list of equippable items for this slot
         Debug.Log($"Clicked on {slotType} slot");
-        // You could implement an equip from inventory system here
     }
 
     private void OnUnequipClicked()

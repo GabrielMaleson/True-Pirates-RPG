@@ -13,13 +13,15 @@ MonoBehaviour:
   m_Name: Basic Attack
   m_EditorClassIdentifier: Assembly-CSharp::AttackFile
   attackName: BasicAttack
+  description: 
+  icon: {fileID: 0}
   partyMemberOnly: 1
   actionPointCost: 3
   effects:
   - effectType: 0
     targetType: 1
     numberOfTargets: 1
-    value: 5
+    value: 2
     accuracy: 100
     triggersOn: 0
     statusEffect: {fileID: 0}

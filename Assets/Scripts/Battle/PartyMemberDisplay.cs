@@ -13,21 +13,21 @@ public class CharacterUI : MonoBehaviour
     public GameObject defeatedOverlay;
 
     [Header("Target Indicator")]
-    public GameObject targetIndicator; // Visual indicator when this character is targetable
+    public GameObject targetIndicator;
+    public TargetButton targetButton;
 
-    private CharacterData characterData;
+    private PartyMemberState memberState;
     private GameObject characterVisualObject;
     private CombatUIManager uiManager;
     private TargetSelector selector;
-    public TargetButton targetButton;
 
-    public void Initialize(CharacterData data, GameObject visualObject, CombatUIManager manager)
+    public void Initialize(PartyMemberState state, GameObject visualObject, CombatUIManager manager)
     {
-        characterData = data;
+        memberState = state;
         characterVisualObject = visualObject;
         uiManager = manager;
 
-        nameText.text = data.characterName;
+        nameText.text = state.CharacterName;
         UpdateDisplay();
 
         // Hide target indicator initially
@@ -47,24 +47,24 @@ public class CharacterUI : MonoBehaviour
 
     public void UpdateDisplay()
     {
-        if (characterData != null)
+        if (memberState != null)
         {
-            hpText.text = $"{characterData.currentHP}/{characterData.hp}";
+            hpText.text = $"{memberState.currentHP}/{memberState.MaxHP}";
             if (healthBar != null)
-                healthBar.fillAmount = (float)characterData.currentHP / characterData.hp;
+                healthBar.fillAmount = (float)memberState.currentHP / memberState.MaxHP;
 
             if (apText != null)
-                apText.text = $"AP: {characterData.currentAP}/{characterData.maxAP}";
+                apText.text = $"AP: {memberState.currentAP}/{memberState.MaxAP}";
             if (apBar != null)
-                apBar.fillAmount = (float)characterData.currentAP / characterData.maxAP;
+                apBar.fillAmount = (float)memberState.currentAP / memberState.MaxAP;
         }
     }
 
     public void ShowTargetIndicator(TargetSelector selector)
     {
-        if (targetIndicator != null)
+        if (targetIndicator != null && targetButton != null)
         {
-            targetButton.SetTarget(characterData, selector.OnTargetSelected);
+            targetButton.SetTarget(memberState, selector.OnTargetSelected);
             targetIndicator.SetActive(true);
         }
     }

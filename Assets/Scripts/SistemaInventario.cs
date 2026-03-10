@@ -4,41 +4,58 @@ using System;
 
 public class SistemaInventario : MonoBehaviour
 {
-    public List<SlotInventario> inventario = new List<SlotInventario>();
-
     public static SistemaInventario Instance { get; private set; }
+
+    [Header("Party Members")]
+    public List<PartyMemberState> partyMembers = new List<PartyMemberState>(); // Runtime states
+
+    [Header("Inventory")]
+    public List<SlotInventario> inventario = new List<SlotInventario>();
+    public int maxInventorySize = 30;
 
     [Header("Economy")]
     public int moedas = 0;
 
-    [Header("Party Members")]
-    public List<CharacterComponent> partyMembers = new List<CharacterComponent>(); // Changed to CharacterComponent
-
-    [Header("Inventory Settings")]
-    public int maxInventorySize = 30;
-
-    // Event that indicates inventory changes
-    public event Action onInventarioMudou;
-
+    [Header("Game Progress")]
     public List<string> gameProgress = new List<string>();
 
-    // Store original CharacterData references
-    private Dictionary<CharacterData, CharacterData> originalCharacterData = new Dictionary<CharacterData, CharacterData>();
+    // Events
+    public event Action onInventarioMudou;
+    public event Action onPartyUpdated;
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+            gameObject.tag = "Inventory";
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     private void Start()
     {
+        // Initialize party members if needed
+        InitializePartyMembers();
+    }
 
-        Instance = this;
-        // Store references to original CharacterData for each party member
+    private void InitializePartyMembers()
+    {
         foreach (var member in partyMembers)
         {
-            if (member != null && member.characterData != null)
+            if (member != null && member.currentHP == 0)
             {
-                originalCharacterData[member.characterData] = member.characterData;
+                member.currentHP = member.MaxHP;
+                member.currentAP = member.MaxAP;
             }
         }
     }
 
+    // Inventory Methods
     public void AdicionarItem(DadosItem itemParaAdicionar, int quantidade)
     {
         if (inventario.Count >= maxInventorySize && !ItemExistsInInventory(itemParaAdicionar))
@@ -47,32 +64,21 @@ public class SistemaInventario : MonoBehaviour
             return;
         }
 
-        // 1. Check if item is stackable
         if (itemParaAdicionar.ehEmpilhavel)
         {
-            // 1.1 Check if inventory already has this item type
             for (int i = 0; i < inventario.Count; i++)
             {
                 if (inventario[i].dadosDoItem == itemParaAdicionar)
                 {
                     inventario[i].AdicionarQuantidade(quantidade);
-                    Debug.Log($"Added +{quantidade} to item {itemParaAdicionar.nomeDoItem}");
-
-                    // Notify Unity that inventory has changed
                     onInventarioMudou?.Invoke();
                     return;
                 }
             }
         }
 
-        // 2. Non-stackable item or doesn't have one yet
-        // Create a new slot
         SlotInventario novoSlot = new SlotInventario(itemParaAdicionar, quantidade);
-
-        // Add slot to inventory
         inventario.Add(novoSlot);
-
-        // Notify Unity that inventory has changed
         onInventarioMudou?.Invoke();
     }
 
@@ -88,29 +94,19 @@ public class SistemaInventario : MonoBehaviour
 
     public void RemoverItem(DadosItem item, int quantidade)
     {
-        // 1. Check if item exists in inventory
         for (int i = 0; i < inventario.Count; i++)
         {
             SlotInventario slot = inventario[i];
             if (slot.dadosDoItem == item)
             {
-                // 1.1 Subtract desired quantity
                 slot.SubtrairQuantidade(quantidade);
-                Debug.Log($"Subtracted -{quantidade} from item {item.nomeDoItem}. Total: {slot.quantidade}");
-
-                // Notify Unity that inventory has changed
                 onInventarioMudou?.Invoke();
 
                 if (slot.quantidade <= 0)
                 {
-                    // Remove item from inventory
                     inventario.RemoveAt(i);
-                    Debug.Log($"Slot removed: {item.nomeDoItem}");
-
-                    // Notify Unity that inventory has changed
                     onInventarioMudou?.Invoke();
                 }
-
                 return;
             }
         }
@@ -119,81 +115,153 @@ public class SistemaInventario : MonoBehaviour
     public void ModificadorMoedas(int valor)
     {
         moedas += valor;
-
-        if (moedas < 0)
-        {
-            moedas = 0;
-        }
-
-        // Notify Unity that inventory has changed
+        if (moedas < 0) moedas = 0;
         onInventarioMudou?.Invoke();
     }
 
     public bool TemItem(DadosItem item, int qtd)
     {
-        // Check if has required item and quantity in inventory
         foreach (SlotInventario slot in inventario)
         {
             if (slot.dadosDoItem == item && slot.quantidade >= qtd)
-            {
                 return true;
+        }
+        return false;
+    }
+
+    // Party Member Methods
+    public List<PartyMemberState> GetPartyMembersForCombat()
+    {
+        // Return a copy of the list (references are fine, we want to modify the same objects)
+        return new List<PartyMemberState>(partyMembers);
+    }
+
+    public void UpdatePartyMembersFromCombat(List<PartyMemberState> combatPartyMembers)
+    {
+        // The references are the same, so no need to copy back
+        // But we can trigger an update event
+        onPartyUpdated?.Invoke();
+    }
+
+    public void HealPartyFull()
+    {
+        foreach (var member in partyMembers)
+        {
+            if (member != null)
+            {
+                member.currentHP = member.MaxHP;
+                member.currentAP = member.MaxAP;
             }
+        }
+        onPartyUpdated?.Invoke();
+    }
+
+    public void ReviveParty(float percentage)
+    {
+        foreach (var member in partyMembers)
+        {
+            if (member != null && member.currentHP <= 0)
+            {
+                member.currentHP = Mathf.RoundToInt(member.MaxHP * percentage);
+                member.currentAP = member.MaxAP;
+            }
+        }
+        onPartyUpdated?.Invoke();
+    }
+
+    // Equipment Methods
+    public bool EquipWeapon(int partyIndex, DadosItem weaponItem)
+    {
+        if (partyIndex < 0 || partyIndex >= partyMembers.Count) return false;
+
+        var member = partyMembers[partyIndex];
+        if (member == null) return false;
+
+        // Check if item exists in inventory
+        if (!TemItem(weaponItem, 1)) return false;
+
+        // Unequip current weapon and add back to inventory
+        if (member.weapon != null)
+        {
+            AdicionarItem(member.weapon, 1);
+        }
+
+        // Equip new weapon
+        if (member.EquipWeapon(weaponItem))
+        {
+            RemoverItem(weaponItem, 1);
+            onPartyUpdated?.Invoke();
+            return true;
         }
 
         return false;
     }
 
-    public List<CharacterData> GetPartyMembersForCombat()
+    public bool EquipArmor(int partyIndex, DadosItem armorItem)
     {
-        List<CharacterData> combatParty = new List<CharacterData>();
+        if (partyIndex < 0 || partyIndex >= partyMembers.Count) return false;
 
-        foreach (var member in partyMembers)
+        var member = partyMembers[partyIndex];
+        if (member == null) return false;
+
+        if (!TemItem(armorItem, 1)) return false;
+
+        if (member.armor != null)
         {
-            if (member != null && member.characterData != null)
-            {
-                // Create a runtime copy to preserve original data
-                CharacterData combatCopy = ScriptableObject.CreateInstance<CharacterData>();
-
-                // Copy all data
-                CharacterData source = member.characterData;
-                combatCopy.characterName = source.characterName;
-                combatCopy.level = source.level;
-                combatCopy.currentHP = source.currentHP;
-                combatCopy.hp = source.hp;
-                combatCopy.attack = source.attack;
-                combatCopy.defense = source.defense;
-                combatCopy.maxAP = source.maxAP;
-                combatCopy.availableAttacks = new List<AttackFile>(source.availableAttacks);
-                combatCopy.expValue = source.expValue;
-
-                // Copy equipped items
-                combatCopy.equippedItems = new List<DadosItem>(source.equippedItems);
-
-                combatParty.Add(combatCopy);
-            }
+            AdicionarItem(member.armor, 1);
         }
 
-        return combatParty;
+        if (member.EquipArmor(armorItem))
+        {
+            RemoverItem(armorItem, 1);
+            onPartyUpdated?.Invoke();
+            return true;
+        }
+
+        return false;
     }
 
-    public void UpdatePartyMembersFromCombat(List<CharacterData> combatPartyMembers)
+    public void UnequipWeapon(int partyIndex)
     {
-        for (int i = 0; i < combatPartyMembers.Count && i < partyMembers.Count; i++)
-        {
-            if (partyMembers[i] != null && partyMembers[i].characterData != null && combatPartyMembers[i] != null)
-            {
-                // Update the original CharacterData with combat results
-                partyMembers[i].characterData.currentHP = combatPartyMembers[i].currentHP;
-                partyMembers[i].characterData.level = combatPartyMembers[i].level;
-                partyMembers[i].characterData.currentExperience = combatPartyMembers[i].currentExperience;
+        if (partyIndex < 0 || partyIndex >= partyMembers.Count) return;
 
-                // Update stats if level changed
-                if (partyMembers[i].characterData.level != combatPartyMembers[i].level)
-                {
-                    partyMembers[i].characterData.CalculateStatsForLevel();
-                }
-            }
+        var member = partyMembers[partyIndex];
+        if (member == null || member.weapon == null) return;
+
+        AdicionarItem(member.weapon, 1);
+        member.UnequipWeapon();
+        onPartyUpdated?.Invoke();
+    }
+
+    public void UnequipArmor(int partyIndex)
+    {
+        if (partyIndex < 0 || partyIndex >= partyMembers.Count) return;
+
+        var member = partyMembers[partyIndex];
+        if (member == null || member.armor == null) return;
+
+        AdicionarItem(member.armor, 1);
+        member.UnequipArmor();
+        onPartyUpdated?.Invoke();
+    }
+
+    // Progress Methods
+    public void AddProgress(string thing)
+    {
+        if (!gameProgress.Contains(thing))
+        {
+            gameProgress.Add(thing);
         }
+    }
+
+    public void RemoveProgress(string thing)
+    {
+        gameProgress.Remove(thing);
+    }
+
+    public bool HasProgress(string thing)
+    {
+        return gameProgress.Contains(thing);
     }
 
     public List<string> GetGameProgress()
@@ -201,14 +269,11 @@ public class SistemaInventario : MonoBehaviour
         return new List<string>(gameProgress);
     }
 
-
-    public void AddProgress(string thing)
+    private void OnValidate()
     {
-        gameProgress.Add(thing);
+        if (Application.isPlaying && onInventarioMudou != null)
+        {
+            onInventarioMudou.Invoke();
+        }
     }
-    public void RemoveProgress(string thing)
-    {
-        gameProgress.Remove(thing);
-    }
-
 }

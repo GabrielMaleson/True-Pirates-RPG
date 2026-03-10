@@ -1,8 +1,8 @@
-using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
-[CreateAssetMenu(fileName = "Nova Animacao", menuName = "RPG/Battle Animation")]
+[CreateAssetMenu(fileName = "New Battle Animation", menuName = "RPG/Battle Animation")]
 public class BattleAnimationData : ScriptableObject
 {
     [Header("Animation Clips")]
@@ -27,13 +27,13 @@ public class BattleAnimationData : ScriptableObject
     public float hitDelay = 0.5f;
     public float postDelay = 0.3f;
 
-    public IEnumerator PlayAnimation(CharacterData user, List<CharacterData> targets, System.Action onComplete = null)
+    public IEnumerator PlayAnimation(PartyMemberState user, List<PartyMemberState> targets, System.Action onComplete = null)
     {
         // Pre-delay
         yield return new WaitForSeconds(preDelay);
 
-        // Play charge VFX/sound
-        if (chargeVFX != null && user != null)
+        // Play charge VFX/sound at user's position
+        if (chargeVFX != null && user != null && user.transform != null)
         {
             GameObject charge = Object.Instantiate(chargeVFX, user.transform.position, Quaternion.identity);
             Object.Destroy(charge, 1f);
@@ -42,6 +42,16 @@ public class BattleAnimationData : ScriptableObject
         if (chargeSound != null && Camera.main != null)
         {
             AudioSource.PlayClipAtPoint(chargeSound, Camera.main.transform.position);
+        }
+
+        // Play user animation if available
+        if (userAnimation != null && user != null && user.transform != null)
+        {
+            Animator animator = user.transform.GetComponent<Animator>();
+            if (animator != null)
+            {
+                animator.Play(userAnimation.name);
+            }
         }
 
         yield return new WaitForSeconds(hitDelay);
@@ -57,17 +67,27 @@ public class BattleAnimationData : ScriptableObject
                 CameraShake.Instance.Shake(cameraShakeIntensity, cameraShakeDuration);
             }
 
-            // Hit VFX
-            if (impactVFX != null)
+            // Hit VFX at target's position
+            if (impactVFX != null && target.transform != null)
             {
                 GameObject hit = Object.Instantiate(impactVFX, target.transform.position, Quaternion.identity);
                 Object.Destroy(hit, 1f);
             }
 
-            // Hit sound
-            if (impactSound != null && target != null)
+            // Hit sound at target's position
+            if (impactSound != null && target.transform != null)
             {
                 AudioSource.PlayClipAtPoint(impactSound, target.transform.position);
+            }
+
+            // Target hit animation
+            if (targetHitAnimation != null && target.transform != null)
+            {
+                Animator animator = target.transform.GetComponent<Animator>();
+                if (animator != null)
+                {
+                    animator.Play(targetHitAnimation.name);
+                }
             }
         }
 
@@ -77,7 +97,7 @@ public class BattleAnimationData : ScriptableObject
     }
 }
 
-// Camera shake component - can be in the same file or separate
+// Camera shake component (keep this as is)
 public class CameraShake : MonoBehaviour
 {
     public static CameraShake Instance;

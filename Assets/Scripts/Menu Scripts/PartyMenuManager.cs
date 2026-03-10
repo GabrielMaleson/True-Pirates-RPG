@@ -19,8 +19,10 @@ public class PartyMenuManager : MonoBehaviour
     [Header("Stats Display Area")]
     public Transform statsDisplayContainer;
     public GameObject statsDisplayPrefab;
-    private Dictionary<CharacterData, PartyMemberStatsDisplay> statsDisplays =
-        new Dictionary<CharacterData, PartyMemberStatsDisplay>();
+    private Dictionary<PartyMemberState, PartyMemberStatsDisplay> statsDisplays =
+        new Dictionary<PartyMemberState, PartyMemberStatsDisplay>();
+
+    private PartyMemberState currentSelectedMember;
 
     [Header("Attacks Display")]
     public Transform attackListParent;
@@ -39,13 +41,12 @@ public class PartyMenuManager : MonoBehaviour
     private List<SlotUI> inventorySlots = new List<SlotUI>();
 
     [Header("Item Details")]
-    public GameObject itemDetailsPrefab; // Used for tooltips
+    public GameObject itemDetailsPrefab;
     public GameObject partyMemberSelectorPrefab;
 
     [Header("References")]
     public SistemaInventario inventory;
 
-    private CharacterData currentSelectedCharacter;
     private SlotUI currentlyHighlightedSlot;
 
     private void Start()
@@ -64,6 +65,24 @@ public class PartyMenuManager : MonoBehaviour
 
         // Create party member buttons and stats displays
         CreatePartyMemberDisplays();
+    }
+
+    private void Update()
+    {
+        // Open with Tab key
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            if (partyMenuPanel.activeSelf)
+                CloseMenu();
+            else
+                OpenMenu();
+        }
+
+        // Close with Escape
+        if (Input.GetKeyDown(KeyCode.Escape) && partyMenuPanel.activeSelf)
+        {
+            CloseMenu();
+        }
     }
 
     private void HideAllPanels()
@@ -91,21 +110,19 @@ public class PartyMenuManager : MonoBehaviour
         // Create displays for each party member
         foreach (var member in inventory.partyMembers)
         {
-            if (member != null && member.characterData != null)
+            if (member != null)
             {
-                CharacterData characterData = member.characterData;
-
                 // Create selection button
                 GameObject btnObj = Instantiate(partyMemberButtonPrefab, partyMemberButtonParent);
                 PartyMemberButton btn = btnObj.GetComponent<PartyMemberButton>();
-                btn.Initialize(characterData, this);
+                btn.Initialize(member, this);
                 partyMemberButtons.Add(btn);
 
                 // Create stats display
                 GameObject displayObj = Instantiate(statsDisplayPrefab, statsDisplayContainer);
                 PartyMemberStatsDisplay display = displayObj.GetComponent<PartyMemberStatsDisplay>();
-                display.Initialize(characterData);
-                statsDisplays[characterData] = display;
+                display.Initialize(member);
+                statsDisplays[member] = display;
 
                 // Initially hide all displays
                 displayObj.SetActive(false);
@@ -115,18 +132,18 @@ public class PartyMenuManager : MonoBehaviour
         // Select first party member by default
         if (inventory.partyMembers.Count > 0 && inventory.partyMembers[0] != null)
         {
-            OnPartyMemberSelected(inventory.partyMembers[0].characterData);
+            OnPartyMemberSelected(inventory.partyMembers[0]);
         }
     }
 
-    public void OnPartyMemberSelected(CharacterData character)
+    public void OnPartyMemberSelected(PartyMemberState member)
     {
-        currentSelectedCharacter = character;
+        currentSelectedMember = member;
 
         // Show only the selected character's stats display
         foreach (var kvp in statsDisplays)
         {
-            kvp.Value.gameObject.SetActive(kvp.Key == character);
+            kvp.Value.gameObject.SetActive(kvp.Key == member);
         }
 
         // Update party member highlights
@@ -149,7 +166,7 @@ public class PartyMenuManager : MonoBehaviour
     {
         foreach (var btn in partyMemberButtons)
         {
-            btn.SetHighlight(btn.GetCharacterData() == currentSelectedCharacter);
+            btn.SetHighlight(btn.GetMemberState() == currentSelectedMember);
         }
     }
 
@@ -158,7 +175,7 @@ public class PartyMenuManager : MonoBehaviour
         HideAllPanels();
         attacksPanel.SetActive(true);
 
-        if (currentSelectedCharacter != null)
+        if (currentSelectedMember != null)
         {
             UpdateAttacksDisplay();
         }
@@ -178,7 +195,7 @@ public class PartyMenuManager : MonoBehaviour
         HideAllPanels();
         equipmentPanel.SetActive(true);
 
-        if (currentSelectedCharacter != null)
+        if (currentSelectedMember != null)
         {
             UpdateEquipmentDisplay();
         }
@@ -186,56 +203,39 @@ public class PartyMenuManager : MonoBehaviour
 
     private void UpdateAttacksDisplay()
     {
-        // Clear existing
         foreach (Transform child in attackListParent)
-        {
             Destroy(child.gameObject);
-        }
 
-        if (currentSelectedCharacter == null) return;
+        if (currentSelectedMember == null) return;
 
-        foreach (var attack in currentSelectedCharacter.availableAttacks)
+        foreach (var attack in currentSelectedMember.learnedAttacks)
         {
             GameObject attackObj = Instantiate(attackDisplayPrefab, attackListParent);
             AttackDisplay display = attackObj.GetComponent<AttackDisplay>();
             if (display != null)
-            {
                 display.Initialize(attack);
-            }
         }
     }
 
     public void UpdateEquipmentDisplay()
     {
-        // Clear existing
         foreach (Transform child in equipmentSlotParent)
-        {
             Destroy(child.gameObject);
-        }
         equipmentSlots.Clear();
 
-        if (currentSelectedCharacter == null) return;
+        if (currentSelectedMember == null) return;
 
-        // Create slots for each equipment type
-        foreach (EquipmentSlot slotType in System.Enum.GetValues(typeof(EquipmentSlot)))
-        {
-            GameObject slotObj = Instantiate(equipmentSlotPrefab, equipmentSlotParent);
-            EquipmentSlotUI slotUI = slotObj.GetComponent<EquipmentSlotUI>();
+        // Create weapon slot
+        GameObject weaponSlot = Instantiate(equipmentSlotPrefab, equipmentSlotParent);
+        EquipmentSlotUI weaponUI = weaponSlot.GetComponent<EquipmentSlotUI>();
+        weaponUI.Initialize(EquipmentSlot.Arma, currentSelectedMember.weapon, this);
+        equipmentSlots[EquipmentSlot.Arma] = weaponUI;
 
-            // Find equipped item of this type
-            DadosItem equippedItem = null;
-            foreach (var item in currentSelectedCharacter.equippedItems)
-            {
-                if (item != null && item.ehEquipavel && item.slotEquipamento == slotType)
-                {
-                    equippedItem = item;
-                    break;
-                }
-            }
-
-            slotUI.Initialize(slotType, equippedItem, this);
-            equipmentSlots[slotType] = slotUI;
-        }
+        // Create armor slot
+        GameObject armorSlot = Instantiate(equipmentSlotPrefab, equipmentSlotParent);
+        EquipmentSlotUI armorUI = armorSlot.GetComponent<EquipmentSlotUI>();
+        armorUI.Initialize(EquipmentSlot.Armadura, currentSelectedMember.armor, this);
+        equipmentSlots[EquipmentSlot.Armadura] = armorUI;
     }
 
     public void RefreshInventoryDisplay()
@@ -293,30 +293,38 @@ public class PartyMenuManager : MonoBehaviour
 
     public void UnequipItem(DadosItem item, EquipmentSlot slot)
     {
-        if (currentSelectedCharacter == null) return;
+        if (currentSelectedMember == null) return;
 
-        currentSelectedCharacter.UnequipItem(item);
+        if (slot == EquipmentSlot.Arma)
+        {
+            currentSelectedMember.UnequipWeapon();
+        }
+        else if (slot == EquipmentSlot.Armadura)
+        {
+            currentSelectedMember.UnequipArmor();
+        }
 
         // Add back to inventory
         if (inventory != null)
         {
             inventory.AdicionarItem(item, 1);
-
-            // Refresh inventory display
             RefreshInventoryDisplay();
         }
 
         UpdateEquipmentDisplay();
-
-        // Update stats display
-        UpdateCharacterStats(currentSelectedCharacter);
+        UpdateCharacterStats(currentSelectedMember);
     }
 
-    public void UpdateCharacterStats(CharacterData character)
+    public PartyMemberState GetCurrentSelectedMember()
     {
-        if (statsDisplays.ContainsKey(character))
+        return currentSelectedMember;
+    }
+
+    public void UpdateCharacterStats(PartyMemberState member)
+    {
+        if (statsDisplays.ContainsKey(member))
         {
-            statsDisplays[character].UpdateDisplay();
+            statsDisplays[member].UpdateDisplay();
         }
     }
 
@@ -332,11 +340,6 @@ public class PartyMenuManager : MonoBehaviour
     public void CloseMenu()
     {
         partyMenuPanel.SetActive(false);
-    }
-
-    public CharacterData GetCurrentSelectedCharacter()
-    {
-        return currentSelectedCharacter;
     }
 
     private void OnDestroy()

@@ -9,7 +9,7 @@ public class TargetButton : MonoBehaviour
     public TextMeshProUGUI targetNameText;
     public Button button;
 
-    private CharacterData target;
+    private PartyMemberState target;
     private System.Action onClick;
 
     private void Awake()
@@ -20,11 +20,11 @@ public class TargetButton : MonoBehaviour
         }
     }
 
-    public void SetTarget(CharacterData targetCharacter, System.Action callback)
+    public void SetTarget(PartyMemberState targetCharacter, System.Action callback)
     {
         target = targetCharacter;
         onClick = callback;
-        targetNameText.text = targetCharacter.characterName;
+        targetNameText.text = targetCharacter.CharacterName;
     }
 
     private void OnClick()

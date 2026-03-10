@@ -5,23 +5,37 @@ using TMPro;
 public class PartyMemberButton : MonoBehaviour
 {
     [Header("UI Elements")]
+    public Image iconImage;
     public TextMeshProUGUI nameText;
     public Button button;
     public Image highlightBorder;
 
-    private CharacterData characterData;
+    private PartyMemberState memberState;
     private PartyMenuManager menuManager;
 
-    public void Initialize(CharacterData character, PartyMenuManager manager)
+    public void Initialize(PartyMemberState state, PartyMenuManager manager)
     {
-        characterData = character;
+        memberState = state;
         menuManager = manager;
 
-        nameText.text = character.characterName;
+        // Set icon
+        if (iconImage != null)
+        {
+            if (state.PartyIcon != null)
+            {
+                iconImage.sprite = state.PartyIcon;
+                iconImage.gameObject.SetActive(true);
+            }
+            else
+            {
+                iconImage.gameObject.SetActive(false);
+            }
+        }
+
+        nameText.text = state.CharacterName;
 
         button.onClick.AddListener(OnClick);
 
-        // Initially not highlighted
         if (highlightBorder != null)
             highlightBorder.gameObject.SetActive(false);
     }
@@ -30,7 +44,7 @@ public class PartyMemberButton : MonoBehaviour
     {
         if (menuManager != null)
         {
-            menuManager.OnPartyMemberSelected(characterData);
+            menuManager.OnPartyMemberSelected(memberState);
         }
     }
 
@@ -40,9 +54,9 @@ public class PartyMemberButton : MonoBehaviour
             highlightBorder.gameObject.SetActive(highlighted);
     }
 
-    public CharacterData GetCharacterData()
+    public PartyMemberState GetMemberState()
     {
-        return characterData;
+        return memberState;
     }
 
     private void OnDestroy()

@@ -8,15 +8,12 @@ public class EncounterStarter : MonoBehaviour
     public EncounterFile encounterFile;
 
     [Header("Player Reference")]
-    public SistemaInventario playerInventory; // Assign in inspector or find on player
+    public SistemaInventario playerInventory;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
         {
-            Debug.Log($"Player triggered encounter: {encounterFile?.name}");
-
-            // Find inventory if not assigned
             if (playerInventory == null)
                 playerInventory = FindFirstObjectByType<SistemaInventario>();
 
@@ -26,11 +23,9 @@ public class EncounterStarter : MonoBehaviour
 
     public void StartEncounter()
     {
-        Debug.Log("=== Starting Encounter ===");
-
         if (encounterFile == null)
         {
-            Debug.LogError("No EncounterFile assigned to EncounterStarter!");
+            Debug.LogError("No EncounterFile assigned!");
             return;
         }
 
@@ -40,51 +35,41 @@ public class EncounterStarter : MonoBehaviour
             return;
         }
 
-        // Store reference to THIS GameObject to disable it later
         GameObject encounterStarterObject = this.gameObject;
 
-        // Get or create EncounterData
         EncounterData encounterData = FindFirstObjectByType<EncounterData>();
         if (encounterData == null)
         {
             GameObject dataObj = new GameObject("EncounterData");
             DontDestroyOnLoad(dataObj);
             encounterData = dataObj.AddComponent<EncounterData>();
-            Debug.Log("Created new EncounterData");
-        }
-        else
-        {
-            Debug.Log("Found existing EncounterData");
         }
 
-        // Store the encounter starter reference
         encounterData.encounterStarterObject = encounterStarterObject;
-
-        // Store player inventory
         encounterData.playerInventory = playerInventory;
+        encounterData.encounterFile = encounterFile;
 
-        // Make sure inventory persists
-        if (playerInventory != null)
-        {
-            DontDestroyOnLoad(playerInventory.gameObject);
-        }
-
-        // LOAD THE ENCOUNTER FILE INTO ENCOUNTER DATA
-        encounterData.LoadEncounterFromFile(encounterFile);
-
-        // Store player's current party state
+        // Store player's current party state (references are fine)
         encounterData.playerPartyMembers = playerInventory.GetPartyMembersForCombat();
-        Debug.Log($"Party members stored: {encounterData.playerPartyMembers.Count}");
 
-        // Log what we're sending to combat
-        Debug.Log($"=== Encounter Data Summary ===");
-        Debug.Log($"Enemies loaded: {encounterData.enemyCharacters.Count}");
-        for (int i = 0; i < encounterData.enemyCharacters.Count; i++)
+        // Store enemy data from encounter file (creates new PartyMemberState objects)
+        encounterData.enemyPartyMembers.Clear();
+        foreach (var enemyData in encounterFile.enemies)
         {
-            Debug.Log($"Enemy {i}: {encounterData.enemyCharacters[i]?.characterName}, Prefab: {encounterData.enemyPrefabs[i]?.name}");
+            if (enemyData.characterData != null)
+            {
+                PartyMemberState enemyState = new PartyMemberState(enemyData.characterData, enemyData.level);
+                if (enemyData.overrideHP > 0)
+                {
+                    enemyState.currentHP = enemyData.overrideHP;
+                }
+                encounterData.enemyPartyMembers.Add(enemyState);
+                encounterData.enemyPrefabs.Add(enemyData.enemyPrefab);
+            }
         }
 
-        // Create scene manager and load combat
+        encounterData.CalculateRewards();
+
         GameObject sceneObj = new GameObject("PreviousScene");
         sceneObj.AddComponent<PreviousScene>();
         sceneObj.GetComponent<PreviousScene>().UnloadScene();

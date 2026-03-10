@@ -14,15 +14,15 @@ public class EnemyUI : MonoBehaviour
     public GameObject targetButtonObject;
     public TargetButton targetButton;
 
-    private CharacterData characterData;
+    private PartyMemberState memberState;
     private GameObject characterVisualObject;
     private TargetSelector targetSelector;
 
-    public void Initialize(CharacterData data, GameObject visualObject)
+    public void Initialize(PartyMemberState state, GameObject visualObject)
     {
-        characterData = data;
+        memberState = state;
         characterVisualObject = visualObject;
-        nameText.text = data.characterName;
+        nameText.text = state.CharacterName;
         UpdateDisplay();
 
         if (characterVisualObject != null)
@@ -42,11 +42,11 @@ public class EnemyUI : MonoBehaviour
 
     public void UpdateDisplay()
     {
-        if (characterData != null)
+        if (memberState != null)
         {
-            hpText.text = $"{characterData.currentHP}/{characterData.hp}";
+            hpText.text = $"{memberState.currentHP}/{memberState.MaxHP}";
             if (healthBar != null)
-                healthBar.fillAmount = (float)characterData.currentHP / characterData.hp;
+                healthBar.fillAmount = (float)memberState.currentHP / memberState.MaxHP;
         }
     }
 
@@ -55,7 +55,7 @@ public class EnemyUI : MonoBehaviour
         if (targetButtonObject != null && targetButton != null)
         {
             targetSelector = selector;
-            targetButton.SetTarget(characterData, selector.OnTargetSelected);
+            targetButton.SetTarget(memberState, selector.OnTargetSelected);
             targetButtonObject.SetActive(true);
         }
     }

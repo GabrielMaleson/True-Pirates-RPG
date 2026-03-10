@@ -44,7 +44,7 @@ public class ItemDetails : MonoBehaviour
             closeButton.onClick.AddListener(OnCloseClicked);
     }
 
-    public void Initialize(DadosItem item, SlotInventario slot, CharacterData selectedCharacter)
+    public void Initialize(DadosItem item, SlotInventario slot, PartyMemberState selectedCharacter)
     {
         currentItem = item;
         currentSlot = slot;
@@ -71,6 +71,13 @@ public class ItemDetails : MonoBehaviour
                     string percent = mod.tipoModificador == ModifierType.Percentual ? "%" : "";
                     stats += $"{mod.statType}: {sign}{mod.valorModificador}{percent}\n";
                 }
+
+                // Add requirement info
+                if (item.nivelRequerido > 0)
+                {
+                    stats += $"Requires Level: {item.nivelRequerido}";
+                }
+
                 itemStatsText.text = stats;
                 itemStatsText.gameObject.SetActive(true);
             }
@@ -95,30 +102,21 @@ public class ItemDetails : MonoBehaviour
     {
         if (currentItem == null || currentSlot == null) return;
 
-        CharacterData currentCharacter = menuManager?.GetCurrentSelectedCharacter();
+        PartyMemberState currentCharacter = menuManager?.GetCurrentSelectedMember();
         if (currentCharacter == null) return;
 
-        // Use item on current character
         bool used = currentCharacter.UseConsumable(currentItem);
 
         if (used && inventory != null)
         {
             inventory.RemoverItem(currentItem, 1);
 
-            // Find and refresh PartyMenuManager
-            PartyMenuManager menuManager = FindFirstObjectByType<PartyMenuManager>();
             if (menuManager != null)
                 menuManager.RefreshInventoryDisplay();
 
-            // Close if item is gone
             if (currentSlot.quantidade <= 0)
             {
                 Destroy(gameObject);
-            }
-            else
-            {
-                // Update quantity display in inventory, keep details open
-                Initialize(currentItem, currentSlot, currentCharacter);
             }
         }
     }
@@ -127,46 +125,36 @@ public class ItemDetails : MonoBehaviour
     {
         if (currentItem == null || !currentItem.ehEquipavel) return;
 
-        CharacterData currentCharacter = menuManager?.GetCurrentSelectedCharacter();
+        PartyMemberState currentCharacter = menuManager?.GetCurrentSelectedMember();
         if (currentCharacter == null) return;
 
-        // Check level requirement
         if (currentItem.nivelRequerido > currentCharacter.level)
         {
             Debug.Log($"Cannot equip {currentItem.nomeDoItem} - requires level {currentItem.nivelRequerido}");
-            // You could show a message to the player here
             return;
         }
 
-        // Equip item to current character
-        bool equipped = currentCharacter.EquipItem(currentItem);
+        bool equipped = false;
+        if (currentItem.slotEquipamento == EquipmentSlot.Arma)
+        {
+            equipped = currentCharacter.EquipWeapon(currentItem);
+        }
+        else if (currentItem.slotEquipamento == EquipmentSlot.Armadura)
+        {
+            equipped = currentCharacter.EquipArmor(currentItem);
+        }
 
         if (equipped && inventory != null)
         {
             inventory.RemoverItem(currentItem, 1);
 
-            // Find and refresh PartyMenuManager
-            PartyMenuManager menuManager = FindFirstObjectByType<PartyMenuManager>();
             if (menuManager != null)
             {
                 menuManager.RefreshInventoryDisplay();
                 menuManager.UpdateEquipmentDisplay();
-
-                // Update stats display (stats may change from equipment)
-                CharacterData currentChar = menuManager.GetCurrentSelectedCharacter();
-                if (currentChar != null)
-                {
-                    // Find and update the stats display
-                    PartyMemberStatsDisplay[] displays = FindObjectsOfType<PartyMemberStatsDisplay>();
-                    foreach (var display in displays)
-                    {
-                        // You might need a better way to find the correct display
-                        display.UpdateDisplay();
-                    }
-                }
+                menuManager.UpdateCharacterStats(currentCharacter);
             }
 
-            // Close if item is gone
             if (currentSlot.quantidade <= 0)
             {
                 Destroy(gameObject);
@@ -178,15 +166,11 @@ public class ItemDetails : MonoBehaviour
     {
         if (currentItem == null || currentSlot == null || inventory == null) return;
 
-        // Remove item from inventory
         inventory.RemoverItem(currentItem, 1);
 
-        // Find and refresh PartyMenuManager
-        PartyMenuManager menuManager = FindFirstObjectByType<PartyMenuManager>();
         if (menuManager != null)
             menuManager.RefreshInventoryDisplay();
 
-        // Close this details panel
         Destroy(gameObject);
     }
 
@@ -197,7 +181,6 @@ public class ItemDetails : MonoBehaviour
 
     private void OnDestroy()
     {
-        // Remove button listeners
         if (useButton != null)
             useButton.onClick.RemoveListener(OnUseClicked);
         if (equipButton != null)

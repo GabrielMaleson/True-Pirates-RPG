@@ -3,11 +3,11 @@ using UnityEngine;
 public class TargetSelector : MonoBehaviour
 {
     private CombatUIManager uiManager;
-    private System.Action<CharacterData> onTargetSelected;
-    private CharacterData characterData;
+    private System.Action<PartyMemberState> onTargetSelected;
+    private PartyMemberState memberState;
     private bool isActive = false;
-    private CharacterUI characterUI; // For party members
-    private EnemyUI enemyUI; // For enemies
+    private CharacterUI characterUI;
+    private EnemyUI enemyUI;
 
     public void Initialize(CombatUIManager manager)
     {
@@ -15,7 +15,7 @@ public class TargetSelector : MonoBehaviour
 
         CharacterComponent comp = GetComponent<CharacterComponent>();
         if (comp != null)
-            characterData = comp.characterData;
+            memberState = comp.partyMemberState;
     }
 
     public void SetCharacterUI(CharacterUI ui)
@@ -28,9 +28,9 @@ public class TargetSelector : MonoBehaviour
         enemyUI = ui;
     }
 
-    public void EnableTargeting(CharacterData target, System.Action<CharacterData> callback)
+    public void EnableTargeting(PartyMemberState target, System.Action<PartyMemberState> callback)
     {
-        characterData = target;
+        memberState = target;
         onTargetSelected = callback;
         isActive = true;
 
@@ -65,7 +65,7 @@ public class TargetSelector : MonoBehaviour
     {
         if (isActive && onTargetSelected != null)
         {
-            onTargetSelected.Invoke(characterData);
+            onTargetSelected.Invoke(memberState);
         }
     }
 }
