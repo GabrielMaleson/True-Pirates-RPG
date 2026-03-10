@@ -33,14 +33,14 @@ public class PartyMenuManager : MonoBehaviour
         new Dictionary<EquipmentSlot, EquipmentSlotUI>();
 
     [Header("Inventory Display")]
-    public Transform inventoryGrid; // Grid where item slots will be instantiated
-    public GameObject itemSlotPrefab; // SlotUI prefab
-    public TextMeshProUGUI goldText; // For displaying gold
+    public Transform inventoryGrid;
+    public GameObject itemSlotPrefab;
+    public TextMeshProUGUI goldText;
     private List<SlotUI> inventorySlots = new List<SlotUI>();
 
     [Header("Item Details")]
-    public GameObject itemDetailsPrefab;
-    public Transform detailsParent; // Usually the canvas
+    public GameObject itemDetailsPrefab; // Used for tooltips
+    public GameObject partyMemberSelectorPrefab;
 
     [Header("References")]
     public SistemaInventario inventory;
@@ -238,7 +238,6 @@ public class PartyMenuManager : MonoBehaviour
         }
     }
 
-    // New method to refresh inventory display (replaces InterfaceInventario.AtualizarInterface)
     public void RefreshInventoryDisplay()
     {
         if (inventory == null) return;
@@ -265,7 +264,8 @@ public class PartyMenuManager : MonoBehaviour
             // Set up references
             slotUI.partyMenuManager = this;
             slotUI.itemDetailsPrefab = itemDetailsPrefab;
-            slotUI.detailsParent = detailsParent != null ? detailsParent : transform;
+            slotUI.partyMemberSelectorPrefab = partyMemberSelectorPrefab;
+            slotUI.partyMemberButtonPrefab = partyMemberButtonPrefab;
 
             slotUI.ConfigurarSlot(slot);
             inventorySlots.Add(slotUI);
@@ -275,7 +275,6 @@ public class PartyMenuManager : MonoBehaviour
         currentlyHighlightedSlot = null;
     }
 
-    // New method to handle slot highlighting
     public void HighlightSlot(SlotUI selectedSlot)
     {
         // Unhighlight previous slot
@@ -309,9 +308,16 @@ public class PartyMenuManager : MonoBehaviour
 
         UpdateEquipmentDisplay();
 
-        // Update stats display (stats may change from unequipping)
-        if (statsDisplays.ContainsKey(currentSelectedCharacter))
-            statsDisplays[currentSelectedCharacter].UpdateDisplay();
+        // Update stats display
+        UpdateCharacterStats(currentSelectedCharacter);
+    }
+
+    public void UpdateCharacterStats(CharacterData character)
+    {
+        if (statsDisplays.ContainsKey(character))
+        {
+            statsDisplays[character].UpdateDisplay();
+        }
     }
 
     public void OpenMenu()
@@ -320,7 +326,7 @@ public class PartyMenuManager : MonoBehaviour
 
         // Refresh displays
         CreatePartyMemberDisplays();
-        RefreshInventoryDisplay(); // Refresh inventory when opening menu
+        RefreshInventoryDisplay();
     }
 
     public void CloseMenu()

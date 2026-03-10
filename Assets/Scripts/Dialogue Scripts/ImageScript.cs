@@ -56,10 +56,6 @@ public class DialogueManager : MonoBehaviour
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
-
-            // Tag as Inventory to persist through scene unloading
-            gameObject.tag = "Inventory";
-
             // Find references if not assigned
             if (dialogueCanvas == null)
                 dialogueCanvas = gameObject;

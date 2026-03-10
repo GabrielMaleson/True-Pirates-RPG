@@ -1467,7 +1467,6 @@ GameObject:
   - component: {fileID: 559982183918266813}
   - component: {fileID: 8174024826945154993}
   - component: {fileID: 2271378648538890132}
-  - component: {fileID: 3905277368400860099}
   m_Layer: 0
   m_Name: AttackDisplay
   m_TagString: Untagged
@@ -1532,21 +1531,3 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &3905277368400860099
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8640942363462600423}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cdaf51ae960f7f740a1fcd0ed35b260a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::AttackDisplay
-  iconImage: {fileID: 0}
-  attackNameText: {fileID: 1300351824287341437}
-  apCostText: {fileID: 1811206080090129600}
-  damageText: {fileID: 0}
-  accuracyText: {fileID: 0}
-  descriptionText: {fileID: 2175340237350063935}

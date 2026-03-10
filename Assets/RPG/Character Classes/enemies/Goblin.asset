@@ -18,7 +18,7 @@ MonoBehaviour:
   expValue: 50
   baseHP: 20
   baseAttack: 5
-  baseDefense: 3
+  baseDefense: 1
   hpGrowth:
     serializedVersion: 2
     m_Curve:
