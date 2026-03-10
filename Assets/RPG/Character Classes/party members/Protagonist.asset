@@ -17,7 +17,7 @@ MonoBehaviour:
   battlePortrait: {fileID: 21300000, guid: 978ee106236f5bf4486426d1219942d8, type: 3}
   baseHP: 20
   baseAttack: 5
-  baseDefense: 3
+  baseDefense: 5
   baseMaxAP: 10
   hpGrowth:
     serializedVersion: 2

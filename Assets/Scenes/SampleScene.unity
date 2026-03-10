@@ -4900,6 +4900,7 @@ MonoBehaviour:
   attacksPanel: {fileID: 571972220}
   itemsPanel: {fileID: 1266503201}
   equipmentPanel: {fileID: 1870421936}
+  partyMenuCanvas: {fileID: 1279499654}
   partyMemberButtonParent: {fileID: 2045191775}
   partyMemberButtonPrefab: {fileID: 6544876395421401408, guid: 82a0ca3bf089bf7479aa449996b3bd90, type: 3}
   statsDisplayContainer: {fileID: 516238595}
@@ -5170,14 +5171,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SistemaInventario
   partyMembers:
-  - template: {fileID: 0}
-    level: 0
-    currentHP: 0
-    currentAP: 0
+  - template: {fileID: 11400000, guid: cf1ac269ae3ec694a853eda9c9ceab7c, type: 2}
+    level: 1
+    currentHP: 20
+    currentAP: 10
     currentExperience: 0
     weapon: {fileID: 0}
     armor: {fileID: 0}
-    learnedAttacks: []
+    learnedAttacks:
+    - {fileID: 11400000, guid: 0578df8de0ac7ff4a83971ff592ddf02, type: 2}
     activeStatusEffects: []
   inventario: []
   maxInventorySize: 30
@@ -34040,7 +34042,7 @@ MonoBehaviour:
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 100, y: 100}
+  m_CellSize: {x: 200, y: 200}
   m_Spacing: {x: 10, y: 10}
   m_Constraint: 0
   m_ConstraintCount: 2

@@ -11,6 +11,9 @@ public class PartyMenuManager : MonoBehaviour
     public GameObject itemsPanel;
     public GameObject equipmentPanel;
 
+    [Header("Canvas References")]
+    public Transform partyMenuCanvas; // Assign the PartyMenuPanel or main canvas in inspector
+
     [Header("Party Member Selection")]
     public Transform partyMemberButtonParent;
     public GameObject partyMemberButtonPrefab;
@@ -53,6 +56,10 @@ public class PartyMenuManager : MonoBehaviour
     {
         if (inventory == null)
             inventory = FindFirstObjectByType<SistemaInventario>();
+
+        // Set default canvas if not assigned
+        if (partyMenuCanvas == null)
+            partyMenuCanvas = transform;
 
         // Subscribe to inventory change events
         if (inventory != null)
@@ -331,6 +338,14 @@ public class PartyMenuManager : MonoBehaviour
     public void OpenMenu()
     {
         partyMenuPanel.SetActive(true);
+
+        // Ensure raycasts work properly
+        CanvasGroup canvasGroup = partyMenuPanel.GetComponent<CanvasGroup>();
+        if (canvasGroup != null)
+        {
+            canvasGroup.blocksRaycasts = true;
+            canvasGroup.interactable = true;
+        }
 
         // Refresh displays
         CreatePartyMemberDisplays();

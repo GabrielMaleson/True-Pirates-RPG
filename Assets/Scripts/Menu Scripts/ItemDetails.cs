@@ -24,6 +24,16 @@ public class ItemDetails : MonoBehaviour
 
     private void Start()
     {
+        // Ensure this is parented to the correct canvas
+        if (menuManager == null)
+            menuManager = FindFirstObjectByType<PartyMenuManager>();
+
+        if (menuManager != null && menuManager.partyMenuCanvas != null && transform.parent != menuManager.partyMenuCanvas)
+        {
+            transform.SetParent(menuManager.partyMenuCanvas, false);
+            transform.SetAsLastSibling();
+        }
+
         if (inventory == null)
             inventory = FindFirstObjectByType<SistemaInventario>();
 

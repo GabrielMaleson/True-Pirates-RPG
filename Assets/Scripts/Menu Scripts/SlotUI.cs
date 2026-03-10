@@ -22,14 +22,10 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     private GameObject activeTooltip;
     private GameObject activeSelector;
-    private Transform tooltipParent;
     private SlotInventario slotData;
 
     private void Start()
     {
-        if (tooltipParent == null)
-            tooltipParent = GameObject.Find("Canvas")?.transform;
-
         if (clickButton != null)
             clickButton.onClick.AddListener(OnItemClick);
 
@@ -71,13 +67,15 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (slotData != null && slotData.dadosDoItem != null && itemDetailsPrefab != null && tooltipParent != null)
+        if (slotData != null && slotData.dadosDoItem != null && itemDetailsPrefab != null && partyMenuManager != null)
         {
             if (activeTooltip != null)
                 Destroy(activeTooltip);
 
-            // Create ItemDetails as tooltip
-            activeTooltip = Instantiate(itemDetailsPrefab, tooltipParent);
+            // Use PartyMenuManager's canvas as parent
+            Transform parentCanvas = partyMenuManager.partyMenuCanvas;
+            activeTooltip = Instantiate(itemDetailsPrefab, parentCanvas);
+            activeTooltip.transform.SetAsLastSibling();
             activeTooltip.transform.position = Input.mousePosition + new Vector3(10, -10, 0);
 
             // Make it look like a tooltip (smaller, no buttons)
@@ -147,7 +145,10 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         if (activeSelector != null)
             Destroy(activeSelector);
 
-        activeSelector = Instantiate(partyMemberSelectorPrefab, tooltipParent);
+        // Use PartyMenuManager's canvas as parent
+        Transform parentCanvas = partyMenuManager.partyMenuCanvas;
+        activeSelector = Instantiate(partyMemberSelectorPrefab, parentCanvas);
+        activeSelector.transform.SetAsLastSibling();
         activeSelector.transform.position = Input.mousePosition;
 
         // Find the button container
