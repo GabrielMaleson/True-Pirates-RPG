@@ -18,20 +18,19 @@ public class DadosItem : ScriptableObject
     public int valorEmOuro;
     public bool ehEmpilhavel;
 
-    // New additions - Equipment Properties
+    // Equipment Properties
     [Header("Tipo de Equipamento (Opcional)")]
     public bool ehEquipavel;
-    public EquipmentSlot slotEquipamento;
-    public bool ehDuasMaos;
+    public EquipmentSlot slotEquipamento; // Will be Arma or Armadura only
 
     [Header("Modificadores de Stat (para Equipamentos)")]
     public List<StatModifier> modificadoresStats;
 
     [Header("Requisitos")]
     public int nivelRequerido;
-    public string classeRequerida;
+    // Removed classeRequerida as it's not used in current system
 
-    // New additions - Consumable Properties
+    // Consumable Properties
     [Header("Tipo de Consumível (Opcional)")]
     public bool ehConsumivel;
     public ConsumableType tipoConsumivel;
@@ -39,62 +38,58 @@ public class DadosItem : ScriptableObject
     public bool usavelNoMapa = true;
 
     [Header("Efeitos (para Consumíveis)")]
-    public List<ItemEffectData> efeitos; // Changed from EfeitoItem to ItemEffectData
+    public List<ItemEffectData> efeitos;
 }
 
-// New class for item effects that matches AttackFile's EffectData
+// Item effect data that matches combat system
 [System.Serializable]
 public class ItemEffectData
 {
-    public EffectType tipoEfeito;
+    public EffectType tipoEfeito; // Uses the same EffectType as attacks
     public int valor;
-    public int duracao; // Para efeitos de status
+    public int duracao; // For status effects
 
-    // Targeting properties (match AttackFile's EffectData)
-    public TargetType targetType = TargetType.Ally; // Default to ally for items
+    // Targeting properties (matches combat system)
+    public TargetType targetType = TargetType.Ally;
     public int numberOfTargets = 1;
     [Range(0, 100)]
     public int accuracy = 100;
     public EffectTrigger triggersOn = EffectTrigger.OnSuccess;
 
-    // Status effect reference (optional)
+    // Status effect reference
     public StatusEffectData statusEffect;
 }
 
-// Supporting enums and classes
+// Simplified Equipment Slots - Only what we use
 public enum EquipmentSlot
 {
-    Arma,
-    Escudo,
-    Capacete,
-    Armadura,
-    Luvas,
-    Botas,
-    Acessorio1,
-    Acessorio2
+    Arma,      // Weapon slot
+    Armadura   // Armor slot
 }
 
+// Consumable types
 public enum ConsumableType
 {
-    Cura,
-    RestauracaoMana,
-    CuraStatus,
-    Buff,
-    Debuff,
-    Reviver,
-    Especial
+    Cura,              // Healing
+    RestauracaoMana,   // AP Restore
+    CuraStatus,        // Status Cure
+    Buff,              // Temporary stat boost
+    Debuff,            // Temporary stat reduction
+    Reviver,           // Revive fallen character
+    Especial           // Special effects
 }
 
+// Stat types that match PartyMemberState properties
 public enum StatType
 {
-    HP,
-    Attack,
-    Defense,
-    Speed,
-    Magic,
-    MagicDefense
+    HP,        // MaxHP
+    Attack,    // Attack
+    Defense,   // Defense
+    AP         // MaxAP (for mana/AP potions)
+    // Removed Speed, Magic, MagicDefense as they're not in current combat system
 }
 
+// Stat modifier structure
 [System.Serializable]
 public class StatModifier
 {
@@ -103,8 +98,9 @@ public class StatModifier
     public ModifierType tipoModificador;
 }
 
+// Modifier type
 public enum ModifierType
 {
-    Fixo,        // +5 Attack
-    Percentual   // +10% Attack
+    Fixo,        // +5 Attack (adds directly)
+    Percentual   // +10% Attack (percentage of base stat)
 }

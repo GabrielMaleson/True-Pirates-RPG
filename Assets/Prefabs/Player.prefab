@@ -228,6 +228,37 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!1 &8524272207052272519
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3156306320205589446}
+  m_Layer: 0
+  m_Name: GroundCheck
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3156306320205589446
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8524272207052272519}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.81, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7353143640536152879}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8931263230098566763
 GameObject:
   m_ObjectHideFlags: 0
@@ -265,6 +296,7 @@ Transform:
   m_Children:
   - {fileID: 3403405359691279792}
   - {fileID: 9055174428587776698}
+  - {fileID: 3156306320205589446}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &6793912737546179895
@@ -403,6 +435,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MovimentacaoExploracao
   velocidade: 5
+  forcaPulo: 10
+  groundCheck: {fileID: 0}
+  groundCheckRadius: 0.2
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!95 &2522479113332351888
 Animator:
   serializedVersion: 7
@@ -437,4 +475,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07db9b2fbd5b38940a98b94e391400c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  characterData: {fileID: 0}
+  partyMemberState:
+    template: {fileID: 0}
+    level: 0
+    currentHP: 0
+    currentAP: 0
+    currentExperience: 0
+    weapon: {fileID: 0}
+    armor: {fileID: 0}
+    learnedAttacks: []
+    activeStatusEffects: []
+  currentLevel: 0
+  currentHP: 0
+  currentAP: 0
+  currentEXP: 0
+  nextLevelEXP: 100
