@@ -4947,7 +4947,7 @@ MonoBehaviour:
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 1200, y: 600}
+  m_ReferenceResolution: {x: 1100, y: 600}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
@@ -5147,7 +5147,6 @@ GameObject:
   - component: {fileID: 1337405900}
   - component: {fileID: 1337405899}
   - component: {fileID: 1337405898}
-  - component: {fileID: 1337405901}
   - component: {fileID: 1337405902}
   - component: {fileID: 1337405903}
   - component: {fileID: 1337405904}
@@ -5218,24 +5217,6 @@ Transform:
   - {fileID: 1279499654}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1337405901
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1337405897}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3afdd833e3ff3494ab9eec7f28da2802, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InterfaceInventario
-  sistemaInventario: {fileID: 1337405898}
-  containerGrid: {fileID: 847840208}
-  prefabSlot: {fileID: 159576471053939692, guid: d047e5f734bdc8646bbea9cca78834f7, type: 3}
-  textoMoedas: {fileID: 1763060594}
-  normalColor: {r: 1, g: 1, b: 1, a: 1}
-  highlightedColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!114 &1337405902
 MonoBehaviour:
   m_ObjectHideFlags: 0

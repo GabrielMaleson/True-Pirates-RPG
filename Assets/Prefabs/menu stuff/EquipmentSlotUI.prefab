@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3424190977919783256}
   - component: {fileID: 6335871578883682787}
-  - component: {fileID: 6270542398605013503}
   - component: {fileID: 5820884677968414619}
   m_Layer: 5
   m_Name: EquipmentSlotUI
@@ -52,36 +51,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 159576471053939692}
   m_CullTransparentMesh: 1
---- !u!114 &6270542398605013503
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 159576471053939692}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
 --- !u!114 &5820884677968414619
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -100,7 +69,6 @@ MonoBehaviour:
   itemStatsText: {fileID: 298492229344425227}
   slotButton: {fileID: 1010979598329349738}
   unequipButton: {fileID: 8762207728381038155}
-  partyMemberSelectorPrefab: {fileID: 6544876395421401408, guid: afae1ee2801ea2148be3199a3c572e3a, type: 3}
 --- !u!1 &214914816335690678
 GameObject:
   m_ObjectHideFlags: 0

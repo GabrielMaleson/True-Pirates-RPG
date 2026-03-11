@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
+using System.Collections;
 
 public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
@@ -20,9 +21,15 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     [Header("References")]
     [HideInInspector] public PartyMenuManager partyMenuManager;
 
+    [Header("Tooltip Settings")]
+    public float tooltipDelay = 0.5f; // Delay before showing tooltip
+    public Vector2 tooltipOffset = new Vector2(10, -10);
+
     private GameObject activeTooltip;
     private GameObject activeSelector;
     private SlotInventario slotData;
+    private Coroutine tooltipCoroutine;
+    private bool isPointerOver = false;
 
     private void Start()
     {
@@ -67,52 +74,30 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     public void OnPointerEnter(PointerEventData eventData)
     {
+        isPointerOver = true;
+
         if (slotData != null && slotData.dadosDoItem != null && itemDetailsPrefab != null && partyMenuManager != null)
         {
-            if (activeTooltip != null)
-                Destroy(activeTooltip);
+            // Start coroutine to show tooltip after delay
+            if (tooltipCoroutine != null)
+                StopCoroutine(tooltipCoroutine);
 
-            // Use PartyMenuManager's canvas as parent
-            Transform parentCanvas = partyMenuManager.partyMenuCanvas;
-            activeTooltip = Instantiate(itemDetailsPrefab, parentCanvas);
-            activeTooltip.transform.SetAsLastSibling();
-            activeTooltip.transform.position = Input.mousePosition + new Vector3(10, -10, 0);
-
-            // Make it look like a tooltip (smaller, no buttons)
-            ItemDetails details = activeTooltip.GetComponent<ItemDetails>();
-            if (details != null)
-            {
-                // Hide buttons for tooltip mode
-                if (details.useButton != null) details.useButton.gameObject.SetActive(false);
-                if (details.equipButton != null) details.equipButton.gameObject.SetActive(false);
-                if (details.dropButton != null) details.dropButton.gameObject.SetActive(false);
-                if (details.closeButton != null) details.closeButton.gameObject.SetActive(false);
-
-                // Make background semi-transparent
-                Image bg = activeTooltip.GetComponent<Image>();
-                if (bg != null)
-                {
-                    Color c = bg.color;
-                    c.a = 0.9f;
-                    bg.color = c;
-                }
-
-                // Make it smaller for tooltip
-                RectTransform rt = activeTooltip.GetComponent<RectTransform>();
-                if (rt != null)
-                {
-                    rt.localScale = new Vector3(0.8f, 0.8f, 1f);
-                }
-
-                // Initialize with item data
-                PartyMemberState currentCharacter = partyMenuManager?.GetCurrentSelectedMember();
-                details.Initialize(slotData.dadosDoItem, slotData, currentCharacter);
-            }
+            tooltipCoroutine = StartCoroutine(ShowTooltipAfterDelay());
         }
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
+        isPointerOver = false;
+
+        // Cancel tooltip coroutine
+        if (tooltipCoroutine != null)
+        {
+            StopCoroutine(tooltipCoroutine);
+            tooltipCoroutine = null;
+        }
+
+        // Destroy tooltip immediately
         if (activeTooltip != null)
         {
             Destroy(activeTooltip);
@@ -120,10 +105,105 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         }
     }
 
+    private IEnumerator ShowTooltipAfterDelay()
+    {
+        yield return new WaitForSeconds(tooltipDelay);
+
+        // Only show if pointer is still over this slot
+        if (!isPointerOver || activeTooltip != null)
+            yield break;
+
+        // Use PartyMenuManager's canvas as parent
+        Transform parentCanvas = partyMenuManager.partyMenuCanvas;
+        activeTooltip = Instantiate(itemDetailsPrefab, parentCanvas);
+        activeTooltip.transform.SetAsLastSibling();
+
+        // Position tooltip away from mouse to avoid overlap
+        Vector2 mousePos = Input.mousePosition;
+        activeTooltip.transform.position = mousePos;
+
+        // Ensure tooltip stays within screen bounds
+        RectTransform tooltipRect = activeTooltip.GetComponent<RectTransform>();
+        if (tooltipRect != null)
+        {
+            Vector3[] corners = new Vector3[4];
+            tooltipRect.GetWorldCorners(corners);
+            float width = corners[2].x - corners[0].x;
+            float height = corners[2].y - corners[0].y;
+
+            // Check right edge
+            if (corners[2].x > Screen.width)
+            {
+                activeTooltip.transform.position = new Vector3(
+                    Screen.width - width - 10,
+                    activeTooltip.transform.position.y,
+                    activeTooltip.transform.position.z
+                );
+            }
+
+            // Check bottom edge
+            if (corners[0].y < 0)
+            {
+                activeTooltip.transform.position = new Vector3(
+                    activeTooltip.transform.position.x,
+                    height + 10,
+                    activeTooltip.transform.position.z
+                );
+            }
+        }
+
+        // Make it look like a tooltip
+        ItemDetails details = activeTooltip.GetComponent<ItemDetails>();
+        if (details != null)
+        {
+            // Hide buttons for tooltip mode
+            if (details.useButton != null) details.useButton.gameObject.SetActive(false);
+            if (details.equipButton != null) details.equipButton.gameObject.SetActive(false);
+            if (details.dropButton != null) details.dropButton.gameObject.SetActive(false);
+            if (details.closeButton != null) details.closeButton.gameObject.SetActive(false);
+
+            // Make background semi-transparent
+            Image bg = activeTooltip.GetComponent<Image>();
+            if (bg != null)
+            {
+                Color c = bg.color;
+                c.a = 0.9f;
+                bg.color = c;
+            }
+
+            // Make it smaller for tooltip
+            RectTransform rt = activeTooltip.GetComponent<RectTransform>();
+            if (rt != null)
+            {
+                rt.localScale = new Vector3(0.8f, 0.8f, 1f);
+            }
+
+            // Make sure tooltip doesn't block raycasts
+            CanvasGroup cg = activeTooltip.GetComponent<CanvasGroup>();
+            if (cg == null)
+                cg = activeTooltip.AddComponent<CanvasGroup>();
+            cg.blocksRaycasts = false;
+
+            // Initialize with item data
+            PartyMemberState currentCharacter = partyMenuManager?.GetCurrentSelectedMember();
+            details.Initialize(slotData.dadosDoItem, slotData, currentCharacter);
+        }
+
+        tooltipCoroutine = null;
+    }
+
     private void OnItemClick()
     {
         if (slotData == null || slotData.dadosDoItem == null) return;
 
+        // Cancel any pending tooltip
+        if (tooltipCoroutine != null)
+        {
+            StopCoroutine(tooltipCoroutine);
+            tooltipCoroutine = null;
+        }
+
+        // Destroy tooltip if showing
         if (activeTooltip != null)
         {
             Destroy(activeTooltip);
@@ -317,5 +397,7 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             Destroy(activeTooltip);
         if (activeSelector != null)
             Destroy(activeSelector);
+        if (tooltipCoroutine != null)
+            StopCoroutine(tooltipCoroutine);
     }
 }

@@ -18,3 +18,14 @@ MonoBehaviour:
   descricao: Espada de Amber que sua equipe te deu.
   valorEmOuro: 0
   ehEmpilhavel: 0
+  ehEquipavel: 1
+  slotEquipamento: 0
+  ehDuasMaos: 0
+  modificadoresStats: []
+  nivelRequerido: 0
+  classeRequerida: 
+  ehConsumivel: 0
+  tipoConsumivel: 0
+  usavelEmBatalha: 1
+  usavelNoMapa: 1
+  efeitos: []
