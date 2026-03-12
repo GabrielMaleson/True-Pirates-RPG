@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class PartyMenuManager : MonoBehaviour
 {
@@ -12,7 +13,7 @@ public class PartyMenuManager : MonoBehaviour
     public GameObject equipmentPanel;
 
     [Header("Canvas References")]
-    public Transform partyMenuCanvas; // Assign the PartyMenuPanel or main canvas in inspector
+    public Transform partyMenuCanvas;
 
     [Header("Party Member Selection")]
     public Transform partyMemberButtonParent;
@@ -50,43 +51,66 @@ public class PartyMenuManager : MonoBehaviour
     [Header("References")]
     public SistemaInventario inventory;
 
+    [Header("Menu State")]
+    public bool canOpenMenu = true; // Can be set to false during cutscenes
+
     private SlotUI currentlyHighlightedSlot;
+    private bool isInBattle = false;
 
     private void Start()
     {
         if (inventory == null)
             inventory = FindFirstObjectByType<SistemaInventario>();
 
-        // Set default canvas if not assigned
         if (partyMenuCanvas == null)
             partyMenuCanvas = transform;
 
-        // Subscribe to inventory change events
         if (inventory != null)
         {
             inventory.onInventarioMudou += RefreshInventoryDisplay;
         }
 
-        // Initially hide all panels
         HideAllPanels();
-
-        // Create party member buttons and stats displays
         CreatePartyMemberDisplays();
     }
 
     private void Update()
     {
-        // Open with Tab key
-        if (Input.GetKeyDown(KeyCode.Tab))
+        // Only allow menu opening if not in battle and menu can be opened
+        if (!isInBattle && canOpenMenu)
         {
-            if (partyMenuPanel.activeSelf)
-                CloseMenu();
-            else
-                OpenMenu();
-        }
+            // Open with Tab key
+            if (Input.GetKeyDown(KeyCode.Tab))
+            {
+                if (partyMenuPanel.activeSelf)
+                    CloseMenu();
+                else
+                    OpenMenu();
+            }
 
-        // Close with Escape
-        if (Input.GetKeyDown(KeyCode.Escape) && partyMenuPanel.activeSelf)
+            // Close with Escape
+            if (Input.GetKeyDown(KeyCode.Escape) && partyMenuPanel.activeSelf)
+            {
+                CloseMenu();
+            }
+        }
+    }
+
+    // Called by combat system when battle starts
+    public void SetBattleState(bool inBattle)
+    {
+        isInBattle = inBattle;
+        if (inBattle && partyMenuPanel.activeSelf)
+        {
+            CloseMenu();
+        }
+    }
+
+    // Called by cutscene system
+    public void SetCanOpenMenu(bool canOpen)
+    {
+        canOpenMenu = canOpen;
+        if (!canOpen && partyMenuPanel.activeSelf)
         {
             CloseMenu();
         }
@@ -101,7 +125,6 @@ public class PartyMenuManager : MonoBehaviour
 
     private void CreatePartyMemberDisplays()
     {
-        // Clear existing
         foreach (var btn in partyMemberButtons)
         {
             if (btn != null) Destroy(btn.gameObject);
@@ -114,29 +137,24 @@ public class PartyMenuManager : MonoBehaviour
         }
         statsDisplays.Clear();
 
-        // Create displays for each party member
         foreach (var member in inventory.partyMembers)
         {
             if (member != null)
             {
-                // Create selection button
                 GameObject btnObj = Instantiate(partyMemberButtonPrefab, partyMemberButtonParent);
                 PartyMemberButton btn = btnObj.GetComponent<PartyMemberButton>();
                 btn.Initialize(member, this);
                 partyMemberButtons.Add(btn);
 
-                // Create stats display
                 GameObject displayObj = Instantiate(statsDisplayPrefab, statsDisplayContainer);
                 PartyMemberStatsDisplay display = displayObj.GetComponent<PartyMemberStatsDisplay>();
                 display.Initialize(member);
                 statsDisplays[member] = display;
 
-                // Initially hide all displays
                 displayObj.SetActive(false);
             }
         }
 
-        // Select first party member by default
         if (inventory.partyMembers.Count > 0 && inventory.partyMembers[0] != null)
         {
             OnPartyMemberSelected(inventory.partyMembers[0]);
@@ -147,22 +165,18 @@ public class PartyMenuManager : MonoBehaviour
     {
         currentSelectedMember = member;
 
-        // Show only the selected character's stats display
         foreach (var kvp in statsDisplays)
         {
             kvp.Value.gameObject.SetActive(kvp.Key == member);
         }
 
-        // Update party member highlights
         UpdatePartyMemberHighlights();
 
-        // Refresh attacks if attacks panel is open
         if (attacksPanel.activeSelf)
         {
             UpdateAttacksDisplay();
         }
 
-        // Refresh equipment if equipment panel is open
         if (equipmentPanel.activeSelf)
         {
             UpdateEquipmentDisplay();
@@ -192,8 +206,6 @@ public class PartyMenuManager : MonoBehaviour
     {
         HideAllPanels();
         itemsPanel.SetActive(true);
-
-        // Refresh the inventory display
         RefreshInventoryDisplay();
     }
 
@@ -232,13 +244,11 @@ public class PartyMenuManager : MonoBehaviour
 
         if (currentSelectedMember == null) return;
 
-        // Create weapon slot
         GameObject weaponSlot = Instantiate(equipmentSlotPrefab, equipmentSlotParent);
         EquipmentSlotUI weaponUI = weaponSlot.GetComponent<EquipmentSlotUI>();
         weaponUI.Initialize(EquipmentSlot.Arma, currentSelectedMember.weapon, this);
         equipmentSlots[EquipmentSlot.Arma] = weaponUI;
 
-        // Create armor slot
         GameObject armorSlot = Instantiate(equipmentSlotPrefab, equipmentSlotParent);
         EquipmentSlotUI armorUI = armorSlot.GetComponent<EquipmentSlotUI>();
         armorUI.Initialize(EquipmentSlot.Armadura, currentSelectedMember.armor, this);
@@ -249,26 +259,22 @@ public class PartyMenuManager : MonoBehaviour
     {
         if (inventory == null) return;
 
-        // Update gold
         if (goldText != null)
         {
             goldText.text = "Ouro: " + inventory.moedas.ToString();
         }
 
-        // Clear the grid
         foreach (Transform child in inventoryGrid)
         {
             Destroy(child.gameObject);
         }
         inventorySlots.Clear();
 
-        // Build the inventory
         foreach (SlotInventario slot in inventory.inventario)
         {
             GameObject newSlot = Instantiate(itemSlotPrefab, inventoryGrid);
             SlotUI slotUI = newSlot.GetComponent<SlotUI>();
 
-            // Set up references
             slotUI.partyMenuManager = this;
             slotUI.itemDetailsPrefab = itemDetailsPrefab;
             slotUI.partyMemberSelectorPrefab = partyMemberSelectorPrefab;
@@ -278,19 +284,16 @@ public class PartyMenuManager : MonoBehaviour
             inventorySlots.Add(slotUI);
         }
 
-        // Clear highlight
         currentlyHighlightedSlot = null;
     }
 
     public void HighlightSlot(SlotUI selectedSlot)
     {
-        // Unhighlight previous slot
         if (currentlyHighlightedSlot != null)
         {
             currentlyHighlightedSlot.SetHighlight(false);
         }
 
-        // Highlight new slot
         currentlyHighlightedSlot = selectedSlot;
         if (currentlyHighlightedSlot != null)
         {
@@ -311,7 +314,6 @@ public class PartyMenuManager : MonoBehaviour
             currentSelectedMember.UnequipArmor();
         }
 
-        // Add back to inventory
         if (inventory != null)
         {
             inventory.AdicionarItem(item, 1);
@@ -337,9 +339,10 @@ public class PartyMenuManager : MonoBehaviour
 
     public void OpenMenu()
     {
+        if (isInBattle || !canOpenMenu) return; // Don't open during battle or cutscenes
+
         partyMenuPanel.SetActive(true);
 
-        // Ensure raycasts work properly
         CanvasGroup canvasGroup = partyMenuPanel.GetComponent<CanvasGroup>();
         if (canvasGroup != null)
         {
@@ -347,7 +350,6 @@ public class PartyMenuManager : MonoBehaviour
             canvasGroup.interactable = true;
         }
 
-        // Refresh displays
         CreatePartyMemberDisplays();
         RefreshInventoryDisplay();
     }

@@ -1,16 +1,42 @@
-﻿title: receptionintro
+﻿title: pirateintro
 ---
 <<declare $first_intro = true as bool>>
 
 <<if $first_intro>>
-	<<introdarken>>
-	Valentina: Oi oiii! Tudo bem? Vim aqui sobre o emprego de cuidadora!
-	Valentina: ...
-	Valentina: T- Tem alguém aqui? Olá???
-	Valentina: (Que estranho... a recepção tá toda vazia.)
-	Valentina: (Melhor [b]olhar por aí e ver o que houve.[/b])
+	<<darken>>
+	<<sprite guy1 icon>>
+	Cara: Eu esqueci o nome do protagonista.
+	Cara: Essa vai ser minha cara por enquanto.
+	<<surprise>>
+	<<sprite guy2 icon>>
+	Cara: Que som foi esse?
+	Cara: Tenho que correr!
+	<<runaway>>
+	<<dooropen>>
+	<<simonenter>>
+	<<timonenter>>
+	<<sprite simon1 icon>>
+	Simon: Simon é meu nome e eu sou vermelho.
+	<<sprite timon1 icon>>
+	Timon: Eu não sei quem eu sou então eu vou ser o Timon. Verde
+	<<simonflip>>
+	<<sprite simon1 icon>>
+	Simon: Mano cala a boca você não é nem um pouco original. Roubando meu estilo todo
+	<<sprite timon1 icon>>
+	Timon: Meu deus cara que agressivo. E por nada tb.
+	<<sprite simon1 icon>>
+	Simon: É por tudo. Mas não tem nada aqui. Simbora
+	<<guysleave>>
+	<<wait 2>>
+	<<doorclose>>
+	<<sprite guy2 icon>>
+	Cara: Acho que tá safe..........
+	<<playerphew>>
+	<<wait 2>>
+	<<sprite guyphew icon>>
+	Cara: Amo viver.
 	Narração: Objetivo atualizado.
-	<<objective "Encontrar a recepcionista">>
+	<<objective "Sair da intro">>
 	<<set $first_intro to false>>
 	<<brighten>>
 <<endif>>

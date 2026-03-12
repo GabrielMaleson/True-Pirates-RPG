@@ -45,18 +45,23 @@ public class DialogueManager : MonoBehaviour
     [Header("Fade Settings")]
     public float defaultFadeDuration = 0.5f;
 
+    [Header("Player Control")]
+    public GameObject playerObject; // Reference to player GameObject
+    private MovimentacaoExploracao playerMovement;
+    private PartyMenuManager partyMenuManager;
+
     private static DialogueManager instance;
     private static Dictionary<string, Image> activeImages = new Dictionary<string, Image>();
     private DialogueRunner dialogueRunner;
 
     private void Awake()
     {
-        // Singleton pattern
         if (instance == null)
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
-            // Find references if not assigned
+            gameObject.tag = "Inventory";
+
             if (dialogueCanvas == null)
                 dialogueCanvas = gameObject;
 
@@ -69,7 +74,6 @@ public class DialogueManager : MonoBehaviour
             if (objectivePanel != null)
                 objectivePanel.GetComponent<CanvasGroup>().alpha = 0f;
 
-            // Get DialogueRunner
             dialogueRunner = GetComponent<DialogueRunner>();
         }
         else
@@ -78,9 +82,20 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        // Find player movement script if not assigned
+        if (playerObject == null)
+            playerObject = GameObject.FindGameObjectWithTag("Player");
+
+        if (playerObject != null)
+            playerMovement = playerObject.GetComponent<MovimentacaoExploracao>();
+
+        partyMenuManager = FindFirstObjectByType<PartyMenuManager>();
+    }
+
     private void OnValidate()
     {
-        // Keep sprite tags and sprites lists synchronized
         while (sprites.Count > spriteTags.Count)
         {
             spriteTags.Add("");
@@ -101,6 +116,26 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
+    // Method to disable player movement
+    private void DisablePlayerControl()
+    {
+        if (playerMovement != null)
+            playerMovement.enabled = false;
+
+        if (partyMenuManager != null)
+            partyMenuManager.SetCanOpenMenu(false);
+    }
+
+    // Method to enable player movement
+    private void EnablePlayerControl()
+    {
+        if (playerMovement != null)
+            playerMovement.enabled = true;
+
+        if (partyMenuManager != null)
+            partyMenuManager.SetCanOpenMenu(true);
+    }
+
     [YarnCommand("sprite")]
     public static void ShowImage(string spriteTag, string positionName, string prefabName = "")
     {
@@ -112,7 +147,6 @@ public class DialogueManager : MonoBehaviour
 
         RemoveImage(positionName);
 
-        // Find the sprite by tag
         Sprite foundSprite = null;
         for (int i = 0; i < instance.spriteTags.Count; i++)
         {
@@ -129,7 +163,6 @@ public class DialogueManager : MonoBehaviour
             return;
         }
 
-        // Find the position in our list
         Transform positionTransform = null;
         foreach (var positionData in instance.positions)
         {
@@ -146,16 +179,13 @@ public class DialogueManager : MonoBehaviour
             return;
         }
 
-        // Find the appropriate image prefab
         Image imagePrefabToUse = instance.defaultImagePrefab;
 
-        // Create a new UI Image at the target position
         Image newImage = Instantiate(imagePrefabToUse, positionTransform);
         newImage.sprite = foundSprite;
         newImage.transform.localPosition = Vector3.zero;
         newImage.gameObject.SetActive(true);
 
-        // Track this active image
         activeImages[positionName] = newImage;
     }
 
@@ -282,13 +312,16 @@ public class DialogueManager : MonoBehaviour
     }
 
     [YarnCommand("darken")]
-    public static void DarkenScreen(float alpha = 0.67f, float duration = 0.5f)
+    public static void DarkenScreen(float alpha = 0f, float duration = 0.5f)
     {
         if (instance.blackScreen != null)
         {
             instance.blackScreen.SetActive(true);
             instance.StartCoroutine(instance.FadeScreenRoutine(alpha, duration));
             instance.EnsureContinueButtonInteractable();
+
+            // Disable player movement when screen darkens
+            instance.DisablePlayerControl();
         }
     }
 
@@ -298,6 +331,9 @@ public class DialogueManager : MonoBehaviour
         if (instance.blackScreen != null)
         {
             instance.StartCoroutine(instance.FadeScreenRoutine(0f, duration, true));
+
+            // Re-enable player movement when screen brightens
+            instance.EnablePlayerControl();
         }
     }
 
@@ -309,6 +345,9 @@ public class DialogueManager : MonoBehaviour
             instance.blackScreen.SetActive(true);
             instance.StartCoroutine(instance.BlackoutRoutine(duration));
             instance.EnsureContinueButtonInteractable();
+
+            // Disable player movement during blackout
+            instance.DisablePlayerControl();
         }
     }
 
@@ -347,7 +386,6 @@ public class DialogueManager : MonoBehaviour
         Color transparent = new Color(0f, 0f, 0f, 0f);
         Color opaque = new Color(0f, 0f, 0f, 1f);
 
-        // Fade to black
         float halfDuration = duration / 2f;
         float elapsedTime = 0f;
 
@@ -362,7 +400,6 @@ public class DialogueManager : MonoBehaviour
         blackScreenImage.color = opaque;
         yield return new WaitForSeconds(0.1f);
 
-        // Fade back to transparent
         elapsedTime = 0f;
         while (elapsedTime < halfDuration)
         {
@@ -375,6 +412,9 @@ public class DialogueManager : MonoBehaviour
         blackScreenImage.color = transparent;
         blackScreen.SetActive(false);
         EnableRaycaster();
+
+        // Re-enable player movement after blackout completes
+        EnablePlayerControl();
     }
 
     [YarnCommand("playsound")]
