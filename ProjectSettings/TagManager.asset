@@ -11,6 +11,8 @@ TagManager:
   - Objective
   - Objective Panel
   - TitleScreen
+  - MenuOpener
+  - ObjectiveButton
   layers:
   - Default
   - TransparentFX

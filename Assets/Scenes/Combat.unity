@@ -645,7 +645,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0.19215688, g: 0.4745098, b: 0.32527995, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -1412,9 +1412,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CombatSystem
   partyMembers:
-  - {fileID: 11400000, guid: cf1ac269ae3ec694a853eda9c9ceab7c, type: 2}
+  - template: {fileID: 0}
+    level: 0
+    currentHP: 0
+    currentAP: 0
+    currentExperience: 0
+    weapon: {fileID: 0}
+    armor: {fileID: 0}
+    learnedAttacks: []
+    activeStatusEffects: []
   enemies:
-  - {fileID: 11400000, guid: 3477d9bdb332f6347a5e175785076f35, type: 2}
+  - template: {fileID: 0}
+    level: 0
+    currentHP: 0
+    currentAP: 0
+    currentExperience: 0
+    weapon: {fileID: 0}
+    armor: {fileID: 0}
+    learnedAttacks: []
+    activeStatusEffects: []
   partySpawnPoints:
   - {fileID: 926838577}
   enemySpawnPoints:

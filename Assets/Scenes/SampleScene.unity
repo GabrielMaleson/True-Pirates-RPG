@@ -275,7 +275,7 @@ GameObject:
   - component: {fileID: 36783880}
   m_Layer: 0
   m_Name: Toggle
-  m_TagString: Untagged
+  m_TagString: MenuOpener
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -10406,6 +10406,10 @@ PrefabInstance:
     - target: {fileID: 2083064885289468159, guid: ef7ad59e5acc4c949bbff31445b94cf1, type: 3}
       propertyPath: m_SortingOrder
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8608177486375359561, guid: ef7ad59e5acc4c949bbff31445b94cf1, type: 3}
+      propertyPath: m_TagString
+      value: ObjectiveButton
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

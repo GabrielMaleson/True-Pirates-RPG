@@ -94,7 +94,7 @@ public class CombatSystem : MonoBehaviour
     private void Start()
     {
         menubutton = GameObject.FindGameObjectWithTag("MenuOpener");
-        objbutton = GameObject.FindGameObjectWithTag("Objective");
+        objbutton = GameObject.FindGameObjectWithTag("ObjectiveButton");
         menubutton.SetActive(false);
         objbutton.SetActive(false); 
         EncounterData encounterData = FindFirstObjectByType<EncounterData>();
