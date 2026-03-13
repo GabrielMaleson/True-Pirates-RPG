@@ -11,6 +11,7 @@ public class PartyMenuManager : MonoBehaviour
     public GameObject attacksPanel;
     public GameObject itemsPanel;
     public GameObject equipmentPanel;
+    public GameObject MenuOpener;
 
     [Header("Canvas References")]
     public Transform partyMenuCanvas;
@@ -71,6 +72,7 @@ public class PartyMenuManager : MonoBehaviour
         }
 
         HideAllPanels();
+        MenuOpener.SetActive(true);
         CreatePartyMemberDisplays();
     }
 
@@ -118,6 +120,8 @@ public class PartyMenuManager : MonoBehaviour
 
     private void HideAllPanels()
     {
+        if (partyMenuPanel != null) partyMenuPanel.SetActive(false);
+        MenuOpener.SetActive(false);
         if (attacksPanel != null) attacksPanel.SetActive(false);
         if (itemsPanel != null) itemsPanel.SetActive(false);
         if (equipmentPanel != null) equipmentPanel.SetActive(false);
@@ -341,6 +345,7 @@ public class PartyMenuManager : MonoBehaviour
     {
         if (isInBattle || !canOpenMenu) return; // Don't open during battle or cutscenes
 
+        HideAllPanels();
         partyMenuPanel.SetActive(true);
 
         CanvasGroup canvasGroup = partyMenuPanel.GetComponent<CanvasGroup>();
@@ -356,7 +361,8 @@ public class PartyMenuManager : MonoBehaviour
 
     public void CloseMenu()
     {
-        partyMenuPanel.SetActive(false);
+        HideAllPanels();
+        MenuOpener.SetActive(true);
     }
 
     private void OnDestroy()

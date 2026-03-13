@@ -54,6 +54,8 @@ public class CombatSystem : MonoBehaviour
     private bool isExecutingActions = false;
     private bool isAnimating = false;
     private bool isPlayerExecuting = false;
+    private GameObject menubutton;
+    private GameObject objbutton;
 
     // Store queued actions
     private List<QueuedAction> pendingActions = new List<QueuedAction>();
@@ -91,6 +93,10 @@ public class CombatSystem : MonoBehaviour
 
     private void Start()
     {
+        menubutton = GameObject.FindGameObjectWithTag("MenuOpener");
+        objbutton = GameObject.FindGameObjectWithTag("Objective");
+        menubutton.SetActive(false);
+        objbutton.SetActive(false); 
         EncounterData encounterData = FindFirstObjectByType<EncounterData>();
         if (encounterData != null)
         {
@@ -247,8 +253,6 @@ public class CombatSystem : MonoBehaviour
         // Prevent enemy turn from starting while player actions are executing
         if (isPlayerExecuting)
         {
-            Debug.Log("Waiting for player actions to complete before enemy turn...");
-            StartCoroutine(WaitForPlayerExecution());
             return;
         }
 
@@ -738,6 +742,8 @@ public class CombatSystem : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
 
+        menubutton.SetActive(true);
+        objbutton.SetActive(true);
         EncounterData encounterData = FindFirstObjectByType<EncounterData>();
         PreviousScene previousScene = FindFirstObjectByType<PreviousScene>();
 
