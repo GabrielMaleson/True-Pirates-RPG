@@ -53,7 +53,7 @@ public class CombatSystem : MonoBehaviour
     private PartyMemberState currentCharacter;
     private bool isExecutingActions = false;
     private bool isAnimating = false;
-    private bool isPlayerExecuting = false; // New flag to prevent enemy turn during player execution
+    private bool isPlayerExecuting = false;
 
     // Store queued actions
     private List<QueuedAction> pendingActions = new List<QueuedAction>();
@@ -210,7 +210,6 @@ public class CombatSystem : MonoBehaviour
 
         if (playerTurnQueue.Count == 0)
         {
-            // All players have acted, now it's enemy turn
             StartNextEnemyTurn();
             return;
         }
@@ -235,6 +234,7 @@ public class CombatSystem : MonoBehaviour
         // Store initial AP for undo
         apBeforeTurn = currentCharacter.currentAP;
         actionsThisTurn.Clear();
+        pendingActions.Clear(); // Clear any leftover pending actions
 
         currentState = CombatState.PLAYER_TURN;
         onTurnStarted?.Invoke(currentCharacter);
@@ -247,7 +247,8 @@ public class CombatSystem : MonoBehaviour
         // Prevent enemy turn from starting while player actions are executing
         if (isPlayerExecuting)
         {
-            Debug.LogWarning("Attempted to start enemy turn while player actions are executing. Deferring.");
+            Debug.Log("Waiting for player actions to complete before enemy turn...");
+            StartCoroutine(WaitForPlayerExecution());
             return;
         }
 
@@ -287,6 +288,21 @@ public class CombatSystem : MonoBehaviour
         onTurnStarted?.Invoke(currentCharacter);
 
         StartCoroutine(EnemyTurnRoutine());
+    }
+
+    private IEnumerator WaitForPlayerExecution()
+    {
+        float timeout = 5f;
+        float elapsed = 0f;
+
+        while (isPlayerExecuting && elapsed < timeout)
+        {
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        // Try to start enemy turn again
+        StartNextEnemyTurn();
     }
 
     private IEnumerator PlayerTurnRoutine()
@@ -330,14 +346,12 @@ public class CombatSystem : MonoBehaviour
 
         if (selectedAction != null)
         {
-            // Enemies don't use AP, just execute one action
             yield return StartCoroutine(ExecuteAttackWithAnimation(currentCharacter, selectedAction, targets));
 
             onActionExecuted?.Invoke(currentCharacter, selectedAction, targets);
             onCharacterUpdated?.Invoke(currentCharacter);
         }
 
-        // Move to next enemy after one action
         StartNextEnemyTurn();
     }
 
@@ -432,13 +446,17 @@ public class CombatSystem : MonoBehaviour
 
         if (actionsThisTurn.Count > 0)
         {
+            // Remove the last action from both lists
             QueuedAction lastAction = actionsThisTurn[actionsThisTurn.Count - 1];
             actionsThisTurn.RemoveAt(actionsThisTurn.Count - 1);
             pendingActions.Remove(lastAction);
 
+            // Restore AP to beginning of turn state
             currentCharacter.currentAP = apBeforeTurn;
 
             onCharacterUpdated?.Invoke(currentCharacter);
+
+            Debug.Log($"Undid last action. AP restored to {apBeforeTurn}. Remaining queued: {pendingActions.Count}");
         }
     }
 
@@ -453,7 +471,7 @@ public class CombatSystem : MonoBehaviour
             return;
 
         isExecutingActions = true;
-        isPlayerExecuting = true; // Set flag to prevent enemy turn
+        isPlayerExecuting = true;
 
         var orderedActions = pendingActions
             .Where(a => !a.isItem)
@@ -491,7 +509,7 @@ public class CombatSystem : MonoBehaviour
         pendingActions.RemoveAll(a => a.isItem);
         pendingActions.Clear();
         isExecutingActions = false;
-        isPlayerExecuting = false; // Clear flag
+        isPlayerExecuting = false;
 
         StartNextPlayerTurn();
     }

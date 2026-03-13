@@ -12,11 +12,13 @@ public class DoorScript : MonoBehaviour
 
     private void Update()
     {
-        // Check for input in Update while player is in range and chest is not open
-        if (playerInRange && Input.GetKeyDown(KeyCode.T))
-        {
-            TryOpenDoor();
-        }
+        // Check for input in Update while player is in range
+
+            if (playerInRange && Input.GetKeyDown(KeyCode.Space))
+            {
+                StartCoroutine(TryOpenDoor()); // Correct - starts the coroutine
+            }
+        
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

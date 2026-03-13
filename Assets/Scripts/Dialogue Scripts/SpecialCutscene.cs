@@ -10,7 +10,9 @@ public class SpecialCutsceneScript : MonoBehaviour
     public Transform pointB;
     public Transform pointC;
     public Transform pointD;
-
+    public Transform pointE;
+    public Transform playerPoint;
+    public Transform playerPointB;
     [Header("Doors")]
     public GameObject doorClose;
     public GameObject doorOpen;
@@ -18,8 +20,8 @@ public class SpecialCutsceneScript : MonoBehaviour
     [Header("Characters")]
     public GameObject simon;
     public GameObject timon;
+    public GameObject momo;
     public GameObject player;
-    public Transform playerPoint;
 
     [Header("UI")]
     public Sprite surpriseSprite;
@@ -32,8 +34,10 @@ public class SpecialCutsceneScript : MonoBehaviour
     private Animator playerAnimator;
     private Animator simonAnimator;
     private Animator timonAnimator;
+    private Animator momoAnimator;
     private SpriteRenderer simonSpriteRenderer;
     private SpriteRenderer timonSpriteRenderer;
+    private SpriteRenderer momoSpriteRenderer;
     private GameObject notificationObject;
     private SpriteRenderer notificationSpriteRenderer;
 
@@ -46,6 +50,7 @@ public class SpecialCutsceneScript : MonoBehaviour
         FindPlayerComponents();
         FindSimonComponents();
         FindTimonComponents();
+        FindMomoComponents();
 
         if (doorClose != null) doorClose.SetActive(true);
         if (doorOpen != null) doorOpen.SetActive(false);
@@ -101,6 +106,15 @@ public class SpecialCutsceneScript : MonoBehaviour
         }
     }
 
+    private void FindMomoComponents()
+    {
+        if (momo != null)
+        {
+            momoAnimator = timon.GetComponent<Animator>();
+            momoSpriteRenderer = timon.GetComponent<SpriteRenderer>();
+        }
+    }
+
     private void RegisterYarnCommands()
     {
         if (dialogueRunner != null)
@@ -111,9 +125,11 @@ public class SpecialCutsceneScript : MonoBehaviour
             dialogueRunner.AddCommandHandler("doorclose", DoorClose);
             dialogueRunner.AddCommandHandler("simonenter", SimonEnter);
             dialogueRunner.AddCommandHandler("timonenter", TimonEnter);
+            dialogueRunner.AddCommandHandler("momogrr", MomoGrr);
             dialogueRunner.AddCommandHandler("simonflip", SimonFlip);
             dialogueRunner.AddCommandHandler("guysleave", GuysLeave);
             dialogueRunner.AddCommandHandler("playerphew", PlayerPhew);
+            dialogueRunner.AddCommandHandler("playerflip", PlayerFlip);
 
             Debug.Log("Yarn commands registered successfully");
         }
@@ -140,6 +156,7 @@ public class SpecialCutsceneScript : MonoBehaviour
         {
             StartCoroutine(MoveToPoint(player, playerPoint.position, true));
         }
+        StartCoroutine(MoveToPointAfterDelay(momo, playerPointB.position, 0.3f));
         notificationSpriteRenderer.gameObject.SetActive(false);
     }
 
@@ -173,12 +190,24 @@ public class SpecialCutsceneScript : MonoBehaviour
         }
     }
 
+    private void MomoGrr()
+    {
+        StartCoroutine(MoveToPointAfterDelay(momo, pointD.position, 0.3f));
+        StartCoroutine(MoveToPointAfterDelay(momo, pointB.position, 0.3f));
+    }
+
     private void SimonFlip()
     {
         if (simonSpriteRenderer != null)
         {
             simonSpriteRenderer.flipX = !simonSpriteRenderer.flipX;
         }
+    }
+
+    private void PlayerFlip()
+    {
+
+            playerSpriteRenderer.flipX = !playerSpriteRenderer.flipX;
     }
 
     private void GuysLeave()
@@ -193,7 +222,7 @@ public class SpecialCutsceneScript : MonoBehaviour
     {
         if (player != null && pointD != null && playerMovement != null)
         {
-            StartCoroutine(MoveToPoint(player, pointD.position, true));
+            StartCoroutine(MoveToPoint(player, pointA.position, true));
         }
     }
 
@@ -260,15 +289,13 @@ public class SpecialCutsceneScript : MonoBehaviour
 
     private IEnumerator MoveBothToPointAndDeactivate()
     {
-        Coroutine simonMove = StartCoroutine(MoveToPoint(simon, pointC.position, true));
         Coroutine timonMove = StartCoroutine(MoveToPoint(timon, pointC.position, true));
+        StartCoroutine(MoveToPointAfterDelay(simon, pointB.position, 0.3f));
 
-        yield return simonMove;
         yield return timonMove;
 
         yield return new WaitForSeconds(0.4f);
 
-        if (simon != null) simon.SetActive(false);
         if (timon != null) timon.SetActive(false);
     }
 

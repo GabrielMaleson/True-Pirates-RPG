@@ -119,6 +119,8 @@ public class DialogueManager : MonoBehaviour
     // Method to disable player movement
     private void DisablePlayerControl()
     {
+        if (instance.graphicRaycaster != null)
+            instance.graphicRaycaster.enabled = true;
         if (playerMovement != null)
             playerMovement.enabled = false;
 
@@ -132,6 +134,8 @@ public class DialogueManager : MonoBehaviour
         if (playerMovement != null)
             playerMovement.enabled = true;
 
+        if (instance.graphicRaycaster != null)
+            instance.graphicRaycaster.enabled = false;
         if (partyMenuManager != null)
             partyMenuManager.SetCanOpenMenu(true);
     }

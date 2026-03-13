@@ -5,38 +5,64 @@
 <<if $first_intro>>
 	<<darken>>
 	<<sprite guy1 icon>>
-	Cara: Eu esqueci o nome do protagonista.
-	Cara: Essa vai ser minha cara por enquanto.
+	Benito: Não consigo ver nada...
+	Benito: Momo, o que você-
+	<<playerflip>>
 	<<surprise>>
 	<<sprite guy2 icon>>
-	Cara: Que som foi esse?
-	Cara: Tenho que correr!
+	Benito: Que som foi esse?
+	Benito: Tenho que correr!
 	<<runaway>>
 	<<dooropen>>
 	<<simonenter>>
 	<<timonenter>>
-	<<sprite simon1 icon>>
-	Simon: Simon é meu nome e eu sou vermelho.
 	<<sprite timon1 icon>>
-	Timon: Eu não sei quem eu sou então eu vou ser o Timon. Verde
+	Soldado Desconhecido 1: Esse general é um arrogante e meio, sinto falta do nosso comandante.
+	<<sprite simon1 icon>>
+	Soldado Desconhecido 2: Estamos aqui para obedecer ordens, não dar opiniões alheias.
 	<<simonflip>>
-	<<sprite simon1 icon>>
-	Simon: Mano cala a boca você não é nem um pouco original. Roubando meu estilo todo
+	Soldado Desconhecido 2:	Ah, sabia que eu tinha carregado essa caixa. Frutas exóticas da península do Peru! 
 	<<sprite timon1 icon>>
-	Timon: Meu deus cara que agressivo. E por nada tb.
+	Soldado Desconhecido 1: Era só o que me faltava... Sendo garçom do meu general de guerra...
 	<<sprite simon1 icon>>
-	Simon: É por tudo. Mas não tem nada aqui. Simbora
+	Soldado Desconhecido 2: Pare de reclamar e leve logo para ele antes que ele expulse a gente desse pelotão.
+	<<sprite timon1 icon>>
+	Soldado Desconhecido 1: Simon... Antes da gente morrer juntos nas colinas italianas... Cobertos de sangue e óleo de peixe... Eu quero que você saiba... 
+	Soldado Desconhecido 1: Você é o maior puxa-saco militar que eu já tive o desprazer de conhecer. Te amo irmão.
+	<<sprite simon1 icon>>
+	Simon: Ha. Ha. E você é a pessoa mais engraçada que eu conheço. Tá vendo? Nós dois podemos mentir livremente!
+	<<wait 1>>
+	<<sprite guy1 icon>>
+	Benito: (Aquela insígnia deles...)
+	<<blackout>>
+	<<sprite guyphew image>>
+	<<darken>>
+	<<sprite guy2 icon>>
+	Benito: ...
+	<<removesprite image>>
 	<<guysleave>>
 	<<wait 2>>
 	<<doorclose>>
+	<<wait 1>>
+	<<simonflip>>
+	<<sprite simon1 icon>>
+	Simon: Quem está aí?
 	<<sprite guy2 icon>>
-	Cara: Acho que tá safe..........
+	Benito: !!!
+	Simon: Eu o ordeno em nome do Exército Peruano! Saia agora ou vire comida de pássaro!
 	<<playerphew>>
 	<<wait 2>>
+	<<sprite guy2 icon>>
+	Benito: Por favor não me mate-
+	<<sprite guyphew icon>>
+	Benito: Momo, NÃO!
+	<<momogrr>>
 	<<sprite guyphew icon>>
 	Cara: Amo viver.
-	Narração: Objetivo atualizado.
-	<<objective "Sair da intro">>
+	<<removesprite icon>>
+	Narração: Simon aperta seu machado com mais força.
+	Narração: Objetivo atualizado. Clique no símbolo de alvo para ver suas Quests.
+	<<add_objective "Mar calmo nunca fez bom marinheiro">>
 	<<set $first_intro to false>>
 	<<brighten>>
 <<endif>>

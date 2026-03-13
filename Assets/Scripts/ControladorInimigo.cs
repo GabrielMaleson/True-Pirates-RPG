@@ -103,7 +103,6 @@ public class ControladorInimigo : MonoBehaviour
 
     private void IniciarCombate()
     {
-        Debug.Log("Inicio do combate!");
     }
 
     private void Perseguir()
