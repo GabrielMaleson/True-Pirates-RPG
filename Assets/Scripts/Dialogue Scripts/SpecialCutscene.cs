@@ -193,7 +193,7 @@ public class SpecialCutsceneScript : MonoBehaviour
     private void MomoGrr()
     {
         StartCoroutine(MoveToPointAfterDelay(momo, pointD.position, 0.3f));
-        StartCoroutine(MoveToPointAfterDelay(momo, pointB.position, 0.3f));
+        StartCoroutine(MoveToPointAfterDelay(simon, pointE.position, 0.3f));
     }
 
     private void SimonFlip()
