@@ -332,15 +332,15 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 8608177486375359561}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
+      - m_Target: {fileID: 6899485533562271973}
+        m_TargetAssemblyTypeName: UnityEngine.CanvasRenderer, UnityEngine
+        m_MethodName: SetAlpha
+        m_Mode: 4
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
-          m_FloatArgument: 0
+          m_FloatArgument: 1
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
@@ -587,10 +587,10 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
-      - m_Target: {fileID: 8608177486375359561}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
+      - m_Target: {fileID: 6899485533562271973}
+        m_TargetAssemblyTypeName: UnityEngine.CanvasRenderer, UnityEngine
+        m_MethodName: SetAlpha
+        m_Mode: 4
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -666,6 +666,10 @@ PrefabInstance:
     - target: {fileID: 1019023121969765769, guid: 1b5d265cb40a5da4d92a65bc667f3bf4, type: 3}
       propertyPath: m_Name
       value: Objective
+      objectReference: {fileID: 0}
+    - target: {fileID: 1019023121969765769, guid: 1b5d265cb40a5da4d92a65bc667f3bf4, type: 3}
+      propertyPath: m_TagString
+      value: ObjectiveButtwo
       objectReference: {fileID: 0}
     - target: {fileID: 2165047197409109376, guid: 1b5d265cb40a5da4d92a65bc667f3bf4, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size

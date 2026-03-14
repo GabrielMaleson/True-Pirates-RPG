@@ -12,21 +12,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3149aa9faf252a47814cb908b2312b2, type: 3}
   m_Name: DefenseDebuffer
   m_EditorClassIdentifier: Assembly-CSharp::AttackFile
-  attackName: Defense Debuffer
+  attackName: Cura
+  description: Se cure.
+  icon: {fileID: -855298285791758126, guid: b476064aaa731504bbcfe847087a18cb, type: 3}
   partyMemberOnly: 1
   actionPointCost: 6
   effects:
-  - effectType: 6
-    targetType: 1
+  - effectType: 1
+    targetType: 0
     numberOfTargets: 1
     value: 5
     accuracy: 100
     triggersOn: 0
     statusEffect: {fileID: 0}
-    statModifiers:
-    - statType: 2
-      valorModificador: -1
-      tipoModificador: 0
+    statModifiers: []
     hitCount: 1
     damageMultiplier: 1
   battleAnimation: {fileID: 11400000, guid: cc180d481f3f9a24eae690927d2b3767, type: 2}

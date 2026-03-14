@@ -33,10 +33,8 @@
 	Simon: Ha. Ha. E você é a pessoa mais engraçada que eu conheço. Tá vendo? Nós dois podemos mentir livremente!
 	<<wait 1>>
 	<<sprite guy1 icon>>
-	Benito: (Aquela insígnia deles...)
-	<<blackout>>
 	<<sprite guyphew image>>
-	<<darken>>
+	Benito: (Aquela insígnia deles...)
 	<<sprite guy2 icon>>
 	Benito: ...
 	<<removesprite image>>
@@ -50,56 +48,79 @@
 	<<sprite guy2 icon>>
 	Benito: !!!
 	Simon: Eu o ordeno em nome do Exército Peruano! Saia agora ou vire comida de pássaro!
-	<<playerphew>>
-	<<wait 2>>
-	<<sprite guy2 icon>>
+	<<sprite guy1 icon>>
 	Benito: Por favor não me mate-
-	<<sprite guyphew icon>>
+	<<sprite guy2 icon>>
 	Benito: Momo, NÃO!
 	<<momogrr>>
-	<<sprite guyphew icon>>
-	Cara: Amo viver.
+	<<wait 2>>
+	<<simonflip>>
+	<<sprite simon1 icon>>
+	Simon: Que porra é essa?! Isso é um mosassauro?! Essas coisas não eram para ter 15 metros?! Isso é um experimento da Daya?! Quem é você?!
+	<<playerphew>>
+	<<sprite guy2 icon>>
+	Benito: Não não — Quer dizer... Eu não sei... Provavelmente er —
+	<<sprite guy2 icon>>
+	Benito: Olha eu não sei de onde ele veio, mas ele é meu e ele é inofensivo! Eu não sou um espião... Ou um soldado... Ou um assassino... Eu não sou ninguém! Haha... Ninguém...
+	<<removesprite icon>>	
+	Narração: Benito ri nervosamente achando sua resposta muito melhor do que ela realmente foi.
+	Narração: Simon abaixa a guarda finalmente averiguando a idade e voz do garoto. O armazém escuro e a adrenalina não o permitiam antes. Simon suspira levemente.
+	<<sprite simon1 icon>>
+	Simon: Olha garoto... Não sei que ideia de jerico você teve, mas invasão de propriedade militar privada é um crime sério. O general podia te executar pelas coisas que você ouviu aqui dentro. Sem contar que esse barco vai decolar logo, então eu tenho que te escoltar daqui o mais rápido possível.
+	<<sprite guy2 icon>>
+	Benito: E-Eu não vou a lugar nenhum! E-Eu vim aqui em uma missão, ou a cumpro, ou m-morrerei tenta—
+	<<sprite simon1 icon>>
+	Simon: Garoto! Eu não sei quem você ou de onde você veio, mas se alguém me encontrar nesse navio com uma criança, você não será o único expulso! Eu não quero que você entre em perigo, agora se levanta e vamos! Isso é uma ordem!
+	<<sprite simon1 icon>>
+	Simon: AHH! Diabos — Inofensivo é o caralho!
+	<<sprite guy2 icon>>
+	Benito: Momo não! Deixe ele em paz!
+	<<sprite simon1 icon>>
+	Simon: Olha garoto... Eu não quero machucar nenhum de vocês dois... Mas como você, eu vim aqui em uma missão, honrar minha família e meus amigos. E eu não vou deixar um peixe e um pirralho estragarem todo meu esforço. Agora vamos!
+	<<brighten>>
+	<<progress candothing>>
+	<<startencounter>>
+	<<endif>>
+===
+
+title: simonbattleend
+---
+	<<darken>>
+	<<sprite simon1 icon>>
+	Simon: Acabou... Minha chance acabou... Anos treinando, estudando, juntando dinheiro para comprar meu equipamento e me alistar na guerra... Para perder pra um moleque aleatório e um peixe...
+	<<sprite guy2 icon>>
+	Benito: Eu não sabia que esse era um barco militar, eu juro... Eu achei que era um cargueiro levando suprimentos para os civis na Europa! E também... E-Eu meio que não sou um moleque qualquer... Eu quero ir pra Europa, e depois voar pra China... Pra matar a imperatriz e —
+	<<sprite simon1 icon>>
+	Simon: Garoto... Se todo pivete que perdeu um pai, ou um irmão ou até uma mãe por causa da guerra, fosse um rebelde que quisesse se alistar na rebelião ou se infiltrar igual um assassino amador... Nós já teríamos ganhado a guerra...
+	<<sprite guy2 icon>>
+	Benito: Eh... Eu realmente vim pra vingar meu pai... Mas — O meu pai era o Capitão Mansur.
+	<<sprite simon1 icon>>
+	Simon: V-Você é filho d-do líder da resistência?! Do Capitão Sarper?!
+	<<sprite guy2 icon>>
+	Benito: O-Olha eu posso explicar, eu tenho um plano!
+	<<sprite simon1 icon>>
+	Simon: Plano?! Que plano?! Se esgueirar no meio da Guerra mais brutal e violenta da história? Navegar as nuvens sob um mar cheio de criaturas desconhecidas? Mais de 20 NOITES em um barco cheio de equipamento 3 vezes o seu tamanho e peso? E depois o que? Simplesmente atravessar a Europa, navegar mais 25 noites até a China, entrar no palácio da Imperatriz e pedir por favorzinho que ela se renda? Esse é seu plano?
+	<<sprite simon1 icon>>
+	Simon: Olha, Benito... Me desculpa... Eu sei o que você ta sentindo após a morte de seu pai... Essa falta de controle. Eu entendo. Mas esse é o oposto do ambiente que você deveria estar agora. Você deveria estar com a sua família, seus amigos. Não dentro de um batalhão indo pra uma guerra.
+	<<sprite guy2 icon>>
+	Benito: E-Eu não tenho mais família... E eu nunca fiz muitos amigos, meu pai achava perigoso. Pra mim e pra saúde da resistência.
+	<<sprite simon1 icon>>
+	Simon: Eh... Eu entendo... Olha... Eu não sei o que eu posso fazer pela sua missão suicida, mas eu posso tentar garantir a sua segurança. 
+	Simon: Conseguir virar esse barco de volta pro Peru, ou algum acampamento isolado em Portugal, longe do campo de batalha, e te botar em um barco de volta pra casa... 
+	Simon: De qualquer forma, eu provavelmente vou voltar junto com você. Alguém vai ter que levar a culpa por esse erro.
+	<<sprite guy2 icon>>
+	Benito: M-Me desculpa, Simon...
+	<<sprite simon1 icon>>
+	Simon: Ta tudo bem, guri... Vamos arrancar esse curativo, meu Comandante novo deve estar no deck esgoelando mais ordens, vou te levar até ele.
 	<<removesprite icon>>
-	Narração: Simon aperta seu machado com mais força.
+	Narração: Benito ri nervosamente achando sua resposta muito melhor do que ela realmente foi.
+	Narração: Simon abaixa a guarda finalmente averiguando a idade e voz do garoto. O armazém escuro e a adrenalina não o permitiam antes. Simon suspira levemente.
+	Narração: A CUTSCENE CONTINUA MAS PARA O PROTÓTIPO, VAI ACABAR AQUI.
+	Narração: Aperte Tab para abrir os menus, ou aperte os botões na tela a seguir.
+	Narração: Perto de uma porta, aperte a barra de espaço.
 	Narração: Objetivo atualizado. Clique no símbolo de alvo para ver suas Quests.
 	<<add_objective "Mar calmo nunca fez bom marinheiro">>
 	<<set $first_intro to false>>
-	<<brighten>>
-<<endif>>
-===
-
-title: receptiontable
----
-	<<darken>>
-	Valentina: (Isso é a mesa da recepção... mas não tem ninguém aqui.)
-	Narração: De repente, alguém sai correndo em sua direção!
-	<<playsound run>>
-	?????: NOSSA! NEM TE VI! DESCULPA!
-	<<sprite clara.think gings>>
-	?????: Haha, credo, quase te deixei esperando por muito tempo...
-	-> É, demorou só um pouco...
-		Valentina: Demorou só um pouquinho, mas ninguém vai perder a cabeça por isso!
-		?????: Bom de ouvir! Haha.
-	-> Demorou nada, relaxa!
-		Valentina: Nem se preocupa! Não demorou não.
-		<<removesprite gings>>
-		<<sprite clara.clap gings>>
-		?????: Ah, que bom então!
-	<<removesprite gings>>
-	<<sprite clara.happy gings>>
-	?????: Você é a novata, né? Que ia começar hoje? 
-	Valentina: Sim senhora! Recebi o email ontem e até pedi pra gente começar mais cedo. Mal podia esperar!
-	<<removesprite gings>>
-	<<sprite clara.clap gings>>
-	?????: Haha, a gente também não! Meu nome é Clara, e é bom te ver, senhora... hã...
-	<<removesprite gings>>
-	<<sprite clara.think gings>>
-	Clara: Perdão, mas nem me falaram seu nome ainda!
-	Valentina: Ah, é Valentina! Mas não se preocupa - trouxe aqui todos os documentos!
-	Narração: Objetivo atualizado.
-	<<removesprite gings>>
-	<<objective "Mostrar para Clara seus documentos assinados">>
-	<<reappear>>
 	<<brighten>>
 ===
 

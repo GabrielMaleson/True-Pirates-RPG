@@ -1,6 +1,7 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Yarn.Unity; // Assuming DialogueRunner is from Yarn Spinner
+using Yarn.Unity;
 
 public class ProgressCheck : MonoBehaviour
 {
@@ -14,19 +15,36 @@ public class ProgressCheck : MonoBehaviour
     [SerializeField] private List<ConditionEntry> conditions = new List<ConditionEntry>();
     [SerializeField] private string dialogueToLoad;
     [SerializeField] private DialogueRunner dialogueRunner;
+    [SerializeField] private DialogueManager dialogueManager;
 
-    private void Start()
+    private void OnEnable()
     {
-        CheckConditionsAndLoadDialogue();
+        // When this object is enabled (by PreviousScene), start the check
+        StartCoroutine(CheckConditionsAndLoadDialogueCoroutine());
     }
 
-    private void CheckConditionsAndLoadDialogue()
+    private IEnumerator CheckConditionsAndLoadDialogueCoroutine()
     {
-        // If no dialogue specified, nothing to load
+        // Wait one frame to ensure everything is initialized
+        yield return null;
+
+        // Find references if not assigned
+        if (dialogueRunner == null)
+            dialogueRunner = FindFirstObjectByType<DialogueRunner>();
+
+        if (dialogueManager == null)
+            dialogueManager = FindFirstObjectByType<DialogueManager>();
+
         if (string.IsNullOrEmpty(dialogueToLoad))
         {
             Debug.LogWarning("No dialogue specified to load.");
-            return;
+            yield break;
+        }
+
+        if (SistemaInventario.Instance == null)
+        {
+            Debug.LogError("SistemaInventario.Instance is null! Cannot check conditions.");
+            yield break;
         }
 
         // Check all conditions
@@ -36,13 +54,11 @@ public class ProgressCheck : MonoBehaviour
         {
             bool hasCondition = SistemaInventario.Instance.GetGameProgress().Contains(conditionEntry.condition);
 
-            // If condition means it does NOT load, and player has the condition, then don't load
             if (conditionEntry.conditionMeansItDoesNotLoad && hasCondition)
             {
                 shouldLoadDialogue = false;
                 break;
             }
-            // If condition means it DOES load, and player doesn't have the condition, then don't load
             else if (!conditionEntry.conditionMeansItDoesNotLoad && !hasCondition)
             {
                 shouldLoadDialogue = false;
@@ -52,8 +68,22 @@ public class ProgressCheck : MonoBehaviour
 
         if (shouldLoadDialogue)
         {
-            dialogueRunner.StartDialogue(dialogueToLoad);
-            Debug.Log($"Started dialogue: {dialogueToLoad}");
+            // Try DialogueManager first
+            if (dialogueManager != null)
+            {
+                dialogueManager.StartDialogue(dialogueToLoad);
+                Debug.Log($"Started dialogue through DialogueManager: {dialogueToLoad}");
+            }
+            else if (dialogueRunner != null)
+            {
+                // Fallback to direct DialogueRunner
+                dialogueRunner.StartDialogue(dialogueToLoad);
+                Debug.LogWarning($"DialogueManager not found! Starting dialogue directly - player movement won't be restricted.");
+            }
+            else
+            {
+                Debug.LogError("No DialogueRunner or DialogueManager found!");
+            }
         }
         else
         {

@@ -55,7 +55,7 @@ public class CombatSystem : MonoBehaviour
     private bool isAnimating = false;
     private bool isPlayerExecuting = false;
     private GameObject menubutton;
-    private GameObject objbutton;
+    private GameObject objbutton2;
 
     // Store queued actions
     private List<QueuedAction> pendingActions = new List<QueuedAction>();
@@ -94,9 +94,9 @@ public class CombatSystem : MonoBehaviour
     private void Start()
     {
         menubutton = GameObject.FindGameObjectWithTag("MenuOpener");
-        objbutton = GameObject.FindGameObjectWithTag("ObjectiveButton");
+        objbutton2 = GameObject.FindGameObjectWithTag("ObjectiveButtwo");
         menubutton.SetActive(false);
-        objbutton.SetActive(false); 
+        objbutton2.SetActive(false);
         EncounterData encounterData = FindFirstObjectByType<EncounterData>();
         if (encounterData != null)
         {
@@ -743,7 +743,7 @@ public class CombatSystem : MonoBehaviour
         yield return new WaitForSeconds(delay);
 
         menubutton.SetActive(true);
-        objbutton.SetActive(true);
+        objbutton2.SetActive(true);
         EncounterData encounterData = FindFirstObjectByType<EncounterData>();
         PreviousScene previousScene = FindFirstObjectByType<PreviousScene>();
 

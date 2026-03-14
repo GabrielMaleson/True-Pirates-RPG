@@ -1,7 +1,7 @@
 using System.Collections;
-using UnityEditor;
 using UnityEngine;
 using Yarn.Unity;
+using UnityEngine.SceneManagement;
 
 public class SpecialCutsceneScript : MonoBehaviour
 {
@@ -13,6 +13,7 @@ public class SpecialCutsceneScript : MonoBehaviour
     public Transform pointE;
     public Transform playerPoint;
     public Transform playerPointB;
+
     [Header("Doors")]
     public GameObject doorClose;
     public GameObject doorOpen;
@@ -25,6 +26,9 @@ public class SpecialCutsceneScript : MonoBehaviour
 
     [Header("UI")]
     public Sprite surpriseSprite;
+
+    [Header("Encounter")]
+    public EncounterFile encounterToStart; // Assign in inspector for the encounter command
 
     [Header("References")]
     public DialogueRunner dialogueRunner;
@@ -41,10 +45,16 @@ public class SpecialCutsceneScript : MonoBehaviour
     private GameObject notificationObject;
     private SpriteRenderer notificationSpriteRenderer;
 
+    // Reference to the EncounterStarter to reuse its functionality
+    private EncounterStarter encounterStarter;
+
     private void Start()
     {
         if (dialogueRunner == null)
             dialogueRunner = FindFirstObjectByType<DialogueRunner>();
+
+        // Try to find an EncounterStarter in the scene (or create a temporary one)
+        encounterStarter = FindFirstObjectByType<EncounterStarter>();
 
         FindNotificationObject();
         FindPlayerComponents();
@@ -62,7 +72,6 @@ public class SpecialCutsceneScript : MonoBehaviour
     {
         if (player == null) return;
 
-        // Try multiple ways to find the Notification object
         notificationObject = GameObject.FindGameObjectWithTag("Notification");
 
         if (notificationObject != null)
@@ -110,8 +119,8 @@ public class SpecialCutsceneScript : MonoBehaviour
     {
         if (momo != null)
         {
-            momoAnimator = timon.GetComponent<Animator>();
-            momoSpriteRenderer = timon.GetComponent<SpriteRenderer>();
+            momoAnimator = momo.GetComponent<Animator>();
+            momoSpriteRenderer = momo.GetComponent<SpriteRenderer>();
         }
     }
 
@@ -130,6 +139,7 @@ public class SpecialCutsceneScript : MonoBehaviour
             dialogueRunner.AddCommandHandler("guysleave", GuysLeave);
             dialogueRunner.AddCommandHandler("playerphew", PlayerPhew);
             dialogueRunner.AddCommandHandler("playerflip", PlayerFlip);
+            dialogueRunner.AddCommandHandler("startencounter", StartEncounter); // NEW COMMAND
 
             Debug.Log("Yarn commands registered successfully");
         }
@@ -157,7 +167,8 @@ public class SpecialCutsceneScript : MonoBehaviour
             StartCoroutine(MoveToPoint(player, playerPoint.position, true));
         }
         StartCoroutine(MoveToPointAfterDelay(momo, playerPointB.position, 0.3f));
-        notificationSpriteRenderer.gameObject.SetActive(false);
+        if (notificationSpriteRenderer != null)
+            notificationSpriteRenderer.gameObject.SetActive(false);
     }
 
     private void DoorOpen()
@@ -206,7 +217,7 @@ public class SpecialCutsceneScript : MonoBehaviour
 
     private void PlayerFlip()
     {
-
+        if (playerSpriteRenderer != null)
             playerSpriteRenderer.flipX = !playerSpriteRenderer.flipX;
     }
 
@@ -222,8 +233,111 @@ public class SpecialCutsceneScript : MonoBehaviour
     {
         if (player != null && pointD != null && playerMovement != null)
         {
-            StartCoroutine(MoveToPoint(player, pointA.position, true));
+            StartCoroutine(MoveToPoint(player, pointB.position, true));
         }
+    }
+
+    // NEW: Yarn command to start an encounter
+    private void StartEncounter()
+    {
+        Debug.Log("StartEncounter command called");
+
+        if (encounterToStart == null)
+        {
+            Debug.LogError("No encounter assigned to SpecialCutsceneScript! Please assign an EncounterFile in the inspector.");
+            return;
+        }
+
+        // Disable player movement during transition
+        if (playerMovement != null)
+            playerMovement.enabled = false;
+
+        // Use existing EncounterStarter functionality or create our own
+        StartCoroutine(StartEncounterCoroutine());
+    }
+
+    // Overload that accepts an encounter name (if you want to specify which encounter)
+    private void StartEncounter(string encounterName)
+    {
+        Debug.Log($"StartEncounter command called with: {encounterName}");
+
+        // You could implement a dictionary of encounters here
+        // For now, just use the assigned one
+        StartEncounter();
+    }
+
+    private IEnumerator StartEncounterCoroutine()
+    {
+        // Get or create EncounterData
+        EncounterData encounterData = FindFirstObjectByType<EncounterData>();
+        if (encounterData == null)
+        {
+            GameObject dataObj = new GameObject("EncounterData");
+            DontDestroyOnLoad(dataObj);
+            encounterData = dataObj.AddComponent<EncounterData>();
+        }
+
+        // Get player inventory
+        SistemaInventario inventory = FindFirstObjectByType<SistemaInventario>();
+        if (inventory == null)
+        {
+            Debug.LogError("No player inventory found!");
+            yield break;
+        }
+
+        // Store encounter starter reference (this game object)
+        encounterData.encounterStarterObject = gameObject;
+
+        // Store player inventory
+        encounterData.playerInventory = inventory;
+
+        // Store the encounter file
+        encounterData.encounterFile = encounterToStart;
+
+        // Store player's current party state
+        encounterData.playerPartyMembers = inventory.GetPartyMembersForCombat();
+
+        // Store enemy data from encounter file
+        encounterData.enemyPartyMembers.Clear();
+        encounterData.enemyPrefabs.Clear();
+
+        foreach (var enemyData in encounterToStart.enemies)
+        {
+            if (enemyData.characterData != null)
+            {
+                PartyMemberState enemyState = new PartyMemberState(enemyData.characterData, enemyData.level);
+                if (enemyData.overrideHP > 0)
+                {
+                    enemyState.currentHP = enemyData.overrideHP;
+                }
+                encounterData.enemyPartyMembers.Add(enemyState);
+                encounterData.enemyPrefabs.Add(enemyData.enemyPrefab);
+            }
+        }
+
+        encounterData.CalculateRewards();
+
+        // Check if combat scene exists in build
+        if (!Application.CanStreamedLevelBeLoaded("Combat"))
+        {
+            Debug.LogError("Combat scene is not in Build Settings!");
+            yield break;
+        }
+
+        // Create scene manager and load combat
+        GameObject sceneObj = new GameObject("PreviousScene");
+        sceneObj.AddComponent<PreviousScene>();
+        sceneObj.GetComponent<PreviousScene>().UnloadScene();
+
+        // Load combat scene
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("Combat", LoadSceneMode.Additive);
+
+        while (!asyncLoad.isDone)
+        {
+            yield return null;
+        }
+
+        Debug.Log("Combat scene loaded successfully");
     }
 
     private IEnumerator MoveToPointAfterDelay(GameObject character, Vector3 target, float delay)
@@ -247,11 +361,10 @@ public class SpecialCutsceneScript : MonoBehaviour
         }
 
         Vector3 startPos = character.transform.position;
-        float distance = Mathf.Abs(lockedTarget.x - startPos.x); // Simpler distance calculation
+        float distance = Mathf.Abs(lockedTarget.x - startPos.x);
         float duration = distance / speed;
         float elapsed = 0f;
 
-        // Don't move if already at target
         if (distance < 0.01f)
         {
             if (useAnimator && anim != null)
@@ -312,6 +425,9 @@ public class SpecialCutsceneScript : MonoBehaviour
             dialogueRunner.RemoveCommandHandler("simonflip");
             dialogueRunner.RemoveCommandHandler("guysleave");
             dialogueRunner.RemoveCommandHandler("playerphew");
+            dialogueRunner.RemoveCommandHandler("playerflip");
+            dialogueRunner.RemoveCommandHandler("startencounter");
+            dialogueRunner.RemoveCommandHandler("momogrr");
         }
     }
 }

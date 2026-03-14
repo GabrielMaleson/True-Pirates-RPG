@@ -117,7 +117,7 @@ public class DialogueManager : MonoBehaviour
     }
 
     // Method to disable player movement
-    private void DisablePlayerControl()
+    public void DisablePlayerControl()
     {
         if (instance.graphicRaycaster != null)
             instance.graphicRaycaster.enabled = true;
@@ -129,7 +129,7 @@ public class DialogueManager : MonoBehaviour
     }
 
     // Method to enable player movement
-    private void EnablePlayerControl()
+    public void EnablePlayerControl()
     {
         if (playerMovement != null)
             playerMovement.enabled = true;
@@ -327,6 +327,39 @@ public class DialogueManager : MonoBehaviour
             // Disable player movement when screen darkens
             instance.DisablePlayerControl();
         }
+    }
+    // Replace your StartDialogue method with this async version:
+    public async void StartDialogue(string dialogue)
+    {
+        if (dialogueRunner == null)
+        {
+            dialogueRunner = GetComponentInChildren<DialogueRunner>();
+            if (dialogueRunner == null)
+            {
+                Debug.LogError("DialogueRunner is null! Cannot start dialogue.");
+                return;
+            }
+        }
+        ForceFindPlayer();
+        // Disable player control when starting dialogue
+        DisablePlayerControl();
+
+        // Start the dialogue (async but we don't need to await it)
+        await dialogueRunner.StartDialogue(dialogue);
+        Debug.Log($"Started dialogue: {dialogue}");
+    }
+
+    // Add this method to DialogueManager.cs to force it to find the player
+    public void ForceFindPlayer()
+    {
+        if (playerObject == null)
+            playerObject = GameObject.FindGameObjectWithTag("Player");
+
+        if (playerObject != null && playerMovement == null)
+            playerMovement = playerObject.GetComponent<MovimentacaoExploracao>();
+
+        if (partyMenuManager == null)
+            partyMenuManager = FindFirstObjectByType<PartyMenuManager>();
     }
 
     [YarnCommand("brighten")]
