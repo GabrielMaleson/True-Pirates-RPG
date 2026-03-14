@@ -7690,7 +7690,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2749739467906696083, guid: 1e7f3dc7f8881124c80d49cc85d2388b, type: 3}
       propertyPath: m_Constraints
-      value: 4
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 2749739467906696083, guid: 1e7f3dc7f8881124c80d49cc85d2388b, type: 3}
       propertyPath: m_GravityScale
@@ -7779,6 +7779,7 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 6016412685153478994, guid: 1e7f3dc7f8881124c80d49cc85d2388b, type: 3}
     - {fileID: 2276497191558045096, guid: 1e7f3dc7f8881124c80d49cc85d2388b, type: 3}
+    - {fileID: 3007942572547124088, guid: 1e7f3dc7f8881124c80d49cc85d2388b, type: 3}
     m_RemovedGameObjects:
     - {fileID: 2947192720151528669, guid: 1e7f3dc7f8881124c80d49cc85d2388b, type: 3}
     - {fileID: 4471309135445341348, guid: 1e7f3dc7f8881124c80d49cc85d2388b, type: 3}
