@@ -38,7 +38,6 @@ public class BattleAnimationData : ScriptableObject
 
     [Header("UI References")]
     private static TextMeshProUGUI animationText; // Static reference to the animation text UI
-    private static Transform textParent; // Where to spawn the text
     private static MonoBehaviour coroutineRunner; // Static reference to a MonoBehaviour that can run coroutines
 
     // Initialize the static references (call this from CombatSystem or UIManager)
@@ -69,17 +68,27 @@ public class BattleAnimationData : ScriptableObject
             coroutineRunner.StartCoroutine(HideTextAfterDelay(textDisplayDuration));
         }
 
-        // 2. User stands in place and plays animation
+        // 2. User stands in place and plays animation using CharacterComponent
         if (userAnimation != null && user.transform != null)
         {
             // Wait for user animation delay if specified
             if (userAnimationDelay > 0)
                 yield return new WaitForSeconds(userAnimationDelay);
 
-            Animator animator = user.transform.GetComponent<Animator>();
-            if (animator != null)
+            // Try to get CharacterComponent and play animation
+            CharacterComponent characterComp = user.transform.GetComponent<CharacterComponent>();
+            if (characterComp != null)
             {
-                animator.Play(userAnimation.name);
+                characterComp.PlayAnimation(userAnimation);
+            }
+            else
+            {
+                // Fallback to direct Animator access
+                Animator animator = user.transform.GetComponent<Animator>();
+                if (animator != null)
+                {
+                    animator.Play(userAnimation.name);
+                }
             }
         }
 

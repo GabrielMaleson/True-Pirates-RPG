@@ -31,6 +31,10 @@ public class CombatUIManager : MonoBehaviour
     public Button waitMenuButton;
     public Button undoButton;
 
+    [Header("Targeting UI")]
+    public GameObject targetingBackButton;    // Back button that appears during targeting
+    public GameObject targetingPanel;         // Optional panel to show during targeting
+
     [Header("Text Displays")]
     public TextMeshProUGUI turnText;
     public TextMeshProUGUI statusText;
@@ -82,6 +86,13 @@ public class CombatUIManager : MonoBehaviour
         if (undoButton != null)
             undoButton.onClick.AddListener(OnUndoSelected);
 
+        // Hide targeting back button initially
+        if (targetingBackButton != null)
+            targetingBackButton.SetActive(false);
+
+        if (targetingPanel != null)
+            targetingPanel.SetActive(false);
+
         StartCoroutine(InitializeAfterCombatSystem());
     }
 
@@ -115,6 +126,8 @@ public class CombatUIManager : MonoBehaviour
     {
         if (actionMenuPanel != null) actionMenuPanel.SetActive(false);
         if (waitPanel != null) waitPanel.SetActive(false);
+        if (targetingBackButton != null) targetingBackButton.SetActive(false);
+        if (targetingPanel != null) targetingPanel.SetActive(false);
     }
 
     private void CreateAllCharacterUI()
@@ -525,6 +538,22 @@ public class CombatUIManager : MonoBehaviour
 
         statusText.text = $"Select {remainingTargetsToSelect} target(s)";
 
+        // Show targeting back button
+        if (targetingBackButton != null)
+        {
+            targetingBackButton.SetActive(true);
+            // Make sure it has a listener
+            Button backBtn = targetingBackButton.GetComponent<Button>();
+            if (backBtn != null)
+            {
+                backBtn.onClick.RemoveAllListeners();
+                backBtn.onClick.AddListener(OnTargetingBack);
+            }
+        }
+
+        if (targetingPanel != null)
+            targetingPanel.SetActive(true);
+
         // Enable targeting on appropriate characters
         if (targetType == TargetType.Ally)
         {
@@ -534,6 +563,29 @@ public class CombatUIManager : MonoBehaviour
         {
             EnableTargetingOnCharacters(combatSystem.enemies);
         }
+    }
+
+    private void OnTargetingBack()
+    {
+        // Cancel targeting
+        DisableAllTargeting();
+
+        // Hide targeting UI
+        if (targetingBackButton != null)
+            targetingBackButton.SetActive(false);
+        if (targetingPanel != null)
+            targetingPanel.SetActive(false);
+
+        // Return to action menu
+        actionMenuPanel.SetActive(true);
+
+        // Clear selection
+        selectedAttack = null;
+        selectedItem = null;
+        selectedTargets.Clear();
+        isTargeting = false;
+
+        statusText.text = "Selection cancelled";
     }
 
     private void EnableTargetingOnCharacters(List<PartyMemberState> characters)
@@ -586,6 +638,12 @@ public class CombatUIManager : MonoBehaviour
                     selector.DisableTargeting();
             }
         }
+
+        // Hide targeting back button
+        if (targetingBackButton != null)
+            targetingBackButton.SetActive(false);
+        if (targetingPanel != null)
+            targetingPanel.SetActive(false);
     }
 
     private void OnTargetSelected(PartyMemberState target)
@@ -707,9 +765,7 @@ public class CombatUIManager : MonoBehaviour
                         case EffectType.StatusEffect:
                             if (effect.statusEffect != null)
                             {
-                                // You'll need to convert PartyMemberState to CharacterData for source
-                                // This might need adjustment
-                                Debug.Log($"Status effect {effect.statusEffect.effectName} applied to {target.CharacterName}");
+                                target.AddStatusEffect(effect.statusEffect, combatSystem.GetCurrentCharacter());
                             }
                             break;
                     }

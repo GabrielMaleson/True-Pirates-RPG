@@ -2,7 +2,10 @@ using UnityEngine;
 
 public class CharacterComponent : MonoBehaviour
 {
-    public PartyMemberState partyMemberState; // Changed from CharacterData
+    public PartyMemberState partyMemberState;
+
+    [Header("Animation")]
+    public Animator characterAnimator; // Reference for battle animations
 
     [Header("Runtime Stats (Read Only)")]
     [SerializeField] private int currentLevel;
@@ -17,6 +20,10 @@ public class CharacterComponent : MonoBehaviour
         {
             UpdateRuntimeStats();
         }
+
+        // If animator not assigned, try to get it
+        if (characterAnimator == null)
+            characterAnimator = GetComponent<Animator>();
     }
 
     private void UpdateRuntimeStats()
@@ -96,6 +103,23 @@ public class CharacterComponent : MonoBehaviour
         int nextLevel = GetNextLevelEXP();
         if (nextLevel == 0) return 0;
         return (float)partyMemberState.currentExperience / nextLevel;
+    }
+
+    // Play animation for battle system
+    public void PlayAnimation(string animationName)
+    {
+        if (characterAnimator != null)
+        {
+            characterAnimator.Play(animationName);
+        }
+    }
+
+    public void PlayAnimation(AnimationClip clip)
+    {
+        if (characterAnimator != null && clip != null)
+        {
+            characterAnimator.Play(clip.name);
+        }
     }
 
     private void OnValidate()

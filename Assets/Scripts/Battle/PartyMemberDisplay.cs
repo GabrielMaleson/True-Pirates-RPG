@@ -5,6 +5,7 @@ using UnityEngine.UI;
 public class CharacterUI : MonoBehaviour
 {
     [Header("UI Elements")]
+    public Image portraitImage; // NEW: Character portrait
     public TextMeshProUGUI nameText;
     public TextMeshProUGUI hpText;
     public Image healthBar;
@@ -19,7 +20,6 @@ public class CharacterUI : MonoBehaviour
     private PartyMemberState memberState;
     private GameObject characterVisualObject;
     private CombatUIManager uiManager;
-    private TargetSelector selector;
 
     public void Initialize(PartyMemberState state, GameObject visualObject, CombatUIManager manager)
     {
@@ -28,6 +28,30 @@ public class CharacterUI : MonoBehaviour
         uiManager = manager;
 
         nameText.text = state.CharacterName;
+
+        // Set portrait from CharacterData template
+        if (portraitImage != null)
+        {
+            if (state.template != null && state.template.battlePortrait != null)
+            {
+                portraitImage.sprite = state.template.battlePortrait;
+                portraitImage.gameObject.SetActive(true);
+            }
+            else
+            {
+                // Fallback to party icon if battle portrait not available
+                if (state.template != null && state.template.partyIcon != null)
+                {
+                    portraitImage.sprite = state.template.partyIcon;
+                    portraitImage.gameObject.SetActive(true);
+                }
+                else
+                {
+                    portraitImage.gameObject.SetActive(false);
+                }
+            }
+        }
+
         UpdateDisplay();
 
         // Hide target indicator initially
@@ -85,6 +109,14 @@ public class CharacterUI : MonoBehaviour
         Image bg = GetComponent<Image>();
         if (bg != null)
             bg.color = Color.gray;
+
+        // Gray out portrait as well
+        if (portraitImage != null)
+        {
+            Color portraitColor = portraitImage.color;
+            portraitColor.a = 0.5f;
+            portraitImage.color = portraitColor;
+        }
 
         HideTargetIndicator();
     }
