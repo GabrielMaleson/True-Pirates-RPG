@@ -14,16 +14,35 @@ public class CharacterComponent : MonoBehaviour
     [SerializeField] private int currentEXP;
     [SerializeField] private int nextLevelEXP;
 
+    private void Awake()
+    {
+        // If animator not assigned, try to get it
+        if (characterAnimator == null)
+            characterAnimator = GetComponent<Animator>();
+
+        // If we have a party member state with a template that has an animator controller,
+        // apply it to the animator
+        if (partyMemberState?.template != null && partyMemberState.template.animatorController != null)
+        {
+            if (characterAnimator == null)
+            {
+                // Try to add an Animator component
+                characterAnimator = gameObject.AddComponent<Animator>();
+            }
+
+            if (characterAnimator != null)
+            {
+                characterAnimator.runtimeAnimatorController = partyMemberState.template.animatorController;
+            }
+        }
+    }
+
     private void Start()
     {
         if (partyMemberState != null)
         {
             UpdateRuntimeStats();
         }
-
-        // If animator not assigned, try to get it
-        if (characterAnimator == null)
-            characterAnimator = GetComponent<Animator>();
     }
 
     private void UpdateRuntimeStats()

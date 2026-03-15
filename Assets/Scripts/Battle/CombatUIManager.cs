@@ -34,6 +34,7 @@ public class CombatUIManager : MonoBehaviour
     [Header("Targeting UI")]
     public GameObject targetingBackButton;    // Back button that appears during targeting
     public GameObject targetingPanel;         // Optional panel to show during targeting
+    private Button targetingBackButtonComponent; // Cache the button component
 
     [Header("Text Displays")]
     public TextMeshProUGUI turnText;
@@ -86,9 +87,16 @@ public class CombatUIManager : MonoBehaviour
         if (undoButton != null)
             undoButton.onClick.AddListener(OnUndoSelected);
 
-        // Hide targeting back button initially
+        // Set up targeting back button
         if (targetingBackButton != null)
+        {
             targetingBackButton.SetActive(false);
+            targetingBackButtonComponent = targetingBackButton.GetComponent<Button>();
+            if (targetingBackButtonComponent != null)
+            {
+                targetingBackButtonComponent.onClick.AddListener(OnTargetingBack);
+            }
+        }
 
         if (targetingPanel != null)
             targetingPanel.SetActive(false);
@@ -542,13 +550,6 @@ public class CombatUIManager : MonoBehaviour
         if (targetingBackButton != null)
         {
             targetingBackButton.SetActive(true);
-            // Make sure it has a listener
-            Button backBtn = targetingBackButton.GetComponent<Button>();
-            if (backBtn != null)
-            {
-                backBtn.onClick.RemoveAllListeners();
-                backBtn.onClick.AddListener(OnTargetingBack);
-            }
         }
 
         if (targetingPanel != null)
@@ -567,6 +568,8 @@ public class CombatUIManager : MonoBehaviour
 
     private void OnTargetingBack()
     {
+        Debug.Log("Targeting cancelled");
+
         // Cancel targeting
         DisableAllTargeting();
 
@@ -882,5 +885,11 @@ public class CombatUIManager : MonoBehaviour
             waitMenuButton.onClick.RemoveListener(OnWaitSelected);
         if (undoButton != null)
             undoButton.onClick.RemoveListener(OnUndoSelected);
+
+        // Remove targeting back button listener
+        if (targetingBackButtonComponent != null)
+        {
+            targetingBackButtonComponent.onClick.RemoveListener(OnTargetingBack);
+        }
     }
 }

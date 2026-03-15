@@ -611,7 +611,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -19, y: 120.9}
+  m_AnchoredPosition: {x: -24.2, y: 137.5}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &408258832
@@ -631,15 +631,15 @@ MonoBehaviour:
     m_Right: 0
     m_Top: 0
     m_Bottom: 0
-  m_ChildAlignment: 3
-  m_Spacing: 10
+  m_ChildAlignment: 4
+  m_Spacing: 0
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
   m_ChildControlHeight: 0
   m_ChildScaleWidth: 1
   m_ChildScaleHeight: 1
-  m_ReverseArrangement: 0
+  m_ReverseArrangement: 1
 --- !u!1 &432886386
 GameObject:
   m_ObjectHideFlags: 0
@@ -722,7 +722,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 432886389}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1193013461}
+        m_TargetAssemblyTypeName: CombatSystem, Assembly-CSharp
+        m_MethodName: UndoLastAction
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &432886389
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1143,7 +1155,7 @@ GameObject:
   m_Component:
   - component: {fileID: 523742615}
   m_Layer: 5
-  m_Name: EnemySpawn3
+  m_Name: EnemySpawn1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1236,7 +1248,7 @@ GameObject:
   m_Component:
   - component: {fileID: 574022552}
   m_Layer: 5
-  m_Name: PartySpawn3
+  m_Name: PartySpawn1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1671,14 +1683,14 @@ MonoBehaviour:
   partyMembers: []
   enemies: []
   partySpawnPoints:
-  - {fileID: 1500638860}
-  - {fileID: 13607259}
   - {fileID: 574022552}
+  - {fileID: 13607259}
+  - {fileID: 1500638860}
   enemySpawnPoints:
-  - {fileID: 1314767330}
+  - {fileID: 523742615}
   - {fileID: 1829737667}
   - {fileID: 2015639665}
-  - {fileID: 523742615}
+  - {fileID: 1314767330}
   battleAnimationText: {fileID: 0}
   partyMemberVisualPrefab: {fileID: 6974297528663458817, guid: 3339a6e2897547543a521b0f413b369f, type: 3}
   enemyVisualPrefab: {fileID: 6974297528663458817, guid: 391be075ecde2e44495ced23336f447e, type: 3}
@@ -1868,10 +1880,10 @@ Transform:
   - {fileID: 1500638860}
   - {fileID: 13607259}
   - {fileID: 574022552}
-  - {fileID: 1314767330}
+  - {fileID: 523742615}
   - {fileID: 1829737667}
   - {fileID: 2015639665}
-  - {fileID: 523742615}
+  - {fileID: 1314767330}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1314767329
@@ -1884,7 +1896,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1314767330}
   m_Layer: 5
-  m_Name: EnemySpawn
+  m_Name: EnemySpawn4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2263,7 +2275,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1500638860}
   m_Layer: 5
-  m_Name: PartySpawn1
+  m_Name: PartySpawn3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2816,7 +2828,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1829737667}
   m_Layer: 5
-  m_Name: EnemySpawn (1)
+  m_Name: EnemySpawn2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3316,7 +3328,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2015639665}
   m_Layer: 5
-  m_Name: EnemySpawn (2)
+  m_Name: EnemySpawn 3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

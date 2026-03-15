@@ -12,6 +12,9 @@ public class CharacterData : ScriptableObject
     public Sprite partyIcon;
     public Sprite battlePortrait;
 
+    [Header("Animation")]
+    public RuntimeAnimatorController animatorController; // Animator controller for battle animations
+
     [Header("Base Stats")]
     public int baseHP = 20;
     public int baseAttack = 5;
