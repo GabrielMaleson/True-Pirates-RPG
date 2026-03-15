@@ -7774,7 +7774,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8931263230098566763, guid: 1e7f3dc7f8881124c80d49cc85d2388b, type: 3}
       propertyPath: m_TagString
-      value: Untagged
+      value: Ignore
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 6016412685153478994, guid: 1e7f3dc7f8881124c80d49cc85d2388b, type: 3}

@@ -1,52 +1,81 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
+using TMPro;
+using System.Collections.Generic;
 
 [CreateAssetMenu(fileName = "New Battle Animation", menuName = "RPG/Battle Animation")]
 public class BattleAnimationData : ScriptableObject
 {
-    [Header("Animation Clips")]
+    [Header("Animation Text")]
+    public string attackTextFormat = "{user} uses {attack}!"; // Format with {user} and {attack} placeholders
+    public float textDisplayDuration = 1.5f;
+    public Color textColor = Color.white;
+    public float textSize = 36f;
+
+    [Header("User Animation")]
     public AnimationClip userAnimation;
-    public AnimationClip targetHitAnimation;
+    public float userAnimationDelay = 0f; // Delay before user animation starts
 
-    [Header("Visual Effects")]
-    public GameObject impactVFX;
-    public GameObject chargeVFX;
+    [Header("Target Overlay Animation")]
+    public GameObject targetOverlayPrefab; // Animation that plays on top of target
+    public float overlayDuration = 0.5f;
+    public Vector3 overlayOffset = Vector3.zero;
 
-    [Header("Sound Effects")]
-    public AudioClip chargeSound;
-    public AudioClip impactSound;
+    [Header("Hit Effect")]
+    public GameObject hitVFX;
+    public AudioClip hitSound;
+    public float hitDelay = 0.5f; // Delay after user animation before hit effect
+    public float hitEffectDuration = 0.5f;
 
-    [Header("Camera Effects")]
-    public bool useCameraShake = true;
-    public float cameraShakeIntensity = 0.3f;
-    public float cameraShakeDuration = 0.2f;
+    [Header("Target Shake")]
+    public bool shakeTarget = true;
+    public float shakeIntensity = 0.2f;
+    public float shakeDuration = 0.2f;
 
     [Header("Timing")]
     public float preDelay = 0.2f;
-    public float hitDelay = 0.5f;
     public float postDelay = 0.3f;
+
+    [Header("UI References")]
+    private static TextMeshProUGUI animationText; // Static reference to the animation text UI
+    private static Transform textParent; // Where to spawn the text
+    private static MonoBehaviour coroutineRunner; // Static reference to a MonoBehaviour that can run coroutines
+
+    // Initialize the static references (call this from CombatSystem or UIManager)
+    public static void Initialize(TextMeshProUGUI textUI, MonoBehaviour runner)
+    {
+        animationText = textUI;
+        coroutineRunner = runner;
+    }
 
     public IEnumerator PlayAnimation(PartyMemberState user, List<PartyMemberState> targets, System.Action onComplete = null)
     {
         // Pre-delay
         yield return new WaitForSeconds(preDelay);
 
-        // Play charge VFX/sound at user's position
-        if (chargeVFX != null && user != null && user.transform != null)
+        // 1. Show attack text (like Final Fantasy)
+        if (animationText != null && coroutineRunner != null)
         {
-            GameObject charge = Object.Instantiate(chargeVFX, user.transform.position, Quaternion.identity);
-            Object.Destroy(charge, 1f);
+            string displayText = attackTextFormat
+                .Replace("{user}", user.CharacterName)
+                .Replace("{attack}", name);
+
+            animationText.text = displayText;
+            animationText.color = textColor;
+            animationText.fontSize = textSize;
+            animationText.gameObject.SetActive(true);
+
+            // Text stays for duration - use coroutine runner
+            coroutineRunner.StartCoroutine(HideTextAfterDelay(textDisplayDuration));
         }
 
-        if (chargeSound != null && Camera.main != null)
+        // 2. User stands in place and plays animation
+        if (userAnimation != null && user.transform != null)
         {
-            AudioSource.PlayClipAtPoint(chargeSound, Camera.main.transform.position);
-        }
+            // Wait for user animation delay if specified
+            if (userAnimationDelay > 0)
+                yield return new WaitForSeconds(userAnimationDelay);
 
-        // Play user animation if available
-        if (userAnimation != null && user != null && user.transform != null)
-        {
             Animator animator = user.transform.GetComponent<Animator>();
             if (animator != null)
             {
@@ -54,71 +83,68 @@ public class BattleAnimationData : ScriptableObject
             }
         }
 
+        // 3. Wait for hit delay (allow user animation to play)
         yield return new WaitForSeconds(hitDelay);
 
-        // Hit effects for each target
+        // 4. For each target, play overlay animation and hit effect
         foreach (var target in targets)
         {
-            if (target == null) continue;
+            if (target == null || target.transform == null) continue;
 
-            // Camera shake
-            if (useCameraShake && CameraShake.Instance != null)
+            Transform targetTransform = target.transform;
+
+            // Play overlay animation on target (separate GameObject that appears on top)
+            if (targetOverlayPrefab != null)
             {
-                CameraShake.Instance.Shake(cameraShakeIntensity, cameraShakeDuration);
+                GameObject overlay = Object.Instantiate(targetOverlayPrefab, targetTransform.position + overlayOffset, Quaternion.identity);
+                // Parent to target to follow if needed
+                overlay.transform.SetParent(targetTransform);
+
+                // Destroy after duration
+                Object.Destroy(overlay, overlayDuration);
             }
 
-            // Hit VFX at target's position
-            if (impactVFX != null && target.transform != null)
+            // Shake target (if enabled) - use coroutine runner
+            if (shakeTarget && coroutineRunner != null)
             {
-                GameObject hit = Object.Instantiate(impactVFX, target.transform.position, Quaternion.identity);
-                Object.Destroy(hit, 1f);
+                coroutineRunner.StartCoroutine(ShakeTarget(targetTransform, shakeIntensity, shakeDuration));
             }
 
-            // Hit sound at target's position
-            if (impactSound != null && target.transform != null)
+            // Hit VFX
+            if (hitVFX != null)
             {
-                AudioSource.PlayClipAtPoint(impactSound, target.transform.position);
+                GameObject hit = Object.Instantiate(hitVFX, targetTransform.position, Quaternion.identity);
+                Object.Destroy(hit, hitEffectDuration);
             }
 
-            // Target hit animation
-            if (targetHitAnimation != null && target.transform != null)
+            // Hit sound
+            if (hitSound != null)
             {
-                Animator animator = target.transform.GetComponent<Animator>();
-                if (animator != null)
-                {
-                    animator.Play(targetHitAnimation.name);
-                }
+                AudioSource.PlayClipAtPoint(hitSound, targetTransform.position);
             }
         }
 
+        // 5. Wait for post-delay
         yield return new WaitForSeconds(postDelay);
 
+        // 6. Call completion callback
         onComplete?.Invoke();
     }
-}
 
-// Camera shake component (keep this as is)
-public class CameraShake : MonoBehaviour
-{
-    public static CameraShake Instance;
-    private Vector3 originalPosition;
-    private bool isShaking = false;
-
-    private void Awake()
+    private IEnumerator HideTextAfterDelay(float delay)
     {
-        Instance = this;
-        originalPosition = transform.position;
+        yield return new WaitForSeconds(delay);
+        if (animationText != null)
+        {
+            animationText.gameObject.SetActive(false);
+        }
     }
 
-    public void Shake(float intensity, float duration)
+    private IEnumerator ShakeTarget(Transform target, float intensity, float duration)
     {
-        if (!isShaking)
-            StartCoroutine(ShakeCoroutine(intensity, duration));
-    }
+        if (target == null) yield break;
 
-    private IEnumerator ShakeCoroutine(float intensity, float duration)
-    {
-        isShaking = true;
+        Vector3 originalPosition = target.localPosition;
         float elapsed = 0f;
 
         while (elapsed < duration)
@@ -126,13 +152,12 @@ public class CameraShake : MonoBehaviour
             float x = Random.Range(-1f, 1f) * intensity;
             float y = Random.Range(-1f, 1f) * intensity;
 
-            transform.position = originalPosition + new Vector3(x, y, 0);
+            target.localPosition = originalPosition + new Vector3(x, y, 0);
 
             elapsed += Time.deltaTime;
             yield return null;
         }
 
-        transform.position = originalPosition;
-        isShaking = false;
+        target.localPosition = originalPosition;
     }
 }

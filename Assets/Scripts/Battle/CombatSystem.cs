@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -34,7 +35,8 @@ public class CombatSystem : MonoBehaviour
     [Header("Spawn Points")]
     public List<Transform> partySpawnPoints;
     public List<Transform> enemySpawnPoints;
-
+    [Header("Battle Animation")]
+    public TextMeshProUGUI battleAnimationText; // Assign in inspector
     [Header("Prefabs")]
     public GameObject partyMemberVisualPrefab;
     public GameObject enemyVisualPrefab;
@@ -105,6 +107,11 @@ public class CombatSystem : MonoBehaviour
         else
         {
             Debug.LogError("No EncounterData found! Cannot start combat.");
+        }
+        if (battleAnimationText != null)
+        {
+            BattleAnimationData.Initialize(battleAnimationText, this);
+            Debug.Log("Battle animation system initialized");
         }
     }
 
@@ -517,7 +524,10 @@ public class CombatSystem : MonoBehaviour
 
         StartNextPlayerTurn();
     }
-
+    public void InitializeBattleAnimationText(TextMeshProUGUI textUI)
+    {
+        BattleAnimationData.Initialize(battleAnimationText, this);
+    }
     private IEnumerator ExecuteAttackWithAnimation(PartyMemberState user, AttackFile attack, List<PartyMemberState> targets)
     {
         isAnimating = true;

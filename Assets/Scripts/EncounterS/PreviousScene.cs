@@ -23,14 +23,22 @@ public class PreviousScene : MonoBehaviour
         // Store references to all scene objects
         foreach (GameObject obj in rootObjects)
         {
-            // Skip objects with "Inventory" tag
+            // Skip objects with "Inventory" tag - they should persist
             if (obj.CompareTag("Inventory"))
             {
                 Debug.Log($"Preserving Inventory object: {obj.name}");
                 DontDestroyOnLoad(obj);
                 continue;
             }
-
+            
+            // Skip objects with "Ignore" tag - they won't be stored or reactivated
+            if (obj.CompareTag("Ignore"))
+            {
+                Debug.Log($"Ignoring object (won't be reactivated): {obj.name}");
+                // We don't store these objects, so they'll stay as they are
+                continue;
+            }
+            
             // Skip the EncounterData object and this manager
             if (obj != this.gameObject &&
                 obj != encounterData?.gameObject)
@@ -59,6 +67,22 @@ public class PreviousScene : MonoBehaviour
             encounterData.encounterStarterObject = null;
         }
 
+        // Find all Inventory objects that were preserved
+        GameObject[] inventoryObjects = GameObject.FindGameObjectsWithTag("Inventory");
+        foreach (var invObj in inventoryObjects)
+        {
+            Debug.Log($"Found preserved Inventory object: {invObj.name}");
+            invObj.SetActive(true);
+        }
+
+        // Find all Ignore objects (they were never deactivated, so nothing to do)
+        GameObject[] ignoreObjects = GameObject.FindGameObjectsWithTag("Ignore");
+        foreach (var ignoreObj in ignoreObjects)
+        {
+            Debug.Log($"Found Ignore object (keeping as is): {ignoreObj.name}");
+            // These objects were never deactivated, so they remain active
+        }
+
         // Reactivate all stored objects
         foreach (GameObject obj in sceneObjects)
         {
@@ -71,22 +95,19 @@ public class PreviousScene : MonoBehaviour
         // Reactivate player at the encounter location
         if (encounterData != null)
         {
-            // Get the position where combat started (where the EncounterStarter was)
+            // Get the position where combat started
             Vector3 playerPosition = Vector3.zero;
-
-            // Find the encounter starter position from the destroyed object's last known position
-            // You might want to store this position in EncounterData
             if (encounterData.encounterStarterObject != null)
             {
                 playerPosition = encounterData.encounterStarterObject.transform.position;
             }
-
+            
             // If combat was victorious, apply rewards
             if (encounterData.combatVictory)
             {
                 encounterData.ApplyCombatRewards();
             }
-
+            
             encounterData.ReactivateOriginalPlayer(playerPosition);
         }
 

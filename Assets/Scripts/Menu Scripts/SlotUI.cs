@@ -22,7 +22,7 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     [HideInInspector] public PartyMenuManager partyMenuManager;
 
     [Header("Tooltip Settings")]
-    public float tooltipDelay = 0.5f; // Delay before showing tooltip
+    public float tooltipDelay = 0.5f;
     public Vector2 tooltipOffset = new Vector2(10, -10);
 
     private GameObject activeTooltip;
@@ -51,6 +51,23 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             {
                 itemIcon.gameObject.SetActive(true);
                 itemIcon.sprite = slot.dadosDoItem.icone;
+
+                // Setup highlight border to match icon size + 0.1f
+                if (highlightBorder != null)
+                {
+                    // Make highlight border a copy of the icon sprite
+                    highlightBorder.sprite = slot.dadosDoItem.icone;
+                    highlightBorder.color = Color.yellow; // Yellow highlight
+
+                    // Make it 10% larger than the icon
+                    RectTransform iconRect = itemIcon.GetComponent<RectTransform>();
+                    RectTransform borderRect = highlightBorder.GetComponent<RectTransform>();
+
+                    if (iconRect != null && borderRect != null)
+                    {
+                        borderRect.sizeDelta = iconRect.sizeDelta * 1.1f;
+                    }
+                }
             }
 
             if (itemNameText != null)
@@ -69,6 +86,9 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
             if (quantityText != null)
                 quantityText.text = "";
+
+            if (highlightBorder != null)
+                highlightBorder.gameObject.SetActive(false);
         }
     }
 
@@ -195,6 +215,13 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     private void OnItemClick()
     {
         if (slotData == null || slotData.dadosDoItem == null) return;
+
+        // Only allow click if item is consumable or equippable
+        if (!slotData.dadosDoItem.ehConsumivel && !slotData.dadosDoItem.ehEquipavel)
+        {
+            Debug.Log($"Item {slotData.dadosDoItem.nomeDoItem} cannot be used or equipped.");
+            return;
+        }
 
         // Cancel any pending tooltip
         if (tooltipCoroutine != null)
@@ -381,7 +408,15 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     public void SetHighlight(bool highlighted)
     {
         if (highlightBorder != null)
+        {
             highlightBorder.gameObject.SetActive(highlighted);
+
+            // Ensure border stays behind the icon
+            if (highlighted && itemIcon != null)
+            {
+                highlightBorder.transform.SetSiblingIndex(itemIcon.transform.GetSiblingIndex());
+            }
+        }
     }
 
     public SlotInventario GetSlotData()

@@ -62,10 +62,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 944b4269c7e6a444586913a3958f68dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SlotUI
-  itemIcon: {fileID: 8409743382541275833}
+  itemIcon: {fileID: 4110613245858141653}
   itemNameText: {fileID: 2250796287957895384}
   quantityText: {fileID: 298492229344425227}
-  highlightBorder: {fileID: 4110613245858141653}
+  highlightBorder: {fileID: 8409743382541275833}
   clickButton: {fileID: 1012123902185733469}
   itemDetailsPrefab: {fileID: 0}
   partyMemberSelectorPrefab: {fileID: 0}
@@ -151,7 +151,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.11834717, y: -26.099976}
+  m_AnchoredPosition: {x: 5.0059814, y: 56}
   m_SizeDelta: {x: 100, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2747290927409642715
@@ -191,8 +191,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281479730
-  m_fontColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -209,13 +209,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 10
-  m_fontSizeBase: 10
+  m_fontSize: 20
+  m_fontSizeBase: 20
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
   m_fontSizeMax: 0
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -266,7 +266,7 @@ GameObject:
   - component: {fileID: 8172978922865156619}
   - component: {fileID: 4110613245858141653}
   m_Layer: 5
-  m_Name: Image (2)
+  m_Name: icone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -363,8 +363,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 7.299988, y: -26.099976}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchoredPosition: {x: 5.0059814, y: -30.200012}
+  m_SizeDelta: {x: 179.624, y: 39.5367}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6511359427035199738
 CanvasRenderer:
@@ -428,8 +428,8 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 1
-  m_HorizontalAlignment: 4
-  m_VerticalAlignment: 1024
+  m_HorizontalAlignment: 1
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_characterHorizontalScale: 1
@@ -478,7 +478,7 @@ GameObject:
   - component: {fileID: 1463337851867572431}
   - component: {fileID: 8409743382541275833}
   m_Layer: 5
-  m_Name: icone
+  m_Name: border
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
