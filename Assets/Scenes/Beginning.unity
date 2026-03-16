@@ -8060,7 +8060,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ed66988035c6fe46aff50571c757590, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DoorScript
-  destination: SampleScene
+  destination: Main Scene
   spriteRenderer: {fileID: 1828139118}
   opendoor: {fileID: 4130640169021434097, guid: a3b4b83a3c7e47641bb55b01dfa51732, type: 3}
 --- !u!1 &619394800
