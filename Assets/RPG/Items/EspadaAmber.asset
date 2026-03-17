@@ -20,10 +20,11 @@ MonoBehaviour:
   ehEmpilhavel: 0
   ehEquipavel: 1
   slotEquipamento: 0
-  ehDuasMaos: 0
-  modificadoresStats: []
+  modificadoresStats:
+  - statType: 1
+    valorModificador: 2
+    tipoModificador: 0
   nivelRequerido: 0
-  classeRequerida: 
   ehConsumivel: 0
   tipoConsumivel: 0
   usavelEmBatalha: 1

@@ -27,7 +27,14 @@ public class MovimentacaoExploracao : MonoBehaviour
     private float jumpThroughTimer = 0f;
     private const float JUMP_THROUGH_DURATION = 0.2f;
     private bool ignorePlatforms = false;
+    // Add this variable at the top with other variables
+    private bool canJump = true;
 
+    // Add this method to control jumping
+    public void SetCanJump(bool can)
+    {
+        canJump = can;
+    }
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -64,13 +71,13 @@ public class MovimentacaoExploracao : MonoBehaviour
         // 3. Jump input
         if (Input.GetButtonDown("Jump"))
         {
-            if (isGrounded)
+            // Then modify your jump input section in Update():
+            if (isGrounded && canJump)
             {
-                // Regular jump
                 rb.linearVelocity = new Vector2(rb.linearVelocity.x, forcaPulo);
                 // anim.SetTrigger("Pulando");
             }
-            else if (isOnOneWayPlatform && Input.GetAxisRaw("Vertical") < 0)
+            else if (isOnOneWayPlatform && canJump && Input.GetAxisRaw("Vertical") < 0)
             {
                 // Jump down through one-way platform
                 StartCoroutine(JumpThroughPlatform());

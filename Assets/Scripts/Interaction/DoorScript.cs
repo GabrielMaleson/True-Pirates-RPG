@@ -10,25 +10,33 @@ public class DoorScript : MonoBehaviour
     public Sprite opendoor;
     private bool playerInRange = false;
 
+    // Reference to player's movement script to prevent jumping
+    private MovimentacaoExploracao playerMovement;
+
     private void Update()
     {
         // Check for input in Update while player is in range
+        if (playerInRange && Input.GetKeyDown(KeyCode.Space))
+        {
+            // Disable player jumping temporarily
+            if (playerMovement != null)
+                playerMovement.SetCanJump(false);
 
-            if (playerInRange && Input.GetKeyDown(KeyCode.Space))
-            {
-                StartCoroutine(TryOpenDoor()); // Correct - starts the coroutine
-            }
-        
+            StartCoroutine(TryOpenDoor());
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
         {
-            {
-                playerInRange = true;
-                ShowPopup();
-            }
+            playerInRange = true;
+
+            // Get reference to player's movement script
+            if (playerMovement == null)
+                playerMovement = collision.GetComponent<MovimentacaoExploracao>();
+
+            ShowPopup();
         }
     }
 
@@ -37,18 +45,25 @@ public class DoorScript : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             playerInRange = false;
+
+            // Clear reference
+            playerMovement = null;
+
             HidePopup();
         }
     }
 
     private IEnumerator TryOpenDoor()
     {
-      
         spriteRenderer.sprite = opendoor;
         HidePopup();
         yield return new WaitForSeconds(0.3f);
+
+        // Re-enable jumping before scene loads (just in case)
+        if (playerMovement != null)
+            playerMovement.SetCanJump(true);
+
         SceneManager.LoadScene(destination);
-        
     }
 
     private void ShowPopup()

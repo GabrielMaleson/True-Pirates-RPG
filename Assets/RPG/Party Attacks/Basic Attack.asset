@@ -21,7 +21,7 @@ MonoBehaviour:
   - effectType: 0
     targetType: 1
     numberOfTargets: 1
-    value: 2
+    value: 1
     accuracy: 100
     triggersOn: 0
     statusEffect: {fileID: 0}

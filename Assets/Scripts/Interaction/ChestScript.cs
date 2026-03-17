@@ -11,11 +11,18 @@ public class ChestScript : MonoBehaviour
     private bool ChestOpen = false;
     private bool playerInRange = false;
 
+    // Reference to player's movement script to prevent jumping
+    private MovimentacaoExploracao playerMovement;
+
     private void Update()
     {
         // Check for input in Update while player is in range and chest is not open
         if (playerInRange && !ChestOpen && Input.GetKeyDown(KeyCode.Space))
         {
+            // Disable player jumping temporarily
+            if (playerMovement != null)
+                playerMovement.SetCanJump(false);
+
             TryOpenChest();
         }
     }
@@ -24,9 +31,14 @@ public class ChestScript : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
+            playerInRange = true;
+
+            // Get reference to player's movement script
+            if (playerMovement == null)
+                playerMovement = collision.GetComponent<MovimentacaoExploracao>();
+
             if (!ChestOpen)
             {
-                playerInRange = true;
                 ShowPopup();
                 Debug.Log("aperte space bar pra abrir o baú. no jogo final vai aparecer um icone mais relevante");
             }
@@ -38,6 +50,10 @@ public class ChestScript : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             playerInRange = false;
+
+            // Clear reference
+            playerMovement = null;
+
             HidePopup();
         }
     }
@@ -52,7 +68,11 @@ public class ChestScript : MonoBehaviour
             spriteRenderer.sprite = openchest;
             ChestOpen = true;
             Debug.Log("chest aberto");
-            HidePopup(); 
+            HidePopup();
+
+            // Re-enable jumping
+            if (playerMovement != null)
+                playerMovement.SetCanJump(true);
         }
     }
 

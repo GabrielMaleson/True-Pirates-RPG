@@ -55,6 +55,9 @@ public class CombatSystem : MonoBehaviour
     private bool isAnimating = false;
     private bool isPlayerExecuting = false;
 
+    private GameObject menubutton;
+    private GameObject objbutton2;
+
     // Store queued actions
     private List<QueuedAction> pendingActions = new List<QueuedAction>();
 
@@ -91,6 +94,10 @@ public class CombatSystem : MonoBehaviour
 
     private void Start()
     {
+        menubutton = GameObject.FindGameObjectWithTag("MenuOpener");
+        objbutton2 = GameObject.FindGameObjectWithTag("ObjectiveButtwo");
+        menubutton.SetActive(false);
+        objbutton2.SetActive(false);
         EncounterData encounterData = FindFirstObjectByType<EncounterData>();
         if (encounterData != null)
         {
@@ -740,6 +747,8 @@ public class CombatSystem : MonoBehaviour
 
     private IEnumerator ReturnToMapAfterDelay(float delay)
     {
+        menubutton.SetActive(true);
+        objbutton2.SetActive(true);
         yield return new WaitForSeconds(delay);
 
         EncounterData encounterData = FindFirstObjectByType<EncounterData>();
