@@ -124,6 +124,16 @@ title: simonbattleend
 	<<brighten>>
 ===
 
+title: cantprogressyet
+---
+	<<darken>>
+	<<sprite simon1 icon>>
+	Simon: O que você tá pensando, moleque?! Quer matar todos nós?!
+	Simon: Se vamos continuar, vamos por outro lugar, não aqui.
+	<<removesprite icon>>
+	<<brighten>>
+===
+
 title: receptionsuccess
 ---
 	<<darken>>
