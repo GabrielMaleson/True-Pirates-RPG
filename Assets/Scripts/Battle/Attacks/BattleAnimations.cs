@@ -52,7 +52,7 @@ public class BattleAnimationData : ScriptableObject
         // Pre-delay
         yield return new WaitForSeconds(preDelay);
 
-        // 1. Show attack text (like Final Fantasy)
+        // 1. Show attack text
         if (animationText != null && coroutineRunner != null)
         {
             string displayText = attackTextFormat
@@ -64,26 +64,24 @@ public class BattleAnimationData : ScriptableObject
             animationText.fontSize = textSize;
             animationText.gameObject.SetActive(true);
 
-            // Text stays for duration - use coroutine runner
             coroutineRunner.StartCoroutine(HideTextAfterDelay(textDisplayDuration));
         }
 
         // 2. User stands in place and plays animation using CharacterComponent
         if (userAnimation != null && user.transform != null)
         {
-            // Wait for user animation delay if specified
             if (userAnimationDelay > 0)
                 yield return new WaitForSeconds(userAnimationDelay);
 
-            // Try to get CharacterComponent and play animation
             CharacterComponent characterComp = user.transform.GetComponent<CharacterComponent>();
             if (characterComp != null)
             {
+                // Ensure animator controller is set before playing
+                characterComp.PrepareForBattle();
                 characterComp.PlayAnimation(userAnimation);
             }
             else
             {
-                // Fallback to direct Animator access
                 Animator animator = user.transform.GetComponent<Animator>();
                 if (animator != null)
                 {
@@ -91,7 +89,6 @@ public class BattleAnimationData : ScriptableObject
                 }
             }
         }
-
         // 3. Wait for hit delay (allow user animation to play)
         yield return new WaitForSeconds(hitDelay);
 

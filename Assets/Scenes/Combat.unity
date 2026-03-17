@@ -723,9 +723,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1193013461}
-        m_TargetAssemblyTypeName: CombatSystem, Assembly-CSharp
-        m_MethodName: UndoLastAction
+      - m_Target: {fileID: 1193013462}
+        m_TargetAssemblyTypeName: CombatUIManager, Assembly-CSharp
+        m_MethodName: CancelTargeting
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1691,7 +1691,6 @@ MonoBehaviour:
   - {fileID: 1829737667}
   - {fileID: 2015639665}
   - {fileID: 1314767330}
-  battleAnimationText: {fileID: 0}
   partyMemberVisualPrefab: {fileID: 6974297528663458817, guid: 3339a6e2897547543a521b0f413b369f, type: 3}
   enemyVisualPrefab: {fileID: 6974297528663458817, guid: 391be075ecde2e44495ced23336f447e, type: 3}
   currentState: 0

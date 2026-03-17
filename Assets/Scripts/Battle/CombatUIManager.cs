@@ -86,18 +86,6 @@ public class CombatUIManager : MonoBehaviour
 
         if (undoButton != null)
             undoButton.onClick.AddListener(OnUndoSelected);
-
-        // Set up targeting back button
-        if (targetingBackButton != null)
-        {
-            targetingBackButton.SetActive(false);
-            targetingBackButtonComponent = targetingBackButton.GetComponent<Button>();
-            if (targetingBackButtonComponent != null)
-            {
-                targetingBackButtonComponent.onClick.AddListener(OnTargetingBack);
-            }
-        }
-
         if (targetingPanel != null)
             targetingPanel.SetActive(false);
 
@@ -566,9 +554,11 @@ public class CombatUIManager : MonoBehaviour
         }
     }
 
-    private void OnTargetingBack()
+    // Add this public method to CombatUIManager.cs that can be called from a UI button:
+
+    public void CancelTargeting()
     {
-        Debug.Log("Targeting cancelled");
+        Debug.Log("Targeting cancelled via UI button");
 
         // Cancel targeting
         DisableAllTargeting();
@@ -590,7 +580,6 @@ public class CombatUIManager : MonoBehaviour
 
         statusText.text = "Selection cancelled";
     }
-
     private void EnableTargetingOnCharacters(List<PartyMemberState> characters)
     {
         foreach (var character in characters)
@@ -885,11 +874,5 @@ public class CombatUIManager : MonoBehaviour
             waitMenuButton.onClick.RemoveListener(OnWaitSelected);
         if (undoButton != null)
             undoButton.onClick.RemoveListener(OnUndoSelected);
-
-        // Remove targeting back button listener
-        if (targetingBackButtonComponent != null)
-        {
-            targetingBackButtonComponent.onClick.RemoveListener(OnTargetingBack);
-        }
     }
 }

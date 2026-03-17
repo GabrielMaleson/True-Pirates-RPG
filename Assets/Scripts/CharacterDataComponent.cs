@@ -20,21 +20,14 @@ public class CharacterComponent : MonoBehaviour
         if (characterAnimator == null)
             characterAnimator = GetComponent<Animator>();
 
-        // If we have a party member state with a template that has an animator controller,
-        // apply it to the animator
-        if (partyMemberState?.template != null && partyMemberState.template.animatorController != null)
+        // If we still don't have an animator, add one
+        if (characterAnimator == null)
         {
-            if (characterAnimator == null)
-            {
-                // Try to add an Animator component
-                characterAnimator = gameObject.AddComponent<Animator>();
-            }
-
-            if (characterAnimator != null)
-            {
-                characterAnimator.runtimeAnimatorController = partyMemberState.template.animatorController;
-            }
+            characterAnimator = gameObject.AddComponent<Animator>();
         }
+
+        // Apply animator controller from party member state if available
+        UpdateAnimatorController();
     }
 
     private void Start()
@@ -42,6 +35,31 @@ public class CharacterComponent : MonoBehaviour
         if (partyMemberState != null)
         {
             UpdateRuntimeStats();
+        }
+    }
+
+    // Call this method when entering battle to ensure animator controller is set
+    public void PrepareForBattle()
+    {
+        UpdateAnimatorController();
+    }
+
+    private void UpdateAnimatorController()
+    {
+        // If we have a party member state with a template that has an animator controller,
+        // apply it to the animator
+        if (partyMemberState?.template != null && partyMemberState.template.animatorController != null)
+        {
+            // Check if the current controller is different
+            if (characterAnimator.runtimeAnimatorController != partyMemberState.template.animatorController)
+            {
+                characterAnimator.runtimeAnimatorController = partyMemberState.template.animatorController;
+                Debug.Log($"Animator controller set for {partyMemberState.CharacterName}");
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"No animator controller found for {partyMemberState?.CharacterName ?? "Unknown"}");
         }
     }
 

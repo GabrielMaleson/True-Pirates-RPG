@@ -5,12 +5,12 @@ using UnityEngine.UI;
 public class CharacterUI : MonoBehaviour
 {
     [Header("UI Elements")]
-    public Image portraitImage; // NEW: Character portrait
+    public Image portraitImage;
     public TextMeshProUGUI nameText;
     public TextMeshProUGUI hpText;
-    public Image healthBar;
+    public Image healthBar; // Set Image Type to Filled, Fill Method Horizontal
     public TextMeshProUGUI apText;
-    public Image apBar;
+    public Image apBar; // Set Image Type to Filled, Fill Method Horizontal
     public GameObject defeatedOverlay;
 
     [Header("Target Indicator")]
@@ -52,6 +52,19 @@ public class CharacterUI : MonoBehaviour
             }
         }
 
+        // Ensure bars are set to fill type
+        if (healthBar != null)
+        {
+            healthBar.type = Image.Type.Filled;
+            healthBar.fillMethod = Image.FillMethod.Horizontal;
+        }
+
+        if (apBar != null)
+        {
+            apBar.type = Image.Type.Filled;
+            apBar.fillMethod = Image.FillMethod.Horizontal;
+        }
+
         UpdateDisplay();
 
         // Hide target indicator initially
@@ -73,14 +86,22 @@ public class CharacterUI : MonoBehaviour
     {
         if (memberState != null)
         {
+            // Update HP text and bar
             hpText.text = $"{memberState.currentHP}/{memberState.MaxHP}";
             if (healthBar != null)
-                healthBar.fillAmount = (float)memberState.currentHP / memberState.MaxHP;
+            {
+                float hpPercent = (float)memberState.currentHP / memberState.MaxHP;
+                healthBar.fillAmount = Mathf.Clamp01(hpPercent);
+            }
 
+            // Update AP text and bar
             if (apText != null)
                 apText.text = $"AP: {memberState.currentAP}/{memberState.MaxAP}";
             if (apBar != null)
-                apBar.fillAmount = (float)memberState.currentAP / memberState.MaxAP;
+            {
+                float apPercent = (float)memberState.currentAP / memberState.MaxAP;
+                apBar.fillAmount = Mathf.Clamp01(apPercent);
+            }
         }
     }
 
@@ -117,6 +138,12 @@ public class CharacterUI : MonoBehaviour
             portraitColor.a = 0.5f;
             portraitImage.color = portraitColor;
         }
+
+        // Set bars to 0
+        if (healthBar != null)
+            healthBar.fillAmount = 0f;
+        if (apBar != null)
+            apBar.fillAmount = 0f;
 
         HideTargetIndicator();
     }

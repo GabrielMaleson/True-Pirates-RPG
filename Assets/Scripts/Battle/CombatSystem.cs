@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -35,8 +34,7 @@ public class CombatSystem : MonoBehaviour
     [Header("Spawn Points")]
     public List<Transform> partySpawnPoints;
     public List<Transform> enemySpawnPoints;
-    [Header("Battle Animation")]
-    public TextMeshProUGUI battleAnimationText; // Assign in inspector
+
     [Header("Prefabs")]
     public GameObject partyMemberVisualPrefab;
     public GameObject enemyVisualPrefab;
@@ -56,8 +54,6 @@ public class CombatSystem : MonoBehaviour
     private bool isExecutingActions = false;
     private bool isAnimating = false;
     private bool isPlayerExecuting = false;
-    private GameObject menubutton;
-    private GameObject objbutton2;
 
     // Store queued actions
     private List<QueuedAction> pendingActions = new List<QueuedAction>();
@@ -95,10 +91,6 @@ public class CombatSystem : MonoBehaviour
 
     private void Start()
     {
-        menubutton = GameObject.FindGameObjectWithTag("MenuOpener");
-        objbutton2 = GameObject.FindGameObjectWithTag("ObjectiveButtwo");
-        menubutton.SetActive(false);
-        objbutton2.SetActive(false);
         EncounterData encounterData = FindFirstObjectByType<EncounterData>();
         if (encounterData != null)
         {
@@ -108,11 +100,6 @@ public class CombatSystem : MonoBehaviour
         {
             Debug.LogError("No EncounterData found! Cannot start combat.");
         }
-        if (battleAnimationText != null)
-        {
-            BattleAnimationData.Initialize(battleAnimationText, this);
-            Debug.Log("Battle animation system initialized");
-        }
     }
 
     public void InitializeCombatWithData(EncounterData encounterData)
@@ -120,6 +107,7 @@ public class CombatSystem : MonoBehaviour
         partyMembers.Clear();
         enemies.Clear();
 
+        // Set up party members from player data
         if (encounterData.playerPartyMembers != null && encounterData.playerPartyMembers.Count > 0)
         {
             for (int i = 0; i < encounterData.playerPartyMembers.Count; i++)
@@ -136,6 +124,9 @@ public class CombatSystem : MonoBehaviour
                     if (comp == null) comp = memberObj.AddComponent<CharacterComponent>();
                     comp.partyMemberState = memberData;
 
+                    // PREPARE FOR BATTLE - This ensures animator controller is set
+                    comp.PrepareForBattle();
+
                     memberData.transform = memberObj.transform;
                 }
 
@@ -143,6 +134,7 @@ public class CombatSystem : MonoBehaviour
             }
         }
 
+        // Set up enemies from encounter data
         if (encounterData.enemyPartyMembers != null && encounterData.enemyPartyMembers.Count > 0)
         {
             for (int i = 0; i < encounterData.enemyPartyMembers.Count; i++)
@@ -162,6 +154,9 @@ public class CombatSystem : MonoBehaviour
                     CharacterComponent comp = enemyObj.GetComponent<CharacterComponent>();
                     if (comp == null) comp = enemyObj.AddComponent<CharacterComponent>();
                     comp.partyMemberState = enemyData;
+
+                    // PREPARE FOR BATTLE - This ensures animator controller is set
+                    comp.PrepareForBattle();
 
                     enemyData.transform = enemyObj.transform;
 
@@ -247,7 +242,7 @@ public class CombatSystem : MonoBehaviour
         // Store initial AP for undo
         apBeforeTurn = currentCharacter.currentAP;
         actionsThisTurn.Clear();
-        pendingActions.Clear(); // Clear any leftover pending actions
+        pendingActions.Clear();
 
         currentState = CombatState.PLAYER_TURN;
         onTurnStarted?.Invoke(currentCharacter);
@@ -257,9 +252,10 @@ public class CombatSystem : MonoBehaviour
 
     private void StartNextEnemyTurn()
     {
-        // Prevent enemy turn from starting while player actions are executing
         if (isPlayerExecuting)
         {
+            Debug.Log("Waiting for player actions to complete before enemy turn...");
+            StartCoroutine(WaitForPlayerExecution());
             return;
         }
 
@@ -312,7 +308,6 @@ public class CombatSystem : MonoBehaviour
             yield return null;
         }
 
-        // Try to start enemy turn again
         StartNextEnemyTurn();
     }
 
@@ -457,12 +452,10 @@ public class CombatSystem : MonoBehaviour
 
         if (actionsThisTurn.Count > 0)
         {
-            // Remove the last action from both lists
             QueuedAction lastAction = actionsThisTurn[actionsThisTurn.Count - 1];
             actionsThisTurn.RemoveAt(actionsThisTurn.Count - 1);
             pendingActions.Remove(lastAction);
 
-            // Restore AP to beginning of turn state
             currentCharacter.currentAP = apBeforeTurn;
 
             onCharacterUpdated?.Invoke(currentCharacter);
@@ -524,10 +517,7 @@ public class CombatSystem : MonoBehaviour
 
         StartNextPlayerTurn();
     }
-    public void InitializeBattleAnimationText(TextMeshProUGUI textUI)
-    {
-        BattleAnimationData.Initialize(battleAnimationText, this);
-    }
+
     private IEnumerator ExecuteAttackWithAnimation(PartyMemberState user, AttackFile attack, List<PartyMemberState> targets)
     {
         isAnimating = true;
@@ -752,8 +742,6 @@ public class CombatSystem : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
 
-        menubutton.SetActive(true);
-        objbutton2.SetActive(true);
         EncounterData encounterData = FindFirstObjectByType<EncounterData>();
         PreviousScene previousScene = FindFirstObjectByType<PreviousScene>();
 

@@ -5,10 +5,10 @@ using UnityEngine.UI;
 public class EnemyUI : MonoBehaviour
 {
     [Header("UI Elements")]
-    public Image portraitImage; // NEW: Enemy portrait
+    public Image portraitImage;
     public TextMeshProUGUI nameText;
     public TextMeshProUGUI hpText;
-    public Image healthBar;
+    public Image healthBar; // Set Image Type to Filled, Fill Method Horizontal
     public GameObject defeatedOverlay;
 
     [Header("Target Button")]
@@ -48,6 +48,13 @@ public class EnemyUI : MonoBehaviour
             }
         }
 
+        // Ensure health bar is set to fill type
+        if (healthBar != null)
+        {
+            healthBar.type = Image.Type.Filled;
+            healthBar.fillMethod = Image.FillMethod.Horizontal;
+        }
+
         UpdateDisplay();
 
         if (characterVisualObject != null)
@@ -69,9 +76,13 @@ public class EnemyUI : MonoBehaviour
     {
         if (memberState != null)
         {
+            // Update HP text and bar
             hpText.text = $"{memberState.currentHP}/{memberState.MaxHP}";
             if (healthBar != null)
-                healthBar.fillAmount = (float)memberState.currentHP / memberState.MaxHP;
+            {
+                float hpPercent = (float)memberState.currentHP / memberState.MaxHP;
+                healthBar.fillAmount = Mathf.Clamp01(hpPercent);
+            }
         }
     }
 
@@ -109,6 +120,10 @@ public class EnemyUI : MonoBehaviour
             portraitColor.a = 0.5f;
             portraitImage.color = portraitColor;
         }
+
+        // Set health bar to 0
+        if (healthBar != null)
+            healthBar.fillAmount = 0f;
 
         HideTargetButton();
     }
