@@ -30,7 +30,7 @@ public class Shopkeeper : MonoBehaviour
     [Header("UI References")]
     public GameObject shopPanel;
     public Transform itemContainer;
-    public GameObject itemButtonPrefab;
+    public GameObject itemButtonPrefab; // This prefab should have a Button and TextMeshProUGUI
     public TextMeshProUGUI playerGoldText;
     public TextMeshProUGUI shopNameText;
     public TextMeshProUGUI itemDetailsNameText;
@@ -75,6 +75,13 @@ public class Shopkeeper : MonoBehaviour
         // Hide interaction popup initially
         if (interactionPopup != null)
             interactionPopup.SetActive(false);
+
+        // Validate required references
+        if (itemContainer == null)
+            Debug.LogError("itemContainer is not assigned in the Shopkeeper inspector!", this);
+
+        if (itemButtonPrefab == null)
+            Debug.LogError("itemButtonPrefab is not assigned in the Shopkeeper inspector!", this);
     }
 
     private void Update()
@@ -124,59 +131,55 @@ public class Shopkeeper : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter(Collider collision) // For 3D colliders
-    {
-        if (collision.CompareTag("Player"))
-        {
-            playerInRange = true;
-
-            // Get reference to player's movement script
-            if (playerMovement == null)
-                playerMovement = collision.GetComponent<MovimentacaoExploracao>();
-
-            ShowPopup();
-            Debug.Log($"Press {interactKey} to open shop");
-        }
-    }
-
-    private void OnTriggerExit(Collider collision) // For 3D colliders
-    {
-        if (collision.CompareTag("Player"))
-        {
-            playerInRange = false;
-
-            // Clear reference
-            playerMovement = null;
-
-            HidePopup();
-
-            if (isShopOpen)
-            {
-                CloseShop();
-            }
-        }
-    }
-
     private void ShowPopup()
     {
+        if (interactionPopup == null)
+        {
+            // Try to find popup by tag if not assigned
+            interactionPopup = GameObject.FindWithTag("Notification");
+        }
+
         if (interactionPopup != null)
         {
             interactionPopup.SetActive(true);
 
-            // Optional: Update popup text with key
+            // Optional: Update popup text
             TextMeshProUGUI popupText = interactionPopup.GetComponentInChildren<TextMeshProUGUI>();
             if (popupText != null)
             {
                 popupText.text = $"Press {interactKey} to shop";
+            }
+
+            // Handle SpriteRenderer if that's what you're using
+            SpriteRenderer spriteRend = interactionPopup.GetComponent<SpriteRenderer>();
+            if (spriteRend != null)
+            {
+                Color color = spriteRend.color;
+                color.a = 1f;
+                spriteRend.color = color;
             }
         }
     }
 
     private void HidePopup()
     {
+        if (interactionPopup == null)
+        {
+            interactionPopup = GameObject.FindWithTag("Notification");
+        }
+
         if (interactionPopup != null)
         {
             interactionPopup.SetActive(false);
+
+            // Handle SpriteRenderer if that's what you're using
+            SpriteRenderer spriteRend = interactionPopup.GetComponent<SpriteRenderer>();
+            if (spriteRend != null)
+            {
+                Color color = spriteRend.color;
+                color.a = 0f;
+                spriteRend.color = color;
+            }
         }
     }
 
@@ -260,10 +263,13 @@ public class Shopkeeper : MonoBehaviour
                 {
                     itemButtons[selectedItem].interactable = false;
 
-                    // Update button text to show "Sold Out"
+                    // Find the button's text component
                     TextMeshProUGUI btnText = itemButtons[selectedItem].GetComponentInChildren<TextMeshProUGUI>();
                     if (btnText != null)
+                    {
+                        // Just update the text to show it's sold out, but keep the structure simple
                         btnText.text = $"{selectedItem.item.nomeDoItem}\n(Sold Out)";
+                    }
                 }
             }
         }
@@ -285,6 +291,19 @@ public class Shopkeeper : MonoBehaviour
 
     private void RefreshItemList()
     {
+        // Safety check
+        if (itemContainer == null)
+        {
+            Debug.LogError("itemContainer is null! Cannot refresh item list.", this);
+            return;
+        }
+
+        if (itemButtonPrefab == null)
+        {
+            Debug.LogError("itemButtonPrefab is null! Cannot refresh item list.", this);
+            return;
+        }
+
         // Clear existing buttons
         foreach (Transform child in itemContainer)
         {
@@ -297,9 +316,18 @@ public class Shopkeeper : MonoBehaviour
         {
             if (shopItem.item == null) continue;
 
+            // Instantiate the button
             GameObject buttonObj = Instantiate(itemButtonPrefab, itemContainer);
-            TextMeshProUGUI buttonText = buttonObj.GetComponentInChildren<TextMeshProUGUI>();
             Button button = buttonObj.GetComponent<Button>();
+
+            if (button == null)
+            {
+                Debug.LogError($"Item button prefab is missing a Button component!", this);
+                continue;
+            }
+
+            // Find the Text component on the button
+            TextMeshProUGUI buttonText = buttonObj.GetComponentInChildren<TextMeshProUGUI>();
 
             // Set button text
             if (buttonText != null)

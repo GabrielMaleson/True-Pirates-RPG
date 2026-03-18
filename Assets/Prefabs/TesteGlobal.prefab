@@ -1741,7 +1741,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &5341552256377868815
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1751,15 +1751,15 @@ RectTransform:
   m_GameObject: {fileID: 2529533479675949058}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2.1137, y: 2.1137, z: 2.1137}
+  m_LocalScale: {x: 2.1137004, y: 2.1137004, z: 2.1137004}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1946069607213362593}
-  m_Father: {fileID: 4242515024686323064}
+  m_Father: {fileID: 1028641751349857546}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 100, y: -25}
+  m_AnchoredPosition: {x: 1467.5002, y: -280}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &22704111421641644
@@ -1886,6 +1886,7 @@ RectTransform:
   m_LocalScale: {x: 0.5354166, y: 0.5354166, z: 0.5354166}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 5341552256377868815}
   - {fileID: 5414095884451568484}
   - {fileID: 3899708542786031924}
   - {fileID: 2105353394887883324}
@@ -3119,8 +3120,8 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 9021295816073999547}
   - {fileID: 5193093373476357220}
+  - {fileID: 9021295816073999547}
   - {fileID: 1028641751349857546}
   - {fileID: 3087446716744817279}
   - {fileID: 2441269628578087016}
@@ -4133,8 +4134,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -4455,7 +4456,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Equipment
+  m_text: Equipamento
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -4885,7 +4886,6 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 5341552256377868815}
   - {fileID: 8859054518963233141}
   - {fileID: 1278407057015430255}
   - {fileID: 3318488914611460092}
