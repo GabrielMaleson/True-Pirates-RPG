@@ -261,8 +261,6 @@ public class CombatSystem : MonoBehaviour
     {
         if (isPlayerExecuting)
         {
-            Debug.Log("Waiting for player actions to complete before enemy turn...");
-            StartCoroutine(WaitForPlayerExecution());
             return;
         }
 

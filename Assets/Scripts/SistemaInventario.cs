@@ -12,6 +12,7 @@ public class SistemaInventario : MonoBehaviour
     [Header("Inventory")]
     public List<SlotInventario> inventario = new List<SlotInventario>();
     public int maxInventorySize = 30;
+    private SaveLoadManager saveLoadManager;
 
     [Header("Economy")]
     public int moedas = 0;
@@ -39,6 +40,7 @@ public class SistemaInventario : MonoBehaviour
 
     private void Start()
     {
+        saveLoadManager = FindFirstObjectByType<SaveLoadManager>();
         // Initialize party members if needed
         InitializePartyMembers();
     }
@@ -54,6 +56,11 @@ public class SistemaInventario : MonoBehaviour
             }
         }
     }
+
+    public void SaveGame()
+    {
+        saveLoadManager.SaveGame();
+}
 
     // Inventory Methods
     public void AdicionarItem(DadosItem itemParaAdicionar, int quantidade)
