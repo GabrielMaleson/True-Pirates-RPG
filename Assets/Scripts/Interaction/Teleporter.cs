@@ -12,6 +12,8 @@ public class TeleporterScript : MonoBehaviour
     [Header("Teleport Targets")]
     public bool teleportPlayer = true; // Whether to teleport the player
     public bool teleportAllies = true; // Whether to teleport objects tagged "Ally"
+    public GameObject Camera;
+    public GameObject OldCamera;
     public List<GameObject> additionalObjects = new List<GameObject>(); // Specific objects to teleport
 
     [Header("Screen Transition")]
@@ -192,10 +194,11 @@ public class TeleporterScript : MonoBehaviour
 
         // Play the screen transition
         ScreenTransition.Instance.PlayTransition();
-
+        
         // Additional delay before teleporting
         yield return new WaitForSeconds(transitionDelay);
-
+        Camera.SetActive(true);
+        OldCamera.SetActive(false);
         // Now teleport
         ExecuteTeleport();
     }
