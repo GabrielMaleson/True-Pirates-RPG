@@ -1,45 +1,111 @@
 using UnityEngine;
 using System.Collections;
+using Yarn.Unity;
+
 public class FightProgress : MonoBehaviour
 {
-    public DialogueManager dialogueRunner;
+    public DialogueManager dialogueManager;
     public SistemaInventario sistemaInventario;
     public GameObject scamps;
     public GameObject foe;
     public GameObject Player;
     public Transform retreat;
+    public bool isBoss;
+    public bool doingthing = false;
+
+    // Freeze position variables
+    private bool isPositionFrozen = false;
+    private float frozenXPosition;
+    private MovimentacaoExploracao playerMovement;
+    private DialogueRunner dialogueRunner;
+    private bool commandsRegistered = false;
+
     void Start()
     {
-        dialogueRunner = FindFirstObjectByType<DialogueManager>();
-        sistemaInventario = FindFirstObjectByType<SistemaInventario>();
-        Player = GameObject.FindGameObjectWithTag("Player");
+        // Find references
+        if (dialogueManager == null)
+            dialogueManager = FindFirstObjectByType<DialogueManager>();
+
+        if (sistemaInventario == null)
+            sistemaInventario = FindFirstObjectByType<SistemaInventario>();
+
+        if (Player == null)
+            Player = GameObject.FindGameObjectWithTag("Player");
+
+        if (Player != null)
+            playerMovement = Player.GetComponent<MovimentacaoExploracao>();
+
+        // Try to register commands immediately
+        RegisterCommands();
+    }
+
+    private void RegisterCommands()
+    {
+        if (commandsRegistered) return;
+
+        // Get DialogueRunner from DialogueManager
+        if (dialogueManager != null && dialogueManager.dialogueRunner != null)
+        {
+            dialogueRunner = dialogueManager.dialogueRunner;
+
+            dialogueRunner.AddCommandHandler("unfreeze", UnfreezePlayer);
+            commandsRegistered = true;
+            Debug.Log("FightProgress: Registered unfreeze command successfully");
+        }
+        else
+        {
+            // Try again in a moment
+            Invoke(nameof(RegisterCommands), 0.5f);
+        }
     }
 
     private void Update()
     {
-        if (sistemaInventario.HasProgress("mutantfought"))
+        if (sistemaInventario != null && sistemaInventario.HasProgress("mutantfought"))
         {
             NextMoment();
         }
+
+        // Keep player at frozen X position if frozen
+        if (isPositionFrozen && Player != null)
+        {
+            Vector3 pos = Player.transform.position;
+            pos.x = frozenXPosition;
+            Player.transform.position = pos;
+        }
     }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Player"))
         {
             StartCoroutine(MoveToPoint(Player, retreat.position, true));
-            dialogueRunner.StartDialogue("cantprogressyet");
+            if (dialogueManager != null)
+                dialogueManager.StartDialogue("cantprogressyet");
         }
     }
 
     private void NextMoment()
     {
-        Destroy(scamps);
-        foe.SetActive(true);
+        if (scamps != null)
+            Destroy(scamps);
+        if (foe != null)
+            foe.SetActive(true);
         Destroy(this);
     }
 
     private IEnumerator MoveToPoint(GameObject character, Vector3 target, bool useAnimator)
     {
+        if (doingthing)
+        {
+            yield break;
+        }
+        doingthing = true;
+
+        // Disable player movement script temporarily
+        if (playerMovement != null)
+            playerMovement.enabled = false;
+
         Animator anim = character.GetComponent<Animator>();
         SpriteRenderer sprite = character.GetComponent<SpriteRenderer>();
         float speed = 5f;
@@ -61,6 +127,7 @@ public class FightProgress : MonoBehaviour
         {
             if (useAnimator && anim != null)
                 anim.SetBool("Andando", false);
+            doingthing = false;
             yield break;
         }
 
@@ -84,12 +151,58 @@ public class FightProgress : MonoBehaviour
             yield return null;
         }
 
+        // Ensure exact position
         character.transform.position = new Vector3(lockedTarget.x, originalY, character.transform.position.z);
 
         if (useAnimator && anim != null)
         {
             anim.SetBool("Andando", false);
         }
+
+        // Freeze X position after reaching destination
+        FreezePlayerPosition();
+
+        doingthing = false;
     }
 
+    private void FreezePlayerPosition()
+    {
+        if (Player != null)
+        {
+            isPositionFrozen = true;
+            frozenXPosition = Player.transform.position.x;
+            Debug.Log("Player X position frozen at: " + frozenXPosition);
+        }
+    }
+
+    private void UnfreezePlayer()
+    {
+        isPositionFrozen = false;
+
+        // Re-enable player movement
+        if (playerMovement != null)
+            playerMovement.enabled = true;
+
+        Debug.Log("Player X position unfrozen");
+    }
+
+    // Yarn command handler - must match the signature expected by AddCommandHandler
+    private void UnfreezePlayer(string[] parameters)
+    {
+        Debug.Log("Unfreeze command received with " + parameters.Length + " parameters");
+        UnfreezePlayer();
+    }
+
+    private void OnDestroy()
+    {
+        // Unregister Yarn command
+        if (dialogueRunner != null && commandsRegistered)
+        {
+            dialogueRunner.RemoveCommandHandler("unfreeze");
+            Debug.Log("FightProgress: Unregistered unfreeze command");
+        }
+
+        // Cancel any pending invoke
+        CancelInvoke();
+    }
 }

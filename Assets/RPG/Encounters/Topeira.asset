@@ -21,6 +21,18 @@ MonoBehaviour:
     overrideHP: 0
     additionalAttacks: []
     enemySpecificDrops: []
+  - characterData: {fileID: 11400000, guid: 3477d9bdb332f6347a5e175785076f35, type: 2}
+    enemyPrefab: {fileID: 6974297528663458817, guid: 391be075ecde2e44495ced23336f447e, type: 3}
+    level: 1
+    overrideHP: 0
+    additionalAttacks: []
+    enemySpecificDrops: []
+  - characterData: {fileID: 11400000, guid: 3477d9bdb332f6347a5e175785076f35, type: 2}
+    enemyPrefab: {fileID: 6974297528663458817, guid: 391be075ecde2e44495ced23336f447e, type: 3}
+    level: 1
+    overrideHP: 0
+    additionalAttacks: []
+    enemySpecificDrops: []
   baseGoldReward: 10
   baseExpReward: 100
   guaranteedDrops:

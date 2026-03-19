@@ -15,6 +15,7 @@ TagManager:
   - ObjectiveButton
   - ObjectiveButtwo
   - Ignore
+  - Ally
   layers:
   - Default
   - TransparentFX

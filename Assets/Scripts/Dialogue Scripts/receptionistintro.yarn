@@ -128,9 +128,10 @@ title: cantprogressyet
 ---
 	<<darken>>
 	<<sprite simon1 icon>>
-	Simon: O que você tá pensando, moleque?! Quer matar todos nós?!
-	Simon: Se vamos continuar, vamos por outro lugar, não aqui.
+	Simon: Espera aí. Temos que falar com meu comandante.
+	Simon: Se você quer ficar aqui, o MÍNIMO que deveria fazer é obedecer.
 	<<removesprite icon>>
+	<<unfreeze>>
 	<<brighten>>
 ===
 

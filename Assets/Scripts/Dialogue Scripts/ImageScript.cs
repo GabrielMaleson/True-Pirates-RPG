@@ -52,7 +52,7 @@ public class DialogueManager : MonoBehaviour
 
     private static DialogueManager instance;
     private static Dictionary<string, Image> activeImages = new Dictionary<string, Image>();
-    private DialogueRunner dialogueRunner;
+    public DialogueRunner dialogueRunner;
 
     private void Awake()
     {
@@ -119,6 +119,7 @@ public class DialogueManager : MonoBehaviour
     // Method to disable player movement
     public void DisablePlayerControl()
     {
+        ForceFindPlayer();
         if (instance.graphicRaycaster != null)
             instance.graphicRaycaster.enabled = true;
         if (playerMovement != null)
@@ -329,7 +330,7 @@ public class DialogueManager : MonoBehaviour
         }
     }
     // Replace your StartDialogue method with this async version:
-    public async void StartDialogue(string dialogue)
+    public void StartDialogue(string dialogue)
     {
         if (dialogueRunner == null)
         {
@@ -345,7 +346,7 @@ public class DialogueManager : MonoBehaviour
         DisablePlayerControl();
 
         // Start the dialogue (async but we don't need to await it)
-        await dialogueRunner.StartDialogue(dialogue);
+        dialogueRunner.StartDialogue(dialogue);
         Debug.Log($"Started dialogue: {dialogue}");
     }
 

@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using UnityEngine.UI;
 using Yarn.Unity;
 
 public class ObjectiveManager : MonoBehaviour
@@ -13,9 +14,23 @@ public class ObjectiveManager : MonoBehaviour
     public List<ObjectiveInstance> completedObjectives = new List<ObjectiveInstance>();
 
     [Header("UI References")]
-    public TextMeshProUGUI questNameText;      // Displays current objective name
-    public TextMeshProUGUI questDescriptionText; // Displays current objective description
-    public GameObject objectiveUIPanel;        // Optional panel to show/hide objectives
+    public GameObject questListPanel;           // Main panel containing the quest list
+    public Transform questListContainer;        // Container for quest name buttons (Vertical Layout Group)
+    public GameObject questNameButtonPrefab;    // Prefab for quest name buttons
+
+    public GameObject questDetailsPanel;        // Panel that shows selected quest details
+    public TextMeshProUGUI selectedQuestNameText;   // Displays selected quest name
+    public TextMeshProUGUI selectedQuestDescText;   // Displays selected quest description
+    public TextMeshProUGUI selectedQuestProgressText; // Optional: shows progress
+    public Button closeDetailsButton;           // Button to close details panel
+
+    [Header("Optional - Quest Log")]
+    public Button openQuestLogButton;           // Button to open the quest log
+    public Button closeQuestLogButton;          // Button to close the quest log
+
+    [Header("Colors")]
+    public Color activeQuestColor = Color.white;
+    public Color completedQuestColor = Color.gray;
 
     [Header("Objective Database")]
     public List<ObjectiveData> allObjectives;  // All available objectives for lookups
@@ -26,7 +41,7 @@ public class ObjectiveManager : MonoBehaviour
 
     private DialogueRunner dialogueRunner;
     private SistemaInventario inventory;
-    private ObjectiveInstance currentObjective;
+    private ObjectiveInstance currentSelectedObjective;
 
     // Dictionary for faster lookups
     private Dictionary<string, ObjectiveData> objectiveDictionary;
@@ -68,6 +83,154 @@ public class ObjectiveManager : MonoBehaviour
     {
         dialogueRunner = FindFirstObjectByType<DialogueRunner>();
         inventory = SistemaInventario.Instance;
+
+        // Set up UI
+        if (questListPanel != null)
+            questListPanel.SetActive(false);
+
+        if (questDetailsPanel != null)
+            questDetailsPanel.SetActive(false);
+
+        // Set up button listeners
+        if (openQuestLogButton != null)
+            openQuestLogButton.onClick.AddListener(OpenQuestLog);
+
+        if (closeQuestLogButton != null)
+            closeQuestLogButton.onClick.AddListener(CloseQuestLog);
+
+        if (closeDetailsButton != null)
+            closeDetailsButton.onClick.AddListener(CloseDetails);
+    }
+
+    public void OpenQuestLog()
+    {
+        if (questListPanel != null)
+        {
+            RefreshQuestList();
+            questListPanel.SetActive(true);
+        }
+    }
+
+    public void CloseQuestLog()
+    {
+        if (questListPanel != null)
+            questListPanel.SetActive(false);
+
+        if (questDetailsPanel != null)
+            questDetailsPanel.SetActive(false);
+
+        currentSelectedObjective = null;
+    }
+
+    public void CloseDetails()
+    {
+        if (questDetailsPanel != null)
+            questDetailsPanel.SetActive(false);
+
+        currentSelectedObjective = null;
+    }
+
+    private void RefreshQuestList()
+    {
+        // Clear existing buttons
+        foreach (Transform child in questListContainer)
+        {
+            Destroy(child.gameObject);
+        }
+
+        // Add active objectives first
+        foreach (var objective in activeObjectives)
+        {
+            if (objective != null && objective.data != null)
+            {
+                CreateQuestButton(objective, activeQuestColor);
+            }
+        }
+
+        // Add completed objectives (grayed out)
+        foreach (var objective in completedObjectives)
+        {
+            if (objective != null && objective.data != null)
+            {
+                CreateQuestButton(objective, completedQuestColor);
+            }
+        }
+    }
+
+    private void CreateQuestButton(ObjectiveInstance objective, Color textColor)
+    {
+        GameObject buttonObj = Instantiate(questNameButtonPrefab, questListContainer);
+        TextMeshProUGUI buttonText = buttonObj.GetComponentInChildren<TextMeshProUGUI>();
+        Button button = buttonObj.GetComponent<Button>();
+
+        if (buttonText != null)
+        {
+            buttonText.text = objective.data.objectiveName;
+            buttonText.color = textColor;
+
+            // Add status indicator
+            if (objective.isCompleted)
+                buttonText.text += " (Completed)";
+            else if (objective.isActive)
+                buttonText.text += " (Active)";
+        }
+
+        if (button != null)
+        {
+            ObjectiveInstance capturedObjective = objective;
+            button.onClick.AddListener(() => ShowQuestDetails(capturedObjective));
+        }
+    }
+
+    private void ShowQuestDetails(ObjectiveInstance objective)
+    {
+        currentSelectedObjective = objective;
+
+        if (questDetailsPanel != null)
+            questDetailsPanel.SetActive(true);
+
+        // Update details UI
+        if (selectedQuestNameText != null)
+        {
+            string status = objective.isCompleted ? " [COMPLETED]" : (objective.isActive ? " [ACTIVE]" : "");
+            selectedQuestNameText.text = objective.data.objectiveName + status;
+        }
+
+        if (selectedQuestDescText != null)
+            selectedQuestDescText.text = objective.data.objectiveDescription;
+
+        // Update progress text if available
+        if (selectedQuestProgressText != null)
+        {
+            string progressText = GetQuestProgress(objective);
+            selectedQuestProgressText.text = progressText;
+        }
+    }
+
+    private string GetQuestProgress(ObjectiveInstance objective)
+    {
+        if (objective.isCompleted)
+            return "Completed";
+
+        if (inventory == null) return "";
+
+        // Check progress on required tags
+        int completedCount = 0;
+        int totalRequired = objective.data.requiredProgressTags.Count;
+
+        foreach (string requiredTag in objective.data.requiredProgressTags)
+        {
+            if (inventory.GetGameProgress().Contains(requiredTag))
+                completedCount++;
+        }
+
+        if (totalRequired > 0)
+        {
+            float percent = (completedCount / (float)totalRequired) * 100;
+            return $"Progress: {completedCount}/{totalRequired} ({percent:F0}%)";
+        }
+
+        return "";
     }
 
     public void AddObjective(ObjectiveData objectiveData)
@@ -91,14 +254,12 @@ public class ObjectiveManager : MonoBehaviour
 
         activeObjectives.Add(instance);
 
-        // If this is the first objective, set it as current
-        if (activeObjectives.Count == 1)
-        {
-            SetCurrentObjective(instance);
-        }
-
         Debug.Log($"Objective added: {objectiveData.objectiveName}");
         onObjectiveAdded?.Invoke(instance);
+
+        // Refresh quest list if it's open
+        if (questListPanel != null && questListPanel.activeSelf)
+            RefreshQuestList();
     }
 
     public void AddObjectiveByName(string objectiveName)
@@ -114,49 +275,6 @@ public class ObjectiveManager : MonoBehaviour
         {
             Debug.LogError($"Objective '{objectiveName}' not found in database!");
         }
-    }
-
-    public void SetCurrentObjective(ObjectiveInstance objective)
-    {
-        currentObjective = objective;
-        UpdateObjectiveUI();
-    }
-
-    public void SetCurrentObjectiveByName(string objectiveName)
-    {
-        // Look for objective in active objectives
-        foreach (var obj in activeObjectives)
-        {
-            if (obj.data.objectiveName == objectiveName)
-            {
-                SetCurrentObjective(obj);
-                return;
-            }
-        }
-
-        Debug.LogWarning($"Objective '{objectiveName}' is not active!");
-    }
-
-    private void UpdateObjectiveUI()
-    {
-        if (currentObjective == null || currentObjective.data == null)
-        {
-            // No active objective, hide UI
-            if (objectiveUIPanel != null)
-                objectiveUIPanel.SetActive(false);
-            return;
-        }
-
-        // Update UI texts
-        if (questNameText != null)
-            questNameText.text = currentObjective.data.objectiveName;
-
-        if (questDescriptionText != null)
-            questDescriptionText.text = currentObjective.data.objectiveDescription;
-
-        // Show UI panel
-        if (objectiveUIPanel != null)
-            objectiveUIPanel.SetActive(true);
     }
 
     // Call this whenever progress is added (from SistemaInventario)
@@ -177,6 +295,16 @@ public class ObjectiveManager : MonoBehaviour
         foreach (var instance in toComplete)
         {
             CompleteObjective(instance);
+        }
+
+        // Refresh quest list if it's open
+        if (questListPanel != null && questListPanel.activeSelf)
+            RefreshQuestList();
+
+        // Update details if the completed objective is currently selected
+        if (currentSelectedObjective != null && toComplete.Contains(currentSelectedObjective))
+        {
+            ShowQuestDetails(currentSelectedObjective);
         }
     }
 
@@ -220,18 +348,6 @@ public class ObjectiveManager : MonoBehaviour
         {
             AddObjective(instance.data.nextObjective);
         }
-
-        // If there are still active objectives, set the first one as current
-        if (activeObjectives.Count > 0)
-        {
-            SetCurrentObjective(activeObjectives[0]);
-        }
-        else
-        {
-            // No more objectives, hide UI
-            currentObjective = null;
-            UpdateObjectiveUI();
-        }
     }
 
     // Yarn Command to add objective
@@ -246,17 +362,6 @@ public class ObjectiveManager : MonoBehaviour
         else
         {
             Debug.LogError("ObjectiveManager instance not found!");
-        }
-    }
-
-    // Yarn Command to set current objective
-    [YarnCommand("set_objective")]
-    public static void SetObjectiveCommand(string objectiveName)
-    {
-        if (Instance != null)
-        {
-            Debug.Log($"Setting current objective: {objectiveName}");
-            Instance.SetCurrentObjectiveByName(objectiveName);
         }
     }
 
@@ -288,21 +393,20 @@ public class ObjectiveManager : MonoBehaviour
         return false;
     }
 
-    // Yarn Command to clear current objective
-    [YarnCommand("clear_objective")]
-    public static void ClearObjectiveCommand()
+    // Yarn Command to open quest log
+    [YarnCommand("open_quest_log")]
+    public static void OpenQuestLogCommand()
     {
         if (Instance != null)
-        {
-            Instance.currentObjective = null;
-            Instance.UpdateObjectiveUI();
-        }
+            Instance.OpenQuestLog();
     }
 
-    // Public method to manually update UI (call after progress changes)
-    public void RefreshUI()
+    // Yarn Command to close quest log
+    [YarnCommand("close_quest_log")]
+    public static void CloseQuestLogCommand()
     {
-        UpdateObjectiveUI();
+        if (Instance != null)
+            Instance.CloseQuestLog();
     }
 
     private void OnValidate()

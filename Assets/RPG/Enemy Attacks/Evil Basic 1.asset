@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3149aa9faf252a47814cb908b2312b2, type: 3}
+  m_Name: Evil Basic 1
+  m_EditorClassIdentifier: Assembly-CSharp::AttackFile
+  attackName: "V\xF4mito a Jato"
+  description: 
+  icon: {fileID: 0}
+  partyMemberOnly: 0
+  actionPointCost: 0
+  effects:
+  - effectType: 0
+    targetType: 0
+    numberOfTargets: 3
+    value: 5
+    accuracy: 100
+    triggersOn: 0
+    statusEffect: {fileID: 0}
+    statModifiers: []
+    hitCount: 1
+    damageMultiplier: 1
+  battleAnimation: {fileID: 11400000, guid: cc180d481f3f9a24eae690927d2b3767, type: 2}
