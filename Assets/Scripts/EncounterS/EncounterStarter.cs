@@ -68,8 +68,6 @@ public class EncounterStarter : MonoBehaviour
             }
         }
 
-        encounterData.CalculateRewards();
-
         GameObject sceneObj = new GameObject("PreviousScene");
         sceneObj.AddComponent<PreviousScene>();
         sceneObj.GetComponent<PreviousScene>().UnloadScene();

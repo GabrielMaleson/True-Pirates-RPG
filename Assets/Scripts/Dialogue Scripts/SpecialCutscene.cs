@@ -315,7 +315,6 @@ public class SpecialCutsceneScript : MonoBehaviour
             }
         }
 
-        encounterData.CalculateRewards();
 
         // Check if combat scene exists in build
         if (!Application.CanStreamedLevelBeLoaded("Combat"))
