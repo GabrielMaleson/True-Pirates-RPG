@@ -20,15 +20,6 @@ public class MovimentacaoExploracao : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
-
-        // Create ground check if not assigned
-        if (groundCheck == null)
-        {
-            GameObject check = new GameObject("GroundCheck");
-            check.transform.parent = transform;
-            check.transform.localPosition = new Vector3(0, -0.5f, 0);
-            groundCheck = check.transform;
-        }
     }
     public void SetCanJump(bool can)
     {

@@ -1,15 +1,11 @@
 using UnityEngine;
 
-public class ShopkeeperLoad : MonoBehaviour
+public class NPCTalker : MonoBehaviour
 {
     public DialogueManager dialogue;
-    private GameObject player;
     public bool hasstarted = false;
-    public GameObject shop;
     private bool playerInRange = false;
-    public float Ugh = 0f;
-    public GameObject Player;
-    private MovimentacaoExploracao playerMovement;
+
     void Start()
     {
         dialogue = FindFirstObjectByType<DialogueManager>();
@@ -21,30 +17,13 @@ public class ShopkeeperLoad : MonoBehaviour
         {
             ShowPopup();
         }
+
         if (!hasstarted && playerInRange && Input.GetKeyDown(KeyCode.Space))
         {
             hasstarted = true;
-            if (Player == null)
-                Player = GameObject.FindGameObjectWithTag("Player");
-
-            if (Player != null)
-                playerMovement = Player.GetComponent<MovimentacaoExploracao>();
-            playerMovement.enabled = false;
             dialogue.StartDialogue("shopkeep");
         }
-        if (playerInRange && Input.GetKeyDown(KeyCode.Space)) 
-        {
-            Ugh++;
-        }
-        if (Ugh > 8f)
-        {
-            shop.SetActive(true);
-            Destroy(this);
-            playerMovement.enabled = true;
-        }
     }
-
-
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -92,7 +71,5 @@ public class ShopkeeperLoad : MonoBehaviour
             }
         }
     }
-
-
 
 }

@@ -4542,7 +4542,6 @@ GameObject:
   - component: {fileID: 3193728564909431463}
   - component: {fileID: 8726729590948204646}
   - component: {fileID: 1769668878260593955}
-  - component: {fileID: 6910203132597668377}
   m_Layer: 0
   m_Name: TesteGlobal
   m_TagString: Inventory
@@ -4697,22 +4696,6 @@ MonoBehaviour:
   corNaoPodeUsar: {r: 1, g: 0, b: 0, a: 1}
   textoStatusCraft: {fileID: 123622394519394230}
   textoResultadoCraft: {fileID: 1430294458409547178}
---- !u!114 &6910203132597668377
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7226621843539595999}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e82d14f54d45914aa8b1b314f905c27, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
-  player: {fileID: 0}
-  partyMembers:
-  - {fileID: 0}
-  spacing: 1.5
 --- !u!1 &7322310695090124933
 GameObject:
   m_ObjectHideFlags: 0
