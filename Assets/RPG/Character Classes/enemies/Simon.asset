@@ -15,6 +15,7 @@ MonoBehaviour:
   characterName: Simon
   partyIcon: {fileID: 0}
   battlePortrait: {fileID: -2990498346120989320, guid: d81fc21ba7157c54fbd19796fff42e12, type: 3}
+  animatorController: {fileID: 0}
   baseHP: 15
   baseAttack: 5
   baseDefense: 1
@@ -118,4 +119,4 @@ MonoBehaviour:
   unlockableAttacks:
   - attack: {fileID: 11400000, guid: 73ce6ecd6a556f54083e8a2f2ab10b24, type: 2}
     unlockLevel: 0
-  baseExpValue: 50
+  baseExpValue: 0

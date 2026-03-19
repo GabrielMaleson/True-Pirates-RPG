@@ -33,11 +33,7 @@ public class EncounterData : MonoBehaviour
         {
             totalGoldReward = encounterFile.baseGoldReward;
 
-            foreach (var enemy in enemyPartyMembers)
-            {
-                totalExpReward += enemy.GetExpValue();
-            }
-            totalExpReward += encounterFile.baseExpReward;
+            totalExpReward = encounterFile.baseExpReward;
         }
     }
 

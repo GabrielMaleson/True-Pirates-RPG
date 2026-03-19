@@ -22,7 +22,7 @@ MonoBehaviour:
     additionalAttacks: []
     enemySpecificDrops: []
   baseGoldReward: 100
-  baseExpReward: 100
+  baseExpReward: 50
   guaranteedDrops: []
   randomDrops: []
   isBossEncounter: 0

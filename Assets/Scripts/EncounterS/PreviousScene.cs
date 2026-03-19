@@ -102,11 +102,6 @@ public class PreviousScene : MonoBehaviour
                 playerPosition = encounterData.encounterStarterObject.transform.position;
             }
             
-            // If combat was victorious, apply rewards
-            if (encounterData.combatVictory)
-            {
-                encounterData.ApplyCombatRewards();
-            }
             
             encounterData.ReactivateOriginalPlayer(playerPosition);
         }

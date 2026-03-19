@@ -770,10 +770,12 @@ public class CombatSystem : MonoBehaviour
         if (encounterData != null)
         {
             encounterData.combatVictory = true;
+            encounterData.CalculateRewards();
+
             encounterData.ApplyCombatRewards();
         }
 
-        int totalExp = enemies.Sum(e => e.GetExpValue());
+        int totalExp = encounterData.totalExpReward;
         foreach (var member in partyMembers.Where(p => p.currentHP > 0))
         {
             member.GainExperience(totalExp);

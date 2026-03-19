@@ -13,12 +13,13 @@ MonoBehaviour:
   m_Name: Goblin
   m_EditorClassIdentifier: Assembly-CSharp::CharacterData
   characterName: Topeira
-  level: 1
-  currentHP: 20
-  expValue: 50
+  partyIcon: {fileID: 0}
+  battlePortrait: {fileID: 0}
+  animatorController: {fileID: 0}
   baseHP: 20
   baseAttack: 5
   baseDefense: 1
+  baseMaxAP: 10
   hpGrowth:
     serializedVersion: 2
     m_Curve:
@@ -91,10 +92,31 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  maxAP: 10
+  expRequired:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 1
+      value: 100
+      inSlope: 0
+      outSlope: 100
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 10
+      value: 1000
+      inSlope: 100
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   unlockableAttacks:
   - attack: {fileID: 11400000, guid: 73ce6ecd6a556f54083e8a2f2ab10b24, type: 2}
     unlockLevel: 0
-  activeStatusEffects: []
-  equippedItems:
-  - {fileID: 11400000, guid: dcc1005cefe96a9478a682dcc28fb1c0, type: 2}
+  baseExpValue: 0
