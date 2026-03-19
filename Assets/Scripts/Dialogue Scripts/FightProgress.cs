@@ -171,7 +171,6 @@ public class FightProgress : MonoBehaviour
         {
             isPositionFrozen = true;
             frozenXPosition = Player.transform.position.x;
-            Debug.Log("Player X position frozen at: " + frozenXPosition);
         }
     }
 

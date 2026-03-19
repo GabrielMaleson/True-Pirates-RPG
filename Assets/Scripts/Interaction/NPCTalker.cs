@@ -5,6 +5,7 @@ public class NPCTalker : MonoBehaviour
     public DialogueManager dialogue;
     public bool hasstarted = false;
     private bool playerInRange = false;
+    public string thething;
 
     void Start()
     {
@@ -21,7 +22,7 @@ public class NPCTalker : MonoBehaviour
         if (!hasstarted && playerInRange && Input.GetKeyDown(KeyCode.Space))
         {
             hasstarted = true;
-            dialogue.StartDialogue("shopkeep");
+            dialogue.StartDialogue(thething);
         }
     }
 

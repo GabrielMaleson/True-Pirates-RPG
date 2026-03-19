@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 6c126a8b701df994a9fc742efea461bf
+guid: 5fa496bf4d9f83445becffcf04214101
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -6834524911116659543
-    second: chest_0
+      213: 4231264392191104483
+    second: testgoomba_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -51,7 +51,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 64
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -100,23 +100,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: chest_0
+      name: testgoomba_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 128
-        height: 128
+        width: 1920
+        height: 1080
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 9a45550edc3e621a0800000000000000
-      internalID: -6834524911116659543
+      spriteID: 3e55f47eb8878ba30800000000000000
+      internalID: 4231264392191104483
       vertices: []
       indices: 
       edges: []
@@ -125,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 241cc923e9b6c2c4bb547974b9d0b0ad
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      chest_0: -6834524911116659543
+      testgoomba_0: 4231264392191104483
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

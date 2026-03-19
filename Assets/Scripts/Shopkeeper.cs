@@ -170,8 +170,6 @@ public class Shopkeeper : MonoBehaviour
 
         if (interactionPopup != null)
         {
-            interactionPopup.SetActive(false);
-
             // Handle SpriteRenderer if that's what you're using
             SpriteRenderer spriteRend = interactionPopup.GetComponent<SpriteRenderer>();
             if (spriteRend != null)
