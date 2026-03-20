@@ -15,6 +15,7 @@
 	<<dooropen>>
 	<<simonenter>>
 	<<timonenter>>
+	<<playerflip>>
 	<<removesprite icon>>
 	Soldado Desconhecido 1: Esse general é um arrogante e meio, sinto falta do nosso comandante.
 	<<sprite simon.neutral icon>>
@@ -47,13 +48,14 @@
 	Simon: Quem está aí?
 	<<sprite benito.fear icon>>
 	Benito: !!!
+	<<sprite benito.pissed icon>>
 	Simon: Eu o ordeno em nome do Exército Peruano! Saia agora ou vire comida de pássaro!
 	<<sprite benito.fear icon>>
 	Benito: Por favor não me mate-
 	<<sprite guy2 icon>>
 	<<simonflip>>
-	<<sprite simon1 icon>>
-	Simon:  Quem é você?! Um espião? Ladrão? Ou um assassino?  
+	<<sprite simon.neutral icon>>
+	Simon: Quem é você?! Um espião? Ladrão? Ou um assassino?  
 	<<playerphew>>
 	<<sprite benito.fear icon>>
 	Benito: Não não — Quer dizer... Eu não sei... Provavelmente er —
@@ -102,7 +104,8 @@ title: simonbattleend
 	<<removesprite icon>>
 	Narração: Objetivo atualizado. Clique no símbolo de alvo para ver suas Quests.
 	Narração: Quando ver uma notificação, aperte a barra de espaço.
-	Narração: Para abrir o menu, aperte no ícone
+	Narração: Para abrir o menu, aperte no ícone.
+	<<addsimon>>
 	<<add_objective "Mar calmo nunca fez bom marinheiro">>
 	<<set $first_intro to false>>
 	<<brighten>>
@@ -126,86 +129,4 @@ title: shopkeep
 	Cara No Intervalo: Quer saber? Não me importo o suficiente para te ouvir. Também não estou fazendo o que eu devia.
 	Cara No Intervalo: Eu geralmente vendo as armas extras para os cidadãos enquanto ninguém olha, então se você tem algum interesse... eu sou seu homem.
 	<<brighten>>
-===
-
-title: receptionsuccess
----
-	<<darken>>
-	<<disappear>>
-	<<sprite clara.clap gings>>
-	Clara: Ahhhh, Valentina! Sabia que ouvi esse nome antes - estava esperando por você! Como foi a viagem?
-	-> Foi longa, mas foi boa!
-		Valentina: Pouquiiinho longa, mas foi bem legal! A paisagem foi bem relexante, sabe?
-		<<removesprite gings>>
-		<<sprite clara.think gings>>
-		Clara: Aham, aham. Pena que não temos metrô perto, ou a gente já poderia ter feito tudo isso uma hora mais cedo, haha!
-	-> Bem chatinha...
-		Valentina: Foi bem chatinha... mas fazer o quê, né? Assim que vai.
-		<<removesprite gings>>
-		<<sprite clara.think gings>>
-		Clara: Poxa, que pena... espero que você fique menos entediada com a gente, então!
-	<<removesprite gings>>
-	<<sprite clara.clap gings>>
-	Clara: Bem, pra começar de forma própria agora... Todos nós da Casa Serena queremos te desejar um belo bem-vindo a família!
-	<<removesprite gings>>
-	<<sprite clara.happy gings>>
-	Clara: Nem se preocupa sobre ter que assinar o contrato, já que você mesmo tinha assinado tudo online. 
-	Valentina: Opa, que bom! Mal posso esperar pra ajudar todo mundo!
-	<<removesprite gings>>
-	<<sprite clara.think gings>>
-	Clara: Nossa...! Quem me dera todo mundo daqui tivesse essa felicidade toda, haha! 
-	<<removesprite gings>>
-	<<sprite clara.happy gings>>
-	Clara: Se quiser começar com alguma tarefa, é só falar comigo! Temos um [b]paciente que precisamos de um novato para ajudar...[/b] 
-	<<removesprite gings>>
-	Tutorial: (Quando estiver pronto para começar sua primeira missão, clique na Clara.)
-	<<objective "Falar com a Clara sobre o que fazer">>
-	<<brighten>>
-	<<reappear>>
-===	
-
-title: receptiondoor
----
-<<darken>>
-Valentina: Melhor não sair daqui... tenho que falar com a recepcionista ainda. Mas cadê ela...?
-<<brighten>>
-
-===	
-
-title: receptionmission
----
-<<darken>>
-<<disappear>>
-Valentina: Então, o que eu deveria fazer para começar?
-<<sprite clara.think gings>>
-<<fadein gings 0.5>>
-Clara: Hum... Acho que você deveria ir em um dos quartos e visitar um dos nossos idosos!
-<<sprite clara.clap gings>>
-Clara: Eles adoram conhecer novos funcionários!
-Valentina: Ok! Vou ir lá, então.
-<<removesprite gings>>
-Narração: Objetivo atualizado.
-<<objective "Conhecer algum idoso">>
-<<brighten>>
-<<reappear>>
-
-===	
-title: claradump
----
-<<darken>>
-<<disappear>>
-Valentina: Clara, você pode me falar um pouco mais sobre os idosos?
-<<sprite clara.clap gings>>
-<<fadein gings 0.5>>
-Clara: Claro, Valentina! De quem você quer saber?
--> Lucinha.
--> Amerício.
--> Euclides.
--> Mudei de ideia, desculpa!
-<<sprite clara.clap gings>>
-Clara: Eles adoram conhecer novos funcionários!
-Valentina: Ok! Vou ir lá, então.
-<<removesprite gings>>
-<<brighten>>
-<<reappear>>
 ===

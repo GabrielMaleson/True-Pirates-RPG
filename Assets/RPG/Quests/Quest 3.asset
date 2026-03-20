@@ -10,11 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0c7517180f5b0594f9dbe1cc168c3197, type: 3}
-  m_Name: Quest 2
+  m_Name: Quest 3
   m_EditorClassIdentifier: Assembly-CSharp::ObjectiveData
-  objectiveName: "Dispositivo de Navega\xE7\xE3o"
-  objectiveDescription: "Voc\xEA tem que consertar o dispositivo de navega\xE7\xE3o
-    com as tr\xEAs pe\xE7as, mas onde podem estar...?"
+  objectiveName: Velando Vela
+  objectiveDescription: 'Encontrar '
   objectiveIcon: {fileID: 0}
   requiredProgressTags:
   - piece1
@@ -24,5 +23,6 @@ MonoBehaviour:
   completionDialogueNode: 
   rewardGold: 0
   rewardItems: []
-  progressRewards: []
+  progressRewards:
+  - 
   nextObjective: {fileID: 0}

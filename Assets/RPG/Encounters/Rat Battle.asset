@@ -36,6 +36,6 @@ MonoBehaviour:
     dropChance: 50
     minQuantity: 0
     maxQuantity: 0
-  isBossEncounter: 0
-  battleMusic: {fileID: 0}
+  isBossEncounter: 1
+  battleMusic: {fileID: 8300000, guid: c48acbfb53ddd574996fc46fca848a11, type: 3}
   battleBackgroundName: 

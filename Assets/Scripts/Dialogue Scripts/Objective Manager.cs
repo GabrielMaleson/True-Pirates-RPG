@@ -192,7 +192,7 @@ public class ObjectiveManager : MonoBehaviour
         // Update details UI
         if (selectedQuestNameText != null)
         {
-            string status = objective.isCompleted ? " [COMPLETED]" : (objective.isActive ? " [ACTIVE]" : "");
+            string status = objective.isCompleted ? " [COMPLETED]" : (objective.isActive ? " [ATIVA]" : "");
             selectedQuestNameText.text = objective.data.objectiveName + status;
         }
 
@@ -257,9 +257,7 @@ public class ObjectiveManager : MonoBehaviour
         Debug.Log($"Objective added: {objectiveData.objectiveName}");
         onObjectiveAdded?.Invoke(instance);
 
-        // Refresh quest list if it's open
-        if (questListPanel != null && questListPanel.activeSelf)
-            RefreshQuestList();
+        RefreshQuestList();
     }
 
     public void AddObjectiveByName(string objectiveName)

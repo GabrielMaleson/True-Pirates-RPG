@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Yarn.Unity;
@@ -16,6 +15,9 @@ public class DynamicCutsceneScript : MonoBehaviour
     [Header("References")]
     public DialogueRunner dialogueRunner;
     public CharacterData joodie;
+
+    [Header("Encounter")]
+    public EncounterFile encounterToStart;
 
     [System.Serializable]
     public class CharacterEntry
@@ -38,9 +40,6 @@ public class DynamicCutsceneScript : MonoBehaviour
     // Static instance reference for static methods
     private static DynamicCutsceneScript instance;
 
-    [Header("Encounter")]
-    public EncounterFile encounterToStart;
-    private EncounterStarter encounterStarter;
     private void Awake()
     {
         // Set static instance
@@ -76,14 +75,18 @@ public class DynamicCutsceneScript : MonoBehaviour
     [YarnCommand("activate")]
     public static void ActivateGuy(string[] parameters)
     {
+        if (instance == null)
+        {
+            Debug.LogError("No DynamicCutsceneScript instance found!");
+            return;
+        }
         instance.ActivateGuyInternal(parameters);
     }
-    // Internal instance method that does the actual work
+
     private void ActivateGuyInternal(string[] parameters)
     {
         string characterName = parameters[0].ToLower();
 
-        // Find character
         if (!characterDictionary.TryGetValue(characterName, out GameObject character))
         {
             Debug.LogError($"Character '{characterName}' not found. Available: {string.Join(", ", characterDictionary.Keys)}");
@@ -95,14 +98,18 @@ public class DynamicCutsceneScript : MonoBehaviour
     [YarnCommand("deactivate")]
     public static void DeactivateGuy(string[] parameters)
     {
+        if (instance == null)
+        {
+            Debug.LogError("No DynamicCutsceneScript instance found!");
+            return;
+        }
         instance.DeactivateGuyInternal(parameters);
     }
-    // Internal instance method that does the actual work
+
     private void DeactivateGuyInternal(string[] parameters)
     {
         string characterName = parameters[0].ToLower();
 
-        // Find character
         if (!characterDictionary.TryGetValue(characterName, out GameObject character))
         {
             Debug.LogError($"Character '{characterName}' not found. Available: {string.Join(", ", characterDictionary.Keys)}");
@@ -111,7 +118,6 @@ public class DynamicCutsceneScript : MonoBehaviour
         character.gameObject.SetActive(false);
     }
 
-    // STATIC Yarn command - usage: <<move characterName pointName>>
     [YarnCommand("move")]
     public static void MoveCharacter(string[] parameters)
     {
@@ -120,11 +126,9 @@ public class DynamicCutsceneScript : MonoBehaviour
             Debug.LogError("No DynamicCutsceneScript instance found!");
             return;
         }
-
         instance.MoveCharacterInternal(parameters);
     }
 
-    // Internal instance method that does the actual work
     private void MoveCharacterInternal(string[] parameters)
     {
         if (parameters.Length < 2)
@@ -136,14 +140,12 @@ public class DynamicCutsceneScript : MonoBehaviour
         string characterName = parameters[0].ToLower();
         string pointName = parameters[1];
 
-        // Find character
         if (!characterDictionary.TryGetValue(characterName, out GameObject character))
         {
             Debug.LogError($"Character '{characterName}' not found. Available: {string.Join(", ", characterDictionary.Keys)}");
             return;
         }
 
-        // Find point
         if (!pointDictionary.TryGetValue(pointName, out Transform targetPoint))
         {
             Debug.LogError($"Point '{pointName}' not found. Available: {string.Join(", ", pointDictionary.Keys)}");
@@ -156,6 +158,8 @@ public class DynamicCutsceneScript : MonoBehaviour
 
     private IEnumerator MoveToPoint(GameObject character, Vector3 target, bool useAnimator)
     {
+        if (character == null) yield break;
+
         Animator anim = character.GetComponent<Animator>();
         SpriteRenderer sprite = character.GetComponent<SpriteRenderer>();
         float speed = 5f;
@@ -208,48 +212,78 @@ public class DynamicCutsceneScript : MonoBehaviour
         }
     }
 
-    private void OnDestroy()
-    {
-        if (dialogueRunner != null)
-        {
-            dialogueRunner.RemoveCommandHandler("move");
-        }
-
-        // Clear instance
-        if (instance == this)
-            instance = null;
-    }
-
-
-    [YarnCommand ("joodieadd")]
+    [YarnCommand("joodieadd")]
     public static void AddJoodie()
     {
+        if (instance == null)
+        {
+            Debug.LogError("No DynamicCutsceneScript instance found!");
+            return;
+        }
         instance.AddJoodieTrue();
     }
 
     public void AddJoodieTrue()
     {
         SistemaInventario inventory = SistemaInventario.Instance;
+        if (inventory == null)
+        {
+            Debug.LogError("SistemaInventario instance not found!");
+            return;
+        }
+        if (joodie == null)
+        {
+            Debug.LogError("Joodie CharacterData not assigned in inspector!");
+            return;
+        }
         inventory.AddPartyMember(joodie);
     }
 
-    [YarnCommand ("startratfight")]
+    [YarnCommand("startratfight")]
     public static void StartRatEncounter()
     {
+        if (instance == null)
+        {
+            Debug.LogError("No DynamicCutsceneScript instance found!");
+            return;
+        }
         instance.StartRatFightTrue();
     }
 
     private void StartRatFightTrue()
     {
+        // Check if encounter file is assigned
+        if (encounterToStart == null)
+        {
+            Debug.LogError("No encounter file assigned to DynamicCutsceneScript!");
+            return;
+        }
+
+        // Create or find EncounterData
         EncounterData encounterData = FindFirstObjectByType<EncounterData>();
+        if (encounterData == null)
+        {
+            GameObject dataObj = new GameObject("EncounterData");
+            DontDestroyOnLoad(dataObj);
+            encounterData = dataObj.AddComponent<EncounterData>();
+            Debug.Log("Created new EncounterData");
+        }
 
+        // Get inventory
         SistemaInventario inventory = SistemaInventario.Instance;
+        if (inventory == null)
+        {
+            Debug.LogError("SistemaInventario instance not found!");
+            return;
+        }
 
-        encounterData.encounterStarterObject = instance.gameObject;
+        // Set up encounter data
+        encounterData.encounterStarterObject = gameObject;
         encounterData.playerInventory = inventory;
-        encounterData.encounterFile = instance.encounterToStart;
+        encounterData.encounterFile = encounterToStart;
         encounterData.playerPartyMembers = inventory.GetPartyMembersForCombat();
 
+        // Clear and populate enemies
         encounterData.enemyPartyMembers.Clear();
         encounterData.enemyPrefabs.Clear();
 
@@ -267,13 +301,30 @@ public class DynamicCutsceneScript : MonoBehaviour
             }
         }
 
+        // Calculate rewards
+        encounterData.CalculateRewards();
+
+        // Create and load scene
         GameObject sceneObj = new GameObject("PreviousScene");
         sceneObj.AddComponent<PreviousScene>();
         sceneObj.GetComponent<PreviousScene>().UnloadScene();
 
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("Combat", LoadSceneMode.Additive);
-        Debug.Log("Combat scene loaded successfully");
+        SceneManager.LoadSceneAsync("Combat", LoadSceneMode.Additive);
+        Debug.Log("Combat scene loading started");
     }
 
+    private void OnDestroy()
+    {
+        if (dialogueRunner != null)
+        {
+            dialogueRunner.RemoveCommandHandler("activate");
+            dialogueRunner.RemoveCommandHandler("deactivate");
+            dialogueRunner.RemoveCommandHandler("move");
+            dialogueRunner.RemoveCommandHandler("joodieadd");
+            dialogueRunner.RemoveCommandHandler("startratfight");
+        }
 
+        if (instance == this)
+            instance = null;
+    }
 }

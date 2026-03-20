@@ -6324,6 +6324,7 @@ MonoBehaviour:
   surpriseSprite: {fileID: -4178046375966092550, guid: 38ad0b8f7068e40479356477addcb270, type: 3}
   encounterToStart: {fileID: 11400000, guid: 54f5f0d4d985ab14486dc79d64aaafea, type: 2}
   dialogueRunner: {fileID: 0}
+  simonally: {fileID: 11400000, guid: 9486a837a0baef14689566c271d61e64, type: 2}
 --- !u!4 &178517526
 Transform:
   m_ObjectHideFlags: 0
@@ -9732,6 +9733,10 @@ PrefabInstance:
       propertyPath: m_BackGroundColor.r
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2522479113332351888, guid: 1e7f3dc7f8881124c80d49cc85d2388b, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: b01edff1477675b4f86abfed2b3a2160, type: 2}
     - target: {fileID: 2749739467906696083, guid: 1e7f3dc7f8881124c80d49cc85d2388b, type: 3}
       propertyPath: m_Constraints
       value: 6
@@ -11459,6 +11464,10 @@ PrefabInstance:
       propertyPath: m_BackGroundColor.r
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2522479113332351888, guid: 1e7f3dc7f8881124c80d49cc85d2388b, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: b01edff1477675b4f86abfed2b3a2160, type: 2}
     - target: {fileID: 2749739467906696083, guid: 1e7f3dc7f8881124c80d49cc85d2388b, type: 3}
       propertyPath: m_Constraints
       value: 6

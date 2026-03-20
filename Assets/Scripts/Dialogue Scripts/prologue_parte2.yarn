@@ -81,7 +81,7 @@ title: joodie_conversa_privada
 	Joodie: Vamos passar longas noites juntos...
 	<<removesprite icon>>
 	Narração: Objetivo atualizado.
-	<<add_objective "Consertar o dispositivo de navegação">>
+	<<add_objective "Dispositivo de Navegação">>
 	<<brighten>>
 ===
 
@@ -109,12 +109,18 @@ title: sidequest2_vela
 	Marinheiro: Por favor! Alguém me ajude com essa vela! Ela vai me esmagar!
 	<<sprite simon1 icon>>
 	Simon: Segurem aqui! Vamos!
+	<<brighten>>
+===
+
+title: sidequest2_done
+---
+	<<darken>>
 	Narração: Com esforço conjunto, os três içam a vela e a prendem com segurança.
 	Marinheiro: Graças ao céu... Obrigado! Sem vocês eu teria virado torta de marinheiro.
 	Marinheiro: Olha, não tenho muito para oferecer, mas achei esse troço metálico preso nas cordas da vela. Deve ser de alguém aqui do navio.
 	Narração: O marinheiro entrega um fragmento metálico. É parte do dispositivo de navegação.
 	<<removesprite icon>>
-	<<progress sq2_vela_done>>
+	<<progress piece2>>
 	Narração: Objetivo atualizado.
 	<<brighten>>
 ===
@@ -147,7 +153,7 @@ title: sidequest3_rat_resultado
 	<<sprite simon.smug icon>>
 	Simon: E olha só... Você não foi tão inútil afinal.
 	<<removesprite icon>>
-	<<progress sq3_pistola_done>>
+	<<progress piece3>>
 	Narração: Você obteu mais uma peça do dispositivo. Mas como juntá-las...?
 	<<brighten>>
 ===
@@ -222,7 +228,7 @@ title: rat_fight
 	Simon: Temos que lidar com essa coisa AGORA. Não pode ser permitida de sair desse barco.
 	<<sprite simon.pissed icon>>
 	Simon: Preparem-se!
-	<<startencounter rat>>
+	<<startratfight>>
 	<<brighten>>
 	
 

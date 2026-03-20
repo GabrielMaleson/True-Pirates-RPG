@@ -42,6 +42,7 @@ public class NPCTalker : MonoBehaviour
         {
             hasstarted = true;
             dialogue.StartDialogue(thething);
+            Activator.SetActive(true);
             HidePopup();
             Destroy(this);
         }

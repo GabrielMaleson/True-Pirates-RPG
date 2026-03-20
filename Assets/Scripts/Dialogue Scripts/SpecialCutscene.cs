@@ -31,6 +31,7 @@ public class SpecialCutsceneScript : MonoBehaviour
 
     [Header("References")]
     public DialogueRunner dialogueRunner;
+    public CharacterData simonally;
 
     private MovimentacaoExploracao playerMovement;
     private SpriteRenderer playerSpriteRenderer;
@@ -124,6 +125,7 @@ public class SpecialCutsceneScript : MonoBehaviour
             dialogueRunner.AddCommandHandler("guysleave", GuysLeave);
             dialogueRunner.AddCommandHandler("playerphew", PlayerPhew);
             dialogueRunner.AddCommandHandler("playerflip", PlayerFlip);
+            dialogueRunner.AddCommandHandler("addsimon", AddSimon);
             dialogueRunner.AddCommandHandler("startencounter", StartEncounter);
 
             Debug.Log("Yarn commands registered successfully");
@@ -357,6 +359,22 @@ public class SpecialCutsceneScript : MonoBehaviour
         yield return new WaitForSeconds(0.4f);
 
         if (timon != null) timon.SetActive(false);
+    }
+
+    public void AddSimon()
+    {
+        AddSimonTrue();
+    }
+
+    public void AddSimonTrue()
+    {
+        SistemaInventario inventory = SistemaInventario.Instance;
+        if (inventory == null)
+        {
+            Debug.LogError("SistemaInventario instance not found!");
+            return;
+        }
+        inventory.AddPartyMember(simonally);
     }
 
     private void OnDestroy()
