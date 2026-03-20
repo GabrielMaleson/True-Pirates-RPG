@@ -48,11 +48,10 @@
 	Simon: Quem está aí?
 	<<sprite benito.fear icon>>
 	Benito: !!!
-	<<sprite benito.pissed icon>>
+	<<sprite simon.pissed icon>>
 	Simon: Eu o ordeno em nome do Exército Peruano! Saia agora ou vire comida de pássaro!
 	<<sprite benito.fear icon>>
 	Benito: Por favor não me mate-
-	<<sprite guy2 icon>>
 	<<simonflip>>
 	<<sprite simon.neutral icon>>
 	Simon: Quem é você?! Um espião? Ladrão? Ou um assassino?  

@@ -35,11 +35,11 @@ public class MovimentacaoExploracao : MonoBehaviour
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
 
         // 3. Jump input
-        if (Input.GetButtonDown("Jump") && isGrounded && canJump)
-        {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, forcaPulo);
+        //if (Input.GetButtonDown("Jump") && isGrounded && canJump)
+        //{
+       //     rb.linearVelocity = new Vector2(rb.linearVelocity.x, forcaPulo);
             // anim.SetTrigger("Pulando");
-        }
+       // }
 
         // 4. Controle da animação
         if (movimento.x != 0)

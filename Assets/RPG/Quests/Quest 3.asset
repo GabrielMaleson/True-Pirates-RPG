@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c7517180f5b0594f9dbe1cc168c3197, type: 3}
   m_Name: Quest 3
   m_EditorClassIdentifier: Assembly-CSharp::ObjectiveData
-  objectiveName: Velando Vela
-  objectiveDescription: 'Encontrar '
+  objectiveName: "O Barulho No Galp\xE3o"
+  objectiveDescription: "Que estranho. Voc\xEA n\xE3o j\xE1 tinha visto tudo l\xE1
+    dentro...?"
   objectiveIcon: {fileID: 0}
   requiredProgressTags:
   - piece1

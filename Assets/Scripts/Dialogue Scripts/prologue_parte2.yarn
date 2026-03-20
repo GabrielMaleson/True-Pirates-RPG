@@ -56,6 +56,7 @@ title: comandante_joodie_cena
 	Comandante: Não preciso mais me preocupar com isso, só me contate quando estiver com ele na sua mão!
 	<<deactivate joodie>>
 	<<activate truejoodie>>
+	<<joodieadd>>
 	<<removesprite icon>>
 	<<brighten>>
 ===
@@ -137,7 +138,7 @@ title: sidequest3_rat
 	<<brighten>>
 ===
 
-title: sidequest3_rat_resultado
+title: sidequest3_ratcomplete
 ---
 	<<darken>>
 	Zelador: Eu ouvi o que houve, mas não queria olhar por medo...
@@ -228,9 +229,9 @@ title: rat_fight
 	Simon: Temos que lidar com essa coisa AGORA. Não pode ser permitida de sair desse barco.
 	<<sprite simon.pissed icon>>
 	Simon: Preparem-se!
-	<<startratfight>>
 	<<brighten>>
-	
+	<<startratfight>>
+===		
 
 title: pos_batalha_nepal
 ---

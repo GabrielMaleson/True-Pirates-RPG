@@ -10,28 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8fe966cd8ab75104f854a716378aa16f, type: 3}
-  m_Name: PocaoVida
+  m_Name: Dispositivo1
   m_EditorClassIdentifier: Assembly-CSharp::DadosItem
-  nomeDoItem: "Po\xE7\xE3o de Vida"
-  id: item_pocao_vida
-  icone: {fileID: -9063044017300439947, guid: ee6cf6856539af847bd7e6c01d8bf746, type: 3}
-  descricao: "Po\xE7\xE3o m\xE1gica que restaura 50 pontos de vida do jogador."
-  valorEmOuro: 5
+  nomeDoItem: "Pe\xE7a do Dispositivo"
+  id: piece1item
+  icone: {fileID: -4626801167941225519, guid: ab7d014acf0de0c4db0fae4c4990f3d9, type: 3}
+  descricao: "Uma pe\xE7a do dispositivo de navega\xE7\xE3o."
+  valorEmOuro: 10
   ehEmpilhavel: 1
   ehEquipavel: 0
   slotEquipamento: 0
   modificadoresStats: []
   nivelRequerido: 0
-  ehConsumivel: 1
+  ehConsumivel: 0
   tipoConsumivel: 0
   usavelEmBatalha: 1
   usavelNoMapa: 1
-  efeitos:
-  - tipoEfeito: 1
-    valor: 15
-    duracao: 0
-    targetType: 0
-    numberOfTargets: 1
-    accuracy: 100
-    triggersOn: 0
-    statusEffect: {fileID: 0}
+  efeitos: []

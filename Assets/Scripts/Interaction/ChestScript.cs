@@ -67,6 +67,8 @@ public class ChestScript : MonoBehaviour
             inventario.AdicionarItem(item, quantidade);
             spriteRenderer.sprite = openchest;
             ChestOpen = true;
+            SistemaInventario inventory = SistemaInventario.Instance;
+            inventory.AddProgress("piece1");
             Debug.Log("chest aberto");
             HidePopup();
 
