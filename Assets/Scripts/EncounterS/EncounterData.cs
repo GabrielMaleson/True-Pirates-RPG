@@ -5,7 +5,8 @@ public class EncounterData : MonoBehaviour
 {
     [Header("Encounter File")]
     public EncounterFile encounterFile;
-
+    [Header("Battle Trigger")]
+    public string battleTriggerProgress; // The progress tag that triggered this battle
     [Header("Player Data")]
     public List<PartyMemberState> playerPartyMembers = new List<PartyMemberState>();
     public SistemaInventario playerInventory;

@@ -13,6 +13,8 @@ public class CombatUIManager : MonoBehaviour
     [Header("UI Parents")]
     public Transform partyUIParent;
     public Transform enemyUIParent;
+    [Header("Battle Animation")]
+    public TextMeshProUGUI battleAnimationText; // Add this with other headers
 
     [Header("Prefabs")]
     public GameObject partyMemberUIPrefab;
@@ -69,6 +71,11 @@ public class CombatUIManager : MonoBehaviour
             combatSystem.onTurnStarted += OnTurnStarted;
             combatSystem.onCharacterUpdated += OnCharacterUpdated;
             combatSystem.onCombatEnded += OnCombatEnded;
+        }
+        if (battleAnimationText != null)
+        {
+            BattleAnimationData.Initialize(battleAnimationText, this);
+            Debug.Log("Battle animation text initialized");
         }
 
         // Set up menu button listeners

@@ -45,9 +45,7 @@ public class ScreenTransition : MonoBehaviour
         blackOverlay.rectTransform.anchorMax = Vector2.one;
         blackOverlay.rectTransform.offsetMin = Vector2.zero;
         blackOverlay.rectTransform.offsetMax = Vector2.zero;
-
-        // Start with overlay invisible
-        SetOverlayFill(0f);
+        QuickTransition();
     }
 
     // Set the fill amount of the overlay (0 = invisible, 1 = full screen black)
@@ -135,7 +133,24 @@ public class ScreenTransition : MonoBehaviour
     private IEnumerator QuickTransitionRoutine()
     {
         SetOverlayFill(1f);
+        float halfDuration = transitionDuration / 2f;
+        float elapsed = 0f;
         yield return new WaitForSeconds(0.2f);
+
+        // Phase 2: Remove from top to bottom (1 to 0)
+        elapsed = 0f;
+
+        while (elapsed < halfDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / halfDuration;
+            float curveValue = removeCurve.Evaluate(t);
+
+            SetOverlayFill(curveValue);
+
+            yield return null;
+        }
+        yield return new WaitForSeconds(0.1f);
         SetOverlayFill(0f);
     }
 

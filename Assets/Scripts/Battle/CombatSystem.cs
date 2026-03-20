@@ -58,6 +58,9 @@ public class CombatSystem : MonoBehaviour
     private GameObject menubutton;
     private GameObject objbutton2;
 
+    // Store the last progress added before battle for game over recovery
+    private string lastProgressBeforeBattle = "";
+
     // Store queued actions
     private List<QueuedAction> pendingActions = new List<QueuedAction>();
 
@@ -98,9 +101,16 @@ public class CombatSystem : MonoBehaviour
         objbutton2 = GameObject.FindGameObjectWithTag("ObjectiveButtwo");
         menubutton.SetActive(false);
         objbutton2.SetActive(false);
+
         EncounterData encounterData = FindFirstObjectByType<EncounterData>();
         if (encounterData != null)
         {
+            // Store the last progress before battle (if any)
+            if (encounterData.battleTriggerProgress != null)
+            {
+                lastProgressBeforeBattle = encounterData.battleTriggerProgress;
+            }
+
             InitializeCombatWithData(encounterData);
         }
         else
@@ -739,11 +749,33 @@ public class CombatSystem : MonoBehaviour
         {
             currentState = CombatState.DEFEAT;
             onCombatEnded?.Invoke(CombatState.DEFEAT);
-            StartCoroutine(ReturnToMapAfterDelay(2f));
+            StartCoroutine(GameOverRoutine());
             return true;
         }
 
         return false;
+    }
+
+    private IEnumerator GameOverRoutine()
+    {
+        Debug.Log("GAME OVER! Party has been defeated.");
+
+        // Remove the last progress that triggered this battle
+        if (!string.IsNullOrEmpty(lastProgressBeforeBattle))
+        {
+            SistemaInventario inventory = SistemaInventario.Instance;
+            if (inventory != null && inventory.HasProgress(lastProgressBeforeBattle))
+            {
+                inventory.RemoveProgress(lastProgressBeforeBattle);
+                Debug.Log($"Removed progress: {lastProgressBeforeBattle}");
+            }
+        }
+
+        // Show game over message (you can add UI here)
+        yield return new WaitForSeconds(2f);
+
+        // Return to title screen
+        SceneManager.LoadScene("Title");
     }
 
     private IEnumerator ReturnToMapAfterDelay(float delay)

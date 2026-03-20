@@ -45866,40 +45866,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 2947192720151528669, guid: 1e7f3dc7f8881124c80d49cc85d2388b, type: 3}
   m_PrefabInstance: {fileID: 1954456082905731063}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &662591450
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 662591446}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 72ece51f2901e7445ab60da3685d6b5f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Cinemachine::Cinemachine.CinemachineBrain
-  m_ShowDebugText: 0
-  m_ShowCameraFrustum: 1
-  m_IgnoreTimeScale: 0
-  m_WorldUpOverride: {fileID: 0}
-  m_UpdateMethod: 2
-  m_BlendUpdateMethod: 1
-  m_DefaultBlend:
-    m_Style: 1
-    m_Time: 2
-    m_CustomCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  m_CustomBlends: {fileID: 0}
-  m_CameraCutEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_CameraActivatedEvent:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!1 &695128002
 GameObject:
   m_ObjectHideFlags: 0
@@ -57538,7 +57504,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1882371369
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -59113,9 +59079,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8931263230098566763, guid: 1e7f3dc7f8881124c80d49cc85d2388b, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1630534229}
-    - targetCorrespondingSourceObject: {fileID: 2947192720151528669, guid: 1e7f3dc7f8881124c80d49cc85d2388b, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 662591450}
   m_SourcePrefab: {fileID: 100100000, guid: 1e7f3dc7f8881124c80d49cc85d2388b, type: 3}
 --- !u!1001 &4306362573018584605
 PrefabInstance:

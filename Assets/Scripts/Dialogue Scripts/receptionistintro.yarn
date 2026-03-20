@@ -70,39 +70,38 @@
 title: simonbattleend
 ---
 	<<darken>>
-	<<sprite simon1 icon>>
-	Simon: Acabou... Minha chance acabou... Anos treinando, estudando, juntando dinheiro para comprar meu equipamento e me alistar na guerra... Para perder pra um moleque aleatório e um peixe...
-	<<sprite guy2 icon>>
-	Benito: Eu não sabia que esse era um barco militar, eu juro... Eu achei que era um cargueiro levando suprimentos para os civis na Europa! E também... E-Eu meio que não sou um moleque qualquer... Eu quero ir pra Europa, e depois voar pra China... Pra matar a imperatriz e —
-	<<sprite simon1 icon>>
-	Simon: Garoto... Se todo pivete que perdeu um pai, ou um irmão ou até uma mãe por causa da guerra, fosse um rebelde que quisesse se alistar na rebelião ou se infiltrar igual um assassino amador... Nós já teríamos ganhado a guerra...
-	<<sprite guy2 icon>>
-	Benito: Eh... Eu realmente vim pra vingar meu pai... Mas — O meu pai era o Capitão Mansur.
-	<<sprite simon1 icon>>
-	Simon: V-Você é filho d-do líder da resistência?! Do Capitão Sarper?!
-	<<sprite guy2 icon>>
-	Benito: O-Olha eu posso explicar, eu tenho um plano!
-	<<sprite simon1 icon>>
-	Simon: Plano?! Que plano?! Se esgueirar no meio da Guerra mais brutal e violenta da história? Navegar as nuvens sob um mar cheio de criaturas desconhecidas? Mais de 20 NOITES em um barco cheio de equipamento 3 vezes o seu tamanho e peso? E depois o que? Simplesmente atravessar a Europa, navegar mais 25 noites até a China, entrar no palácio da Imperatriz e pedir por favorzinho que ela se renda? Esse é seu plano?
-	<<sprite simon1 icon>>
-	Simon: Olha, Benito... Me desculpa... Eu sei o que você ta sentindo após a morte de seu pai... Essa falta de controle. Eu entendo. Mas esse é o oposto do ambiente que você deveria estar agora. Você deveria estar com a sua família, seus amigos. Não dentro de um batalhão indo pra uma guerra.
-	<<sprite guy2 icon>>
-	Benito: E-Eu não tenho mais família... E eu nunca fiz muitos amigos, meu pai achava perigoso. Pra mim e pra saúde da resistência.
-	<<sprite simon1 icon>>
-	Simon: Eh... Eu entendo... Olha... Eu não sei o que eu posso fazer pela sua missão suicida, mas eu posso tentar garantir a sua segurança. 
-	Simon: Conseguir virar esse barco de volta pro Peru, ou algum acampamento isolado em Portugal, longe do campo de batalha, e te botar em um barco de volta pra casa... 
-	Simon: De qualquer forma, eu provavelmente vou voltar junto com você. Alguém vai ter que levar a culpa por esse erro.
-	<<sprite guy2 icon>>
+	<<sprite simon.hurt icon>>
+	Simon: Acabou... Minha chance acabou... Anos treinando pra me alistar na guerra... Para perder pra um moleque aleatório e um peixe...
+	<<sprite benito.confused icon>>
+	Benito: Eu não sabia que esse era um barco militar, eu juro... Eu achei que era um cargueiro levando suprimentos para os civis na Europa! E também... 
+	<<sprite benito.neutral icon>>
+	Benito: E... E-Eu meio que não sou um moleque qualquer... 
+	<<sprite benito.happy icon>>
+	Benito: O meu pai era o Capitão Mansur.
+	<<sprite simon.mad icon>>
+	Simon: V- Você é filho d-do líder da resistência?! Do Capitão Sarper?!
+	<<sprite benito.happy icon>>
+	Benito: Benito Sarper, sim! O- Olha, eu posso explicar depois, mas eu tenho um plano!
+	<<sprite simon.pissed icon>>
+	Simon: Plano?! Que plano?! Se esgueirar no meio da Guerra mais brutal e violenta da história?  
+	Simon: Navegar as nuvens sob um mar cheio de criaturas desconhecidas? Viajar mais de 25 noites até a China, entrar no palácio da Imperatriz e pedir por favorzinho que ela se renda?  
+	<<sprite simon.smug>>
+	Simon: Esse é seu plano? 
+	<<sprite benito.fear icon>>
+	Benito: . . .
+	<<sprite simon.mad icon>>
+	Simon: (... Urgh.)
+	Simon: Olha, Benito... Me desculpa... Essa falta de controle, principalmente depois da perda do seu pai, é algo que eu entendo muito.  
+	<<sprite simon.neutral icon>>
+	Simon: ... Eu não sei o que eu posso fazer pela sua missão suicida, mas eu posso tentar garantir a sua segurança. 
+	<<sprite benito.confused icon>>
 	Benito: M-Me desculpa, Simon...
-	<<sprite simon1 icon>>
-	Simon: Ta tudo bem, guri... Vamos arrancar esse curativo, meu Comandante novo deve estar no deck esgoelando mais ordens, vou te levar até ele.
+	<<sprite simon.happy icon>>
+	Simon: Tá tudo bem, guri... Vamos arrancar esse curativo, meu Comandante novo deve estar no deck esgoelando mais ordens, vou te levar até ele.
 	<<removesprite icon>>
-	Narração: Benito ri nervosamente achando sua resposta muito melhor do que ela realmente foi.
-	Narração: Simon abaixa a guarda finalmente averiguando a idade e voz do garoto. O armazém escuro e a adrenalina não o permitiam antes. Simon suspira levemente.
-	Narração: A CUTSCENE CONTINUA MAS PARA O PROTÓTIPO, VAI ACABAR AQUI.
-	Narração: Aperte Tab para abrir os menus, ou aperte os botões na tela a seguir.
-	Narração: Perto de uma porta, aperte a barra de espaço.
 	Narração: Objetivo atualizado. Clique no símbolo de alvo para ver suas Quests.
+	Narração: Quando ver uma notificação, aperte a barra de espaço.
+	Narração: Para abrir o menu, aperte no ícone
 	<<add_objective "Mar calmo nunca fez bom marinheiro">>
 	<<set $first_intro to false>>
 	<<brighten>>

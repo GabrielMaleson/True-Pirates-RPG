@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45f82d0ba8ac12140a6c798ca507f0ec, type: 3}
   m_Name: Topeira
   m_EditorClassIdentifier: Assembly-CSharp::EncounterFile
-  encounterName: topeira
+  encounterName: ratbattle
   encounterIcon: {fileID: 21300000, guid: 3c311fccc1bc3470d85f8915b9df0227, type: 3}
   enemies:
   - characterData: {fileID: 11400000, guid: 3477d9bdb332f6347a5e175785076f35, type: 2}

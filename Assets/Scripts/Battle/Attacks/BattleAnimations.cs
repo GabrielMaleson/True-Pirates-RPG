@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using TMPro;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 [CreateAssetMenu(fileName = "New Battle Animation", menuName = "RPG/Battle Animation")]
 public class BattleAnimationData : ScriptableObject
@@ -11,6 +12,11 @@ public class BattleAnimationData : ScriptableObject
     public float textDisplayDuration = 1.5f;
     public Color textColor = Color.white;
     public float textSize = 36f;
+
+    [Header("Text Background")]
+    public bool useBackground = true; // Whether to use a background image
+    public float backgroundPadding = 20f; // Padding around the text
+    public Color backgroundColor = new Color(0, 0, 0, 0.7f); // Semi-transparent black
 
     [Header("User Animation")]
     public AnimationClip userAnimation;
@@ -38,6 +44,7 @@ public class BattleAnimationData : ScriptableObject
 
     [Header("UI References")]
     private static TextMeshProUGUI animationText; // Static reference to the animation text UI
+    private static Image textBackground; // Static reference to the background image
     private static MonoBehaviour coroutineRunner; // Static reference to a MonoBehaviour that can run coroutines
 
     // Initialize the static references (call this from CombatSystem or UIManager)
@@ -45,6 +52,13 @@ public class BattleAnimationData : ScriptableObject
     {
         animationText = textUI;
         coroutineRunner = runner;
+
+        // Get the background image (assumed to be the parent or a sibling)
+        if (animationText != null)
+        {
+            // Try to get background from parent
+            textBackground = animationText.transform.parent?.GetComponent<Image>();
+        }
     }
 
     public IEnumerator PlayAnimation(PartyMemberState user, List<PartyMemberState> targets, System.Action onComplete = null)
@@ -52,7 +66,7 @@ public class BattleAnimationData : ScriptableObject
         // Pre-delay
         yield return new WaitForSeconds(preDelay);
 
-        // 1. Show attack text
+        // 1. Show attack text (like Final Fantasy)
         if (animationText != null && coroutineRunner != null)
         {
             string displayText = attackTextFormat
@@ -62,14 +76,28 @@ public class BattleAnimationData : ScriptableObject
             animationText.text = displayText;
             animationText.color = textColor;
             animationText.fontSize = textSize;
+
+            // Toggle on the background first
+            if (textBackground != null && useBackground)
+            {
+                textBackground.color = backgroundColor;
+                textBackground.gameObject.SetActive(true);
+            }
+
+            // Then show the text
             animationText.gameObject.SetActive(true);
 
+            // Update background size to fit text
+            UpdateBackgroundSize();
+
+            // Text stays for duration - use coroutine runner
             coroutineRunner.StartCoroutine(HideTextAfterDelay(textDisplayDuration));
         }
 
         // 2. User stands in place and plays animation using CharacterComponent
         if (userAnimation != null && user.transform != null)
         {
+            // Wait for user animation delay if specified
             if (userAnimationDelay > 0)
                 yield return new WaitForSeconds(userAnimationDelay);
 
@@ -89,6 +117,7 @@ public class BattleAnimationData : ScriptableObject
                 }
             }
         }
+
         // 3. Wait for hit delay (allow user animation to play)
         yield return new WaitForSeconds(hitDelay);
 
@@ -137,12 +166,39 @@ public class BattleAnimationData : ScriptableObject
         onComplete?.Invoke();
     }
 
+    private void UpdateBackgroundSize()
+    {
+        if (textBackground == null || animationText == null) return;
+
+        // Get the text's preferred size
+        float textWidth = animationText.preferredWidth;
+        float textHeight = animationText.preferredHeight;
+
+        // Set the background size with padding
+        RectTransform bgRect = textBackground.GetComponent<RectTransform>();
+        if (bgRect != null)
+        {
+            bgRect.sizeDelta = new Vector2(textWidth + backgroundPadding, textHeight + backgroundPadding);
+        }
+
+        // Ensure background is behind text
+        textBackground.transform.SetSiblingIndex(animationText.transform.GetSiblingIndex() - 1);
+    }
+
     private IEnumerator HideTextAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
+
+        // Hide text first
         if (animationText != null)
         {
             animationText.gameObject.SetActive(false);
+        }
+
+        // Then hide background
+        if (textBackground != null && useBackground)
+        {
+            textBackground.gameObject.SetActive(false);
         }
     }
 
