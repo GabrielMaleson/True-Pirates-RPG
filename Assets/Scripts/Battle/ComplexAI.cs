@@ -18,6 +18,7 @@ public class ComplexAI : MonoBehaviour
     public bool focusHighestThreat = false;
 
     private Dictionary<PartyMemberState, float> threatLevels = new Dictionary<PartyMemberState, float>();
+    private AttackFile lastSelectedAttack = null; // Track last selected attack
 
     private void Start()
     {
@@ -41,6 +42,9 @@ public class ComplexAI : MonoBehaviour
 
         // Select targets based on action
         decision.targets = SelectTargets(decision.selectedAction, partyMembers, enemies);
+
+        // Update last selected attack
+        lastSelectedAttack = decision.selectedAction;
 
         return decision;
     }
@@ -109,11 +113,19 @@ public class ComplexAI : MonoBehaviour
         if (availableActions.Count == 0)
             return null;
 
+        // If there's only one attack available, just return it
+        if (availableActions.Count == 1)
+            return availableActions[0];
+
         // Score each action based on current weights
         Dictionary<AttackFile, float> actionScores = new Dictionary<AttackFile, float>();
 
         foreach (var action in availableActions)
         {
+            // Skip if this is the same as the last selected attack
+            if (action == lastSelectedAttack)
+                continue;
+
             float score = 0f;
 
             // Calculate offensive score
@@ -142,6 +154,10 @@ public class ComplexAI : MonoBehaviour
 
             actionScores[action] = score;
         }
+
+        // If all attacks were skipped (only one attack total), then just use that one
+        if (actionScores.Count == 0)
+            return availableActions[0];
 
         // Select best action
         return actionScores.OrderByDescending(kvp => kvp.Value).First().Key;

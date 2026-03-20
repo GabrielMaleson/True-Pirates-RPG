@@ -178,7 +178,7 @@ public class BattleAnimationData : ScriptableObject
         RectTransform bgRect = textBackground.GetComponent<RectTransform>();
         if (bgRect != null)
         {
-            bgRect.sizeDelta = new Vector2(textWidth + backgroundPadding, textHeight + backgroundPadding);
+            bgRect.sizeDelta = new Vector2(textWidth + backgroundPadding, textHeight + backgroundPadding + 500);
         }
 
         // Ensure background is behind text

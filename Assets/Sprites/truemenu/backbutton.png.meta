@@ -1,13 +1,10 @@
 fileFormatVersion: 2
-guid: 924e0a1fed1736949a06ee68dc9b6bef
+guid: 16056f58b804fbb4b8b56cfe8f06db75
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 1248514486087614095
-    second: IMG_1229_0
-  - first:
-      213: 8474698130801314211
-    second: IMG_1229_1
+      213: -5004643638299570384
+    second: backbutton_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -99,17 +96,56 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WindowsStoreApps
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: IMG_1229_0
+      name: backbutton_0
       rect:
         serializedVersion: 2
-        x: 572
-        y: 84
-        width: 900
-        height: 1747
+        x: 0
+        y: 0
+        width: 110
+        height: 50
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -118,30 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f8e7e286f4d935110800000000000000
-      internalID: 1248514486087614095
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: IMG_1229_1
-      rect:
-        serializedVersion: 2
-        x: 1171
-        y: 1828
-        width: 7
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 3a944119c0d2c9570800000000000000
-      internalID: 8474698130801314211
+      spriteID: 03f4cbf602feb8ab0800000000000000
+      internalID: -5004643638299570384
       vertices: []
       indices: 
       edges: []
@@ -160,8 +174,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      IMG_1229_0: 1248514486087614095
-      IMG_1229_1: 8474698130801314211
+      backbutton_0: -5004643638299570384
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

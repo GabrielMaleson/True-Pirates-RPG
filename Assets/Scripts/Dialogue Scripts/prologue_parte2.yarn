@@ -44,6 +44,16 @@ title: comandante_joodie_cena
 	Comandante Desconhecido: Você reporta diretamente a mim caso precise de alguma coisa, entendido?
 	<<sprite joodie.neutral icon>>
 	Joodie: Sim senhor, entendido.
+	<<sprite commandant icon>>
+	Comandante: E mais uma coisa...
+	Comandante: GRUMETE!!
+	Comandante: Você por acaso teve alguma coisa a ver com o meu Detector de Afogados estar DESAPARECIDO?!
+	<<sprite benito.fear icon>>
+	Benito: N-Não senhor- 
+	Benito: M-Mas eu posso tentar achar ele pro senhor...
+	<<sprite commandant icon>>
+	Comandante: PER-FEITO!
+	Comandante: Não preciso mais me preocupar com isso, só me contate quando estiver com ele na sua mão!
 	<<deactivate joodie>>
 	<<activate truejoodie>>
 	<<removesprite icon>>

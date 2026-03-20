@@ -162,6 +162,7 @@ MonoBehaviour:
   - {fileID: -1475321949114849037, guid: 6a560733834617c4daba7e7380c0814c, type: 3}
   - {fileID: -1395389464523258490, guid: 9bdc359f0f470c34b96b5ff94fbb9be9, type: 3}
   - {fileID: 411277943810296906, guid: c45ba7f9438b79c40b73b46f89ad7204, type: 3}
+  - {fileID: -7602595512260149774, guid: 1f7a1843aec19764595e9586c325841c, type: 3}
   spriteTags:
   - joodie.mad
   - joodie.happy
@@ -176,12 +177,11 @@ MonoBehaviour:
   - simon.pissed
   - simon.neutral
   - simon.smug
+  - simon.hurt
   defaultImagePrefab: {fileID: 8262675239114639964, guid: d0d2961c3f3e46f40bce6b3dd8787e9e, type: 3}
   positions:
   - positionName: icon
     positionTransform: {fileID: 7060075830181984012}
-  - positionName: image
-    positionTransform: {fileID: 0}
   sounds: []
   audioSource: {fileID: 7480422587954167330}
   defaultFadeDuration: 0.5
@@ -378,6 +378,22 @@ PrefabInstance:
     - target: {fileID: 1140235654199156931, guid: a041a2be0bf43d34cb6b9567b8751846, type: 3}
       propertyPath: m_Alpha
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1197286348458986615, guid: a041a2be0bf43d34cb6b9567b8751846, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 211.1287
+      objectReference: {fileID: 0}
+    - target: {fileID: 1197286348458986615, guid: a041a2be0bf43d34cb6b9567b8751846, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 224.7252
+      objectReference: {fileID: 0}
+    - target: {fileID: 1197286348458986615, guid: a041a2be0bf43d34cb6b9567b8751846, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0.0000047684
+      objectReference: {fileID: 0}
+    - target: {fileID: 1197286348458986615, guid: a041a2be0bf43d34cb6b9567b8751846, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0.0000076294
       objectReference: {fileID: 0}
     - target: {fileID: 1350761821851526252, guid: a041a2be0bf43d34cb6b9567b8751846, type: 3}
       propertyPath: m_fontAsset

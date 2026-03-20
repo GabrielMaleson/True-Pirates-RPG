@@ -228,8 +228,7 @@ public class CombatSystem : MonoBehaviour
         if (CheckBattleEnd())
             return;
 
-        // REMOVE DEFEND BONUS AT THE START OF THE CHARACTER'S NEXT TURN (not before)
-        // This ensures defend lasts through all enemy attacks
+        // REMOVE DEFEND BONUS AT THE START OF THE CHARACTER'S NEXT TURN
         if (currentCharacter != null && defendingCharacters.ContainsKey(currentCharacter))
         {
             RemoveDefendBonus(currentCharacter);
@@ -271,6 +270,7 @@ public class CombatSystem : MonoBehaviour
 
     private void StartNextEnemyTurn()
     {
+        // Check if player is still executing actions - if so, wait
         if (isPlayerExecuting)
         {
             return;
@@ -280,7 +280,6 @@ public class CombatSystem : MonoBehaviour
             return;
 
         // IMPORTANT: DO NOT remove defend bonus here - it should last through ALL enemy turns
-        // Defend bonus is only removed when the defending character's next turn starts
 
         if (enemyTurnQueue.Count == 0)
         {
@@ -474,6 +473,7 @@ public class CombatSystem : MonoBehaviour
 
             // Restore AP to start-of-turn value
             currentCharacter.currentAP = apBeforeTurn;
+
 
             onCharacterUpdated?.Invoke(currentCharacter);
 
@@ -694,6 +694,7 @@ public class CombatSystem : MonoBehaviour
 
         return selectedTargets;
     }
+
     public void ApplyDefendBonus(PartyMemberState character)
     {
         if (character == null) return;
@@ -719,6 +720,7 @@ public class CombatSystem : MonoBehaviour
 
         onCharacterUpdated?.Invoke(character);
     }
+
     public bool IsDefending(PartyMemberState character)
     {
         return defendingCharacters.ContainsKey(character);
@@ -770,7 +772,7 @@ public class CombatSystem : MonoBehaviour
         yield return new WaitForSeconds(2f);
 
         // Return to title screen
-        SceneManager.LoadScene("Title");
+        SceneManager.LoadScene("TitleScreen");
     }
 
     private IEnumerator ReturnToMapAfterDelay(float delay)

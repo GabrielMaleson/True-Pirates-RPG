@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0dae1c0bdb169eb479b9e915ac2d682c, type: 3}
-  m_Name: Protagonist
+  m_Name: Simon
   m_EditorClassIdentifier: Assembly-CSharp::CharacterData
-  characterName: Benito
-  partyIcon: {fileID: -5688714768966083005, guid: a0e8367a37939c84b9e0d8c4b1bf18c2, type: 3}
-  battlePortrait: {fileID: 6787899602028675171, guid: 94502a1b07f15bf45b7c05f0f317d88e, type: 3}
-  animatorController: {fileID: 9100000, guid: 0a25d65453e1df34f8369c6f0bee19ae, type: 2}
-  baseHP: 20
-  baseAttack: 5
-  baseDefense: 8
+  characterName: Simon
+  partyIcon: {fileID: -5321422154615905300, guid: ea1acea5891787446acb3231029cebf3, type: 3}
+  battlePortrait: {fileID: 411277943810296906, guid: c45ba7f9438b79c40b73b46f89ad7204, type: 3}
+  animatorController: {fileID: 9100000, guid: b01edff1477675b4f86abfed2b3a2160, type: 2}
+  baseHP: 24
+  baseAttack: 8
+  baseDefense: 3
   baseMaxAP: 10
   hpGrowth:
     serializedVersion: 2
