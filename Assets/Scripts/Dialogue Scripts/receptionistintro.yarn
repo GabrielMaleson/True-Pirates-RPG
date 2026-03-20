@@ -21,14 +21,14 @@
 	Soldado Desconhecido 2: Estamos aqui para obedecer ordens, não dar opiniões alheias.
 	<<simonflip>>
 	Soldado Desconhecido 2:	Ah, sabia que eu tinha carregado essa caixa. Frutas exóticas da península do Peru! 
-	<<sprite timon1 icon>>
+	<<removesprite icon>>
 	Soldado Desconhecido 1: Era só o que me faltava... Sendo garçom do meu general de guerra...
-	<<sprite simon1 icon>>
+	<<sprite simon.mad icon>>
 	Soldado Desconhecido 2: Pare de reclamar e leve logo para ele antes que ele expulse a gente desse pelotão.
-	<<sprite timon1 icon>>
+	<<removesprite icon>>
 	Soldado Desconhecido 1: Simon... Antes da gente morrer juntos nas colinas italianas... Cobertos de sangue e óleo de peixe... Eu quero que você saiba... 
 	Soldado Desconhecido 1: Você é o maior puxa-saco militar que eu já tive o desprazer de conhecer. Te amo irmão.
-	<<sprite simon1 icon>>
+	<<sprite simon.happy icon>>
 	Simon: Ha. Ha. E você é a pessoa mais engraçada que eu conheço. Tá vendo? Nós dois podemos mentir livremente!
 	<<wait 1>>
 	<<sprite benito.confused icon>>
@@ -62,6 +62,7 @@
 	<<sprite simon.pissed icon>>
 	Simon: Eu não sei quem você ou de onde você veio, mas se alguém me encontrar nesse navio com uma criança, você não será o único expulso! Isso é uma ordem!
 	<<brighten>>
+	<<wait 1>>
 	<<progress candothing>>
 	<<startencounter>>
 	<<endif>>

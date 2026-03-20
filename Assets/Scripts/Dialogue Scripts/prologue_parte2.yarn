@@ -195,6 +195,27 @@ title: fase2_matriz_sinaptica
 	<<brighten>>
 ===
 
+title: rat_fight
+---
+	<<darken>>
+	<<sprite benito.fear icon>>
+	Benito: O que... que é isso...?
+	<<sprite simon.pissed icon>>
+	Simon: Benito, o que você está fazendo?! Quer nos matar?!
+	<<sprite benito.confused icon>>
+	Benito: E- Espera, Simon! Acho que se nós sermos delicados, essa coisa não vai--
+	<<sprite joodie.mad icon>>
+	Joodie: Sai de perto, Benito.
+	<<removesprite icon>>
+	Narração: O rato respira com seus braços.
+	<<sprite simon.neutral icon>>
+	Simon: Temos que lidar com essa coisa AGORA. Não pode ser permitida de sair desse barco.
+	<<sprite simon.pissed icon>>
+	Simon: Preparem-se!
+	<<startencounter rat>>
+	<<brighten>>
+	
+
 title: pos_batalha_nepal
 ---
 	<<darken>>

@@ -12,15 +12,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7aaed775e293fcf46924317e9bb24f99, type: 3}
   m_Name: basic attack
   m_EditorClassIdentifier: Assembly-CSharp::BattleAnimationData
+  attackTextFormat: '{user} uses {attack}!'
+  textDisplayDuration: 1.5
+  textColor: {r: 1, g: 1, b: 1, a: 1}
+  textSize: 24
+  useBackground: 1
+  backgroundPadding: 0
+  backgroundColor: {r: 1, g: 1, b: 1, a: 1}
   userAnimation: {fileID: 0}
-  targetHitAnimation: {fileID: 0}
-  impactVFX: {fileID: 0}
-  chargeVFX: {fileID: 0}
-  chargeSound: {fileID: 0}
-  impactSound: {fileID: 0}
-  useCameraShake: 1
-  cameraShakeIntensity: 0.3
-  cameraShakeDuration: 0.2
-  preDelay: 0.2
+  userAnimationDelay: 0
+  targetOverlayPrefab: {fileID: 0}
+  overlayDuration: 0.5
+  overlayOffset: {x: 0, y: 0, z: 0}
+  hitVFX: {fileID: 0}
+  hitSound: {fileID: 0}
   hitDelay: 0.5
+  hitEffectDuration: 0.5
+  shakeTarget: 1
+  shakeIntensity: 0.2
+  shakeDuration: 0.2
+  preDelay: 0.2
   postDelay: 0.3

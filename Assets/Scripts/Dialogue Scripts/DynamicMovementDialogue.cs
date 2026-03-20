@@ -1,7 +1,9 @@
-using UnityEngine;
 using System.Collections;
-using Yarn.Unity;
 using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using Yarn.Unity;
 
 public class DynamicCutsceneScript : MonoBehaviour
 {
@@ -13,6 +15,7 @@ public class DynamicCutsceneScript : MonoBehaviour
 
     [Header("References")]
     public DialogueRunner dialogueRunner;
+    public CharacterData joodie;
 
     [System.Serializable]
     public class CharacterEntry
@@ -35,6 +38,9 @@ public class DynamicCutsceneScript : MonoBehaviour
     // Static instance reference for static methods
     private static DynamicCutsceneScript instance;
 
+    [Header("Encounter")]
+    public EncounterFile encounterToStart;
+    private EncounterStarter encounterStarter;
     private void Awake()
     {
         // Set static instance
@@ -213,4 +219,61 @@ public class DynamicCutsceneScript : MonoBehaviour
         if (instance == this)
             instance = null;
     }
+
+
+    [YarnCommand ("joodieadd")]
+    public static void AddJoodie()
+    {
+        instance.AddJoodieTrue();
+    }
+
+    public void AddJoodieTrue()
+    {
+        SistemaInventario inventory = SistemaInventario.Instance;
+        inventory.AddPartyMember(joodie);
+    }
+
+    [YarnCommand ("startratfight")]
+    public static void StartRatEncounter()
+    {
+        instance.StartRatFightTrue();
+    }
+
+    private void StartRatFightTrue()
+    {
+        EncounterData encounterData = FindFirstObjectByType<EncounterData>();
+
+        SistemaInventario inventory = SistemaInventario.Instance;
+
+        encounterData.encounterStarterObject = instance.gameObject;
+        encounterData.playerInventory = inventory;
+        encounterData.encounterFile = instance.encounterToStart;
+        encounterData.playerPartyMembers = inventory.GetPartyMembersForCombat();
+
+        encounterData.enemyPartyMembers.Clear();
+        encounterData.enemyPrefabs.Clear();
+
+        foreach (var enemyData in encounterToStart.enemies)
+        {
+            if (enemyData.characterData != null)
+            {
+                PartyMemberState enemyState = new PartyMemberState(enemyData.characterData, enemyData.level);
+                if (enemyData.overrideHP > 0)
+                {
+                    enemyState.currentHP = enemyData.overrideHP;
+                }
+                encounterData.enemyPartyMembers.Add(enemyState);
+                encounterData.enemyPrefabs.Add(enemyData.enemyPrefab);
+            }
+        }
+
+        GameObject sceneObj = new GameObject("PreviousScene");
+        sceneObj.AddComponent<PreviousScene>();
+        sceneObj.GetComponent<PreviousScene>().UnloadScene();
+
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("Combat", LoadSceneMode.Additive);
+        Debug.Log("Combat scene loaded successfully");
+    }
+
+
 }

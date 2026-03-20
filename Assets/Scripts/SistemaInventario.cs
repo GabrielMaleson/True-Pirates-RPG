@@ -69,6 +69,166 @@ public class SistemaInventario : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Adds a new party member to the party
+    /// </summary>
+    /// <param name="characterData">The CharacterData template for the new member</param>
+    /// <param name="level">The starting level (default 1)</param>
+    /// <returns>True if successfully added, false if already in party</returns>
+    public bool AddPartyMember(CharacterData characterData, int level = 1)
+    {
+        if (characterData == null)
+        {
+            Debug.LogError("Cannot add party member: CharacterData is null!");
+            return false;
+        }
+
+        // Check if already in party
+        foreach (var member in partyMembers)
+        {
+            if (member.template == characterData)
+            {
+                Debug.LogWarning($"Character {characterData.characterName} is already in the party!");
+                return false;
+            }
+        }
+
+        // Create new party member state
+        PartyMemberState newMember = new PartyMemberState(characterData, level);
+
+        // Ensure HP and AP are at max
+        newMember.currentHP = newMember.MaxHP;
+        newMember.currentAP = newMember.MaxAP;
+        newMember.currentExperience = 0;
+
+        // Add to party list
+        partyMembers.Add(newMember);
+
+        // Show notification
+        ShowPartyMemberAddedNotification(characterData.characterName);
+
+        // Trigger event
+        onPartyUpdated?.Invoke();
+
+        Debug.Log($"Added {characterData.characterName} (Level {level}) to the party!");
+        return true;
+    }
+
+    /// <summary>
+    /// Adds a new party member by name (looks up CharacterData by name)
+    /// </summary>
+    /// <param name="characterName">Name of the character to add</param>
+    /// <param name="level">Starting level (default 1)</param>
+    /// <returns>True if successfully added</returns>
+    public bool AddPartyMemberByName(string characterName, int level = 1)
+    {
+        // Try to find CharacterData by name from Resources
+        CharacterData[] allCharacters = Resources.LoadAll<CharacterData>("");
+        foreach (var characterData in allCharacters)
+        {
+            if (characterData.characterName == characterName)
+            {
+                return AddPartyMember(characterData, level);
+            }
+        }
+
+        Debug.LogError($"Character '{characterName}' not found in Resources!");
+        return false;
+    }
+
+    /// <summary>
+    /// Shows a notification when a new party member joins
+    /// </summary>
+    private void ShowPartyMemberAddedNotification(string characterName)
+    {
+        if (pickupNotificationPrefab == null || targetCanvas == null) return;
+
+        GameObject notification = Instantiate(pickupNotificationPrefab, targetCanvas.transform);
+
+        // Position at top center
+        RectTransform rectTransform = notification.GetComponent<RectTransform>();
+        if (rectTransform != null)
+        {
+            rectTransform.anchorMin = new Vector2(0.5f, 1f);
+            rectTransform.anchorMax = new Vector2(0.5f, 1f);
+            rectTransform.pivot = new Vector2(0.5f, notificationOffsetY);
+            rectTransform.anchoredPosition = new Vector2(0, notificationOffsetY);
+        }
+
+        TextMeshProUGUI textComponent = notification.GetComponent<TextMeshProUGUI>();
+        if (textComponent != null)
+        {
+            textComponent.text = $"{characterName} joined the party!";
+        }
+    }
+
+    /// <summary>
+    /// Removes a party member from the party
+    /// </summary>
+    /// <param name="member">The PartyMemberState to remove</param>
+    /// <returns>True if successfully removed</returns>
+    public bool RemovePartyMember(PartyMemberState member)
+    {
+        if (member == null) return false;
+
+        if (partyMembers.Contains(member))
+        {
+            partyMembers.Remove(member);
+            onPartyUpdated?.Invoke();
+            Debug.Log($"Removed {member.CharacterName} from the party!");
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Removes a party member by index
+    /// </summary>
+    /// <param name="index">Index in party list</param>
+    /// <returns>True if successfully removed</returns>
+    public bool RemovePartyMemberAt(int index)
+    {
+        if (index < 0 || index >= partyMembers.Count) return false;
+
+        string memberName = partyMembers[index].CharacterName;
+        partyMembers.RemoveAt(index);
+        onPartyUpdated?.Invoke();
+        Debug.Log($"Removed {memberName} from the party!");
+        return true;
+    }
+
+    /// <summary>
+    /// Gets the current party size
+    /// </summary>
+    public int GetPartySize()
+    {
+        return partyMembers.Count;
+    }
+
+    /// <summary>
+    /// Checks if a character is in the party
+    /// </summary>
+    public bool IsInParty(CharacterData characterData)
+    {
+        foreach (var member in partyMembers)
+        {
+            if (member.template == characterData)
+                return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Gets a party member by index
+    /// </summary>
+    public PartyMemberState GetPartyMember(int index)
+    {
+        if (index >= 0 && index < partyMembers.Count)
+            return partyMembers[index];
+        return null;
+    }
+
     // Show pickup notification on canvas
     private void ShowPickupNotification(DadosItem item, int quantidade)
     {

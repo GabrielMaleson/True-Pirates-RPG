@@ -49,16 +49,32 @@ public class PartyMemberState
             return baseAttack + weaponBonus + armorBonus;
         }
     }
+   
+    public void SetDefense(int newDefense)
+    {
+        _temporaryDefense = newDefense;
+    }
+
+    // Add a field for temporary defense
+    private int _temporaryDefense = -1;
 
     public int Defense
     {
         get
         {
+            if (_temporaryDefense >= 0)
+                return _temporaryDefense;
+
             int baseDefense = template != null ? template.GetDefenseForLevel(level) : 1;
             int weaponBonus = GetEquipmentStatBonus(weapon, StatType.Defense);
             int armorBonus = GetEquipmentStatBonus(armor, StatType.Defense);
             return baseDefense + weaponBonus + armorBonus;
         }
+    }
+
+    public void ClearTemporaryDefense()
+    {
+        _temporaryDefense = -1;
     }
 
     public int MaxAP

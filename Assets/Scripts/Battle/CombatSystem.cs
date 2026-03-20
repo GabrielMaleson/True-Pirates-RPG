@@ -228,6 +228,8 @@ public class CombatSystem : MonoBehaviour
         if (CheckBattleEnd())
             return;
 
+        // REMOVE DEFEND BONUS AT THE START OF THE CHARACTER'S NEXT TURN (not before)
+        // This ensures defend lasts through all enemy attacks
         if (currentCharacter != null && defendingCharacters.ContainsKey(currentCharacter))
         {
             RemoveDefendBonus(currentCharacter);
@@ -277,10 +279,8 @@ public class CombatSystem : MonoBehaviour
         if (CheckBattleEnd())
             return;
 
-        if (currentCharacter != null && defendingCharacters.ContainsKey(currentCharacter))
-        {
-            RemoveDefendBonus(currentCharacter);
-        }
+        // IMPORTANT: DO NOT remove defend bonus here - it should last through ALL enemy turns
+        // Defend bonus is only removed when the defending character's next turn starts
 
         if (enemyTurnQueue.Count == 0)
         {
@@ -465,17 +465,19 @@ public class CombatSystem : MonoBehaviour
         if (!partyMembers.Contains(currentCharacter) || currentState != CombatState.PLAYER_TURN)
             return;
 
+        // Complete undo - clear ALL queued actions and restore full AP
         if (actionsThisTurn.Count > 0)
         {
-            QueuedAction lastAction = actionsThisTurn[actionsThisTurn.Count - 1];
-            actionsThisTurn.RemoveAt(actionsThisTurn.Count - 1);
-            pendingActions.Remove(lastAction);
+            // Clear all actions
+            actionsThisTurn.Clear();
+            pendingActions.Clear();
 
+            // Restore AP to start-of-turn value
             currentCharacter.currentAP = apBeforeTurn;
 
             onCharacterUpdated?.Invoke(currentCharacter);
 
-            Debug.Log($"Undid last action. AP restored to {apBeforeTurn}. Remaining queued: {pendingActions.Count}");
+            Debug.Log($"Undid all actions. AP restored to {apBeforeTurn}");
         }
     }
 
@@ -692,17 +694,14 @@ public class CombatSystem : MonoBehaviour
 
         return selectedTargets;
     }
-
     public void ApplyDefendBonus(PartyMemberState character)
     {
         if (character == null) return;
 
-        if (!originalDefenseValues.ContainsKey(character))
-        {
-            originalDefenseValues[character] = character.Defense;
-        }
-
-        defendingCharacters[character] = character.Defense * 3;
+        // Triple the current defense
+        int tripledDefense = character.Defense * 3;
+        character.SetDefense(tripledDefense);
+        defendingCharacters[character] = tripledDefense;
 
         onCharacterUpdated?.Invoke(character);
     }
@@ -711,10 +710,7 @@ public class CombatSystem : MonoBehaviour
     {
         if (character == null) return;
 
-        if (originalDefenseValues.ContainsKey(character))
-        {
-            originalDefenseValues.Remove(character);
-        }
+        character.ClearTemporaryDefense();
 
         if (defendingCharacters.ContainsKey(character))
         {
@@ -723,7 +719,6 @@ public class CombatSystem : MonoBehaviour
 
         onCharacterUpdated?.Invoke(character);
     }
-
     public bool IsDefending(PartyMemberState character)
     {
         return defendingCharacters.ContainsKey(character);
@@ -796,6 +791,32 @@ public class CombatSystem : MonoBehaviour
 
             previousScene.LoadScene();
             SceneManager.UnloadSceneAsync("Combat");
+
+            // Clean up spawned visual objects after combat ends
+            CleanupVisualObjects();
+        }
+    }
+
+    private void CleanupVisualObjects()
+    {
+        // Clean up party member visual objects
+        foreach (var member in partyMembers)
+        {
+            if (member != null && member.transform != null)
+            {
+                Destroy(member.transform.gameObject);
+                member.transform = null;
+            }
+        }
+
+        // Clean up enemy visual objects
+        foreach (var enemy in enemies)
+        {
+            if (enemy != null && enemy.transform != null)
+            {
+                Destroy(enemy.transform.gameObject);
+                enemy.transform = null;
+            }
         }
     }
 

@@ -273,14 +273,6 @@ public class SpecialCutsceneScript : MonoBehaviour
             }
         }
 
-        encounterData.CalculateRewards();
-
-        if (!Application.CanStreamedLevelBeLoaded("Combat"))
-        {
-            Debug.LogError("Combat scene is not in Build Settings!");
-            yield break;
-        }
-
         GameObject sceneObj = new GameObject("PreviousScene");
         sceneObj.AddComponent<PreviousScene>();
         sceneObj.GetComponent<PreviousScene>().UnloadScene();

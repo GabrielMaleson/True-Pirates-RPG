@@ -157,9 +157,6 @@ public class DialogueManager : MonoBehaviour
             Rigidbody2D playerRigidbody = playerObject.GetComponent<Rigidbody2D>();
             playerRigidbody.WakeUp();
         }
-
-        if (instance.graphicRaycaster != null)
-            instance.graphicRaycaster.enabled = false;
         if (partyMenuManager != null)
             partyMenuManager.SetCanOpenMenu(true);
     }
@@ -366,14 +363,14 @@ public class DialogueManager : MonoBehaviour
     }
 
     [YarnCommand("darken")]
-    public static void DarkenScreen(float alpha = 0.67f, float duration = 0.5f)
+    public static void DarkenScreen(float alpha = 0.37f, float duration = 0.5f)
     {
         if (instance.blackScreen != null)
         {
+            if (instance.graphicRaycaster != null)
+                instance.graphicRaycaster.enabled = true;
             instance.blackScreen.SetActive(true);
             instance.StartCoroutine(instance.FadeScreenRoutine(alpha, duration));
-            instance.EnsureContinueButtonInteractable();
-            // Disable player movement when screen darkens
             instance.DisablePlayerControl();
             instance.playerMovement.enabled = false;
         }
@@ -408,6 +405,8 @@ public class DialogueManager : MonoBehaviour
 
             // Re-enable player movement when screen brightens
             instance.EnablePlayerControl();
+            if (instance.graphicRaycaster != null)
+                instance.graphicRaycaster.enabled = false;
             instance.playerMovement.enabled = true;
         }
     }
