@@ -721,6 +721,9 @@ public class CombatSystem : MonoBehaviour
 
     private bool CheckBattleEnd()
     {
+        if (currentState == CombatState.VICTORY || currentState == CombatState.DEFEAT)
+            return true;
+
         bool allPartyDowned = partyMembers.All(p => p.currentHP <= 0);
         bool allEnemiesDowned = enemies.All(e => e.currentHP <= 0);
 
