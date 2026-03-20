@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0dae1c0bdb169eb479b9e915ac2d682c, type: 3}
-  m_Name: Goblin
+  m_Name: Rat
   m_EditorClassIdentifier: Assembly-CSharp::CharacterData
   characterName: Topeira
   partyIcon: {fileID: 0}
   battlePortrait: {fileID: 0}
   animatorController: {fileID: 0}
-  baseHP: 20
+  baseHP: 50
   baseAttack: 5
-  baseDefense: 1
+  baseDefense: 5
   baseMaxAP: 10
   hpGrowth:
     serializedVersion: 2
@@ -117,6 +117,10 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   unlockableAttacks:
-  - attack: {fileID: 11400000, guid: 73ce6ecd6a556f54083e8a2f2ab10b24, type: 2}
+  - attack: {fileID: 11400000, guid: d9c158eca45a3d14eb29938036df67f2, type: 2}
+    unlockLevel: 0
+  - attack: {fileID: 11400000, guid: c8b51e9b639870241a24cc09b8d2fc01, type: 2}
+    unlockLevel: 0
+  - attack: {fileID: 11400000, guid: d369b83fa4db8f04bac4c9db9dfa92b2, type: 2}
     unlockLevel: 0
   baseExpValue: 0

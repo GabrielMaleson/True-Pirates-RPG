@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e3149aa9faf252a47814cb908b2312b2, type: 3}
-  m_Name: Evil Basic
+  m_Name: Projectile Vomit
   m_EditorClassIdentifier: Assembly-CSharp::AttackFile
-  attackName: Golpe de Espada
+  attackName: "V\xF4mito a Jato"
   description: 
   icon: {fileID: 0}
   partyMemberOnly: 0
@@ -20,7 +20,7 @@ MonoBehaviour:
   effects:
   - effectType: 0
     targetType: 0
-    numberOfTargets: 1
+    numberOfTargets: 3
     value: 5
     accuracy: 100
     triggersOn: 0

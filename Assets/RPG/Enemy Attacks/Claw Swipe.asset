@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e3149aa9faf252a47814cb908b2312b2, type: 3}
-  m_Name: Evil Basic
+  m_Name: Claw Swipe
   m_EditorClassIdentifier: Assembly-CSharp::AttackFile
-  attackName: Golpe de Espada
+  attackName: Golpe de Garra
   description: 
   icon: {fileID: 0}
   partyMemberOnly: 0
