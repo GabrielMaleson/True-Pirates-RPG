@@ -1,8 +1,9 @@
-using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
+using System.Collections;
 using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PartyMenuManager : MonoBehaviour
 {
@@ -363,6 +364,42 @@ public class PartyMenuManager : MonoBehaviour
     {
         HideAllPanels();
         MenuOpener.SetActive(true);
+    }
+
+    // Close Game with Save
+    public void CloseGame()
+    {
+        Debug.Log("Closing game... Saving before exit");
+
+        // Find SaveLoadManager instance
+        SaveLoadManager saveManager = SaveLoadManager.Instance;
+
+        if (saveManager != null)
+        {
+            // Save the game before closing
+            saveManager.SaveGame();
+            Debug.Log("Game saved successfully before closing");
+        }
+        else
+        {
+            Debug.LogWarning("SaveLoadManager not found! Game will close without saving.");
+        }
+
+        // Optionally add a small delay to ensure save completes
+        StartCoroutine(QuitAfterDelay(0.2f));
+    }
+
+    public void SaveGame()
+    {
+        SaveLoadManager saveLoadManager = SaveLoadManager.Instance;
+        saveLoadManager.SaveGame();
+    }
+
+    private IEnumerator QuitAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        Application.Quit();
     }
 
     private void OnDestroy()

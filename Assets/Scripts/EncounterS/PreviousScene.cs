@@ -30,7 +30,7 @@ public class PreviousScene : MonoBehaviour
                 DontDestroyOnLoad(obj);
                 continue;
             }
-            
+
             // Skip objects with "Ignore" tag - they won't be stored or reactivated
             if (obj.CompareTag("Ignore"))
             {
@@ -38,7 +38,7 @@ public class PreviousScene : MonoBehaviour
                 // We don't store these objects, so they'll stay as they are
                 continue;
             }
-            
+
             // Skip the EncounterData object and this manager
             if (obj != this.gameObject &&
                 obj != encounterData?.gameObject)
@@ -73,6 +73,14 @@ public class PreviousScene : MonoBehaviour
         {
             Debug.Log($"Found preserved Inventory object: {invObj.name}");
             invObj.SetActive(true);
+
+            // Disable audio listener on preserved objects if they have one
+            AudioListener listener = invObj.GetComponent<AudioListener>();
+            if (listener != null)
+            {
+                listener.enabled = false;
+                Debug.Log($"Disabled AudioListener on preserved object: {invObj.name}");
+            }
         }
 
         // Find all Ignore objects (they were never deactivated, so nothing to do)
@@ -80,7 +88,13 @@ public class PreviousScene : MonoBehaviour
         foreach (var ignoreObj in ignoreObjects)
         {
             Debug.Log($"Found Ignore object (keeping as is): {ignoreObj.name}");
-            // These objects were never deactivated, so they remain active
+            // Disable audio listener on ignore objects if they have one
+            AudioListener listener = ignoreObj.GetComponent<AudioListener>();
+            if (listener != null)
+            {
+                listener.enabled = false;
+                Debug.Log($"Disabled AudioListener on ignore object: {ignoreObj.name}");
+            }
         }
 
         // Reactivate all stored objects
@@ -92,6 +106,9 @@ public class PreviousScene : MonoBehaviour
             }
         }
 
+        // Ensure there's exactly one active AudioListener
+        FixAudioListeners();
+
         // Reactivate player at the encounter location
         if (encounterData != null)
         {
@@ -101,8 +118,7 @@ public class PreviousScene : MonoBehaviour
             {
                 playerPosition = encounterData.encounterStarterObject.transform.position;
             }
-            
-            
+
             encounterData.ReactivateOriginalPlayer(playerPosition);
         }
 
@@ -113,5 +129,33 @@ public class PreviousScene : MonoBehaviour
 
         // Destroy this manager after scene is loaded
         Destroy(gameObject);
+    }
+
+    private void FixAudioListeners()
+    {
+        // Find all AudioListeners in the scene
+        AudioListener[] listeners = FindObjectsByType<AudioListener>(FindObjectsSortMode.None);
+
+        if (listeners.Length > 1)
+        {
+            Debug.LogWarning($"Found {listeners.Length} AudioListeners. Disabling all but one.");
+
+            // Keep the first one enabled, disable the rest
+            for (int i = 1; i < listeners.Length; i++)
+            {
+                listeners[i].enabled = false;
+            }
+        }
+        else if (listeners.Length == 0)
+        {
+            Debug.LogWarning("No AudioListener found in scene. Adding one to main camera.");
+
+            // Try to find main camera and add listener
+            Camera mainCam = Camera.main;
+            if (mainCam != null)
+            {
+                mainCam.gameObject.AddComponent<AudioListener>();
+            }
+        }
     }
 }

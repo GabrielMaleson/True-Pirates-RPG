@@ -4,21 +4,20 @@
 
 <<if $first_intro>>
 	<<darken>>
-	<<sprite guy1 icon>>
+	<<sprite benito.confused icon>>
 	Benito: Não consigo ver nada...
-	Benito: Momo, o que você-
 	<<playerflip>>
 	<<surprise>>
-	<<sprite guy2 icon>>
+	<<sprite benito.fear icon>>
 	Benito: Que som foi esse?
 	Benito: Tenho que correr!
 	<<runaway>>
 	<<dooropen>>
 	<<simonenter>>
 	<<timonenter>>
-	<<sprite timon1 icon>>
+	<<removesprite icon>>
 	Soldado Desconhecido 1: Esse general é um arrogante e meio, sinto falta do nosso comandante.
-	<<sprite simon1 icon>>
+	<<sprite simon.neutral icon>>
 	Soldado Desconhecido 2: Estamos aqui para obedecer ordens, não dar opiniões alheias.
 	<<simonflip>>
 	Soldado Desconhecido 2:	Ah, sabia que eu tinha carregado essa caixa. Frutas exóticas da península do Peru! 
@@ -32,53 +31,36 @@
 	<<sprite simon1 icon>>
 	Simon: Ha. Ha. E você é a pessoa mais engraçada que eu conheço. Tá vendo? Nós dois podemos mentir livremente!
 	<<wait 1>>
-	<<sprite guy1 icon>>
-	<<sprite guyphew image>>
+	<<sprite benito.confused icon>>
 	Benito: (Aquela insígnia deles...)
 	<<removesprite icon>>
 	Narração: Benito inspeciona os uniformes dos soldados.
 	Narração: "<b><color=\#ff0000>Resistência Peruana - Morte aos Afogadores</color></b>"
+	<<sprite benito.fear icon>>
 	Benito: ...
-	<<removesprite image>>
 	<<guysleave>>
 	<<wait 2>>
 	<<doorclose>>
 	<<wait 1>>
 	<<simonflip>>
-	<<sprite simon1 icon>>
+	<<sprite simon.pissed icon>>
 	Simon: Quem está aí?
-	<<sprite guy2 icon>>
+	<<sprite benito.fear icon>>
 	Benito: !!!
 	Simon: Eu o ordeno em nome do Exército Peruano! Saia agora ou vire comida de pássaro!
-	<<sprite guy1 icon>>
+	<<sprite benito.fear icon>>
 	Benito: Por favor não me mate-
 	<<sprite guy2 icon>>
-	Benito: Momo, NÃO!
-	<<momogrr>>
-	<<wait 2>>
 	<<simonflip>>
 	<<sprite simon1 icon>>
-	Simon: Que porra é essa?! Isso é um mosassauro?! Essas coisas não eram para ter 15 metros?! Isso é um experimento da Daya?! Quem é você?!
+	Simon:  Quem é você?! Um espião? Ladrão? Ou um assassino?  
 	<<playerphew>>
-	<<sprite guy2 icon>>
+	<<sprite benito.fear icon>>
 	Benito: Não não — Quer dizer... Eu não sei... Provavelmente er —
-	<<sprite guy2 icon>>
-	Benito: Olha eu não sei de onde ele veio, mas ele é meu e ele é inofensivo! Eu não sou um espião... Ou um soldado... Ou um assassino... Eu não sou ninguém! Haha... Ninguém...
-	<<removesprite icon>>	
-	Narração: Benito ri nervosamente achando sua resposta muito melhor do que ela realmente foi.
-	Narração: Simon abaixa a guarda finalmente averiguando a idade e voz do garoto. O armazém escuro e a adrenalina não o permitiam antes. Simon suspira levemente.
-	<<sprite simon1 icon>>
-	Simon: Olha garoto... Não sei que ideia de jerico você teve, mas invasão de propriedade militar privada é um crime sério. O general podia te executar pelas coisas que você ouviu aqui dentro. Sem contar que esse barco vai decolar logo, então eu tenho que te escoltar daqui o mais rápido possível.
-	<<sprite guy2 icon>>
-	Benito: E-Eu não vou a lugar nenhum! E-Eu vim aqui em uma missão, ou a cumpro, ou m-morrerei tenta—
-	<<sprite simon1 icon>>
-	Simon: Garoto! Eu não sei quem você ou de onde você veio, mas se alguém me encontrar nesse navio com uma criança, você não será o único expulso! Eu não quero que você entre em perigo, agora se levanta e vamos! Isso é uma ordem!
-	<<sprite simon1 icon>>
-	Simon: AHH! Diabos — Inofensivo é o caralho!
-	<<sprite guy2 icon>>
-	Benito: Momo não! Deixe ele em paz!
-	<<sprite simon1 icon>>
-	Simon: Olha garoto... Eu não quero machucar nenhum de vocês dois... Mas como você, eu vim aqui em uma missão, honrar minha família e meus amigos. E eu não vou deixar um peixe e um pirralho estragarem todo meu esforço. Agora vamos!
+	<<sprite simon.mad icon>>
+	Simon: Olha garoto... Não sei que ideia de jerico você teve, mas invasão de propriedade militar privada é um crime sério!
+	<<sprite simon.pissed icon>>
+	Simon: Eu não sei quem você ou de onde você veio, mas se alguém me encontrar nesse navio com uma criança, você não será o único expulso! Isso é uma ordem!
 	<<brighten>>
 	<<progress candothing>>
 	<<startencounter>>

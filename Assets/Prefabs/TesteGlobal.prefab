@@ -1545,7 +1545,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -4.015564, y: 4.015625}
+  m_AnchoredPosition: {x: -4.015625, y: 4.015625}
   m_SizeDelta: {x: 676.9999, y: 316.53308}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4752560322423885558
@@ -2058,8 +2058,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8983900881636473733}
-        m_TargetAssemblyTypeName: SistemaInventario, Assembly-CSharp
+      - m_Target: {fileID: 991241101428107277}
+        m_TargetAssemblyTypeName: PartyMenuManager, Assembly-CSharp
         m_MethodName: SaveGame
         m_Mode: 1
         m_Arguments:
@@ -4610,8 +4610,8 @@ MonoBehaviour:
   moedas: 0
   gameProgress: []
   pickupNotificationPrefab: {fileID: 4256179268038286830, guid: 7d0bec65b222b9a48bdc44b88209373d, type: 3}
-  notificationSpawnPoint: {fileID: 0}
-  notificationOffsetY: 2
+  targetCanvas: {fileID: 1986476068124598944}
+  notificationOffsetY: 3
 --- !u!114 &3193728564909431463
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5031,7 +5031,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 991241101428107277}
         m_TargetAssemblyTypeName: PartyMenuManager, Assembly-CSharp
-        m_MethodName: ShowAttacks
+        m_MethodName: CloseGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

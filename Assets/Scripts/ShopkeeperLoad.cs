@@ -36,7 +36,7 @@ public class ShopkeeperLoad : MonoBehaviour
         {
             Ugh++;
         }
-        if (Ugh > 8f)
+        if (Ugh > 6f)
         {
             shop.SetActive(true);
             Destroy(this);

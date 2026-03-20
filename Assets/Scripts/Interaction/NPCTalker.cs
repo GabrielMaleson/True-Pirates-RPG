@@ -6,7 +6,10 @@ public class NPCTalker : MonoBehaviour
     public bool hasstarted = false;
     private bool playerInRange = false;
     public string thething;
-
+    public bool joodiescript = false;
+    public bool DestroyThe = false;
+    public GameObject Activator;
+    public GameObject Activator2;
     void Start()
     {
         dialogue = FindFirstObjectByType<DialogueManager>();
@@ -23,6 +26,24 @@ public class NPCTalker : MonoBehaviour
         {
             hasstarted = true;
             dialogue.StartDialogue(thething);
+            HidePopup();
+            if (DestroyThe)
+            {
+                Activator.SetActive(true);
+                Destroy(this);
+                if (Activator2 != null)
+                {
+                    Activator2.SetActive(true);
+                }
+            }
+        }
+
+        if (!hasstarted && playerInRange && joodiescript)
+        {
+            hasstarted = true;
+            dialogue.StartDialogue(thething);
+            HidePopup();
+            Destroy(this);
         }
     }
 

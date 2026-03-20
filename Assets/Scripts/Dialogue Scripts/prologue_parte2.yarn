@@ -1,41 +1,51 @@
 title: comandante_joodie_cena
 ---
 	<<darken>>
-	<<sprite simon1 icon>>
+	<<sprite joodie.mad icon>>
+	<<sprite commandant icon>>
 	Comandante Desconhecido: ASPIRANTE SIMON!!!
 	Comandante Desconhecido: ESTOU A 15 MINUTOS ESPERANDO A SENHORITA VOLTAR DO SEU COCHILO, POSSO SABER O PORQ-
-	<<sprite guy2 icon>>
 	Comandante Desconhecido: O QUE TEMOS AQUI? UM JOVEM GRUMETE? PARA QUEM EU DEVO A HONRA DE PARABENIZAR POR TRAZER UMA CRIANÇA PRO NOSSO NAVIO DE BATALHA?
-	<<sprite simon1 icon>>
+	<<sprite simon.mad icon>>
 	Simon: Fui eu, Comandante!
 	Simon: Eu vi ele entrando no barco, e eu fiquei com receio de reportar e levar a culpa. Ele tá em perigo por minha culpa.
-	<<sprite guy2 icon>>
+	<<sprite benito.fear icon>>
 	Benito: Não! Ele tá mentind-
+	<<sprite commandant icon>>
 	Comandante Desconhecido: MUUUITO BEM ASPIRANTE!
 	Comandante Desconhecido: EXPONDO UMA DAS NOSSAS PRECIOSAS GERAÇÕES AO COMBATE NO SEU PRIMEIRO DIA! MINTO, NA SUA PRIMEIRA HORA DE SERVIÇO!
 	Comandante Desconhecido: EU FUI ALERTADO SOBRE VOCÊ, ASPIRANTE SIMON... SUA HISTÓRIA... SEU... HISTÓRICO...
-	<<sprite simon1 icon>>
+	<<sprite simon.pissed icon>>
 	Simon: Eu entendo, Comandante!
 	Simon: Minha prioridade é manter a segurança desse jovem. Eu admito responsabilidade sob ele durante a jornada, e assim que chegarmos em Portugal, aceito minha dispensa por má conduta, Senhor!
+	<<sprite commandant icon>>
 	Comandante Desconhecido: Aspira... Eu não confio você para manter a obra viva desse barco seca... Muito menos para manter a segurança desse pobre jovem...
 	Comandante Desconhecido: Você E o jovem ficarão sob supervisão da nossa engenheira mais renomada. Como sempre, ela está à frente de fazer todas suas obrigações, então ela terá bastante tempo livre para ser babá de vocês dois...
 	Comandante Desconhecido: CHEFE DE MÁQUINAAAAAAS!!
 	Comandante Desconhecido: JOODIE!! APRESENTE-SE!
+	<<activate joodie>>
+	<<move joodie pointA>>
 	<<wait 2>>
+	<<sprite joodie.neutral icon>>
 	Joodie: PORRA de alçapão... Já falei pra não trancarem essa merda...
-	<<sprite joodie1 icon>>
+	<<sprite joodie.mad icon>>
 	Joodie: BENITO?!
-	<<sprite guy2 icon>>
-	Joodie: O que você tá fazendo aqui?! Era pra você tá em casa! Ai meu deus as freiras devem estar malucas procurando por você... Garoto você não tem noção do perigo que você se meteu...
+	Joodie: O que você tá fazendo aqui?! Era pra você tá em casa! Ai meu deus as freiras devem estar malucas procurando por você... 
+	<<sprite joodie.neutral icon>>
+	Joodie: Garoto você não tem noção do perigo que você se meteu...
+	<<sprite commandant icon>>
 	Comandante Desconhecido: MAQUINISTA! A senhorita por acaso conhece esse espécime?
-	<<sprite joodie1 icon>>
+	<<sprite joodie.mad icon>>
 	Joodie: Infelizmente, Comandante... Eu era amiga do pai dele...
 	Joodie: Nós fomos amigos por muitos anos, ajudei ele em alguns projetos, era um homem bom. Infelizmente veio a falecer...
+	<<sprite commandant icon>>
 	Comandante Desconhecido: Um órfão arruaceiro, deveria ter adivinhado...
 	Comandante Desconhecido: Porém como eu disse, a não sei que um desses dois morra, eu não quero ser incomodado por essa situação novamente.
 	Comandante Desconhecido: Você reporta diretamente a mim caso precise de alguma coisa, entendido?
-	<<sprite joodie1 icon>>
+	<<sprite joodie.neutral icon>>
 	Joodie: Sim senhor, entendido.
+	<<deactivate joodie>>
+	<<activate truejoodie>>
 	<<removesprite icon>>
 	<<brighten>>
 ===
@@ -43,19 +53,20 @@ title: comandante_joodie_cena
 title: joodie_conversa_privada
 ---
 	<<darken>>
-	<<sprite joodie1 icon>>
+	<<sprite joodie.mad icon>>
 	Joodie: Eu juro pelo Mar, se você for responsável por trazer ele aqui... Eu vou te afogar em óleo...
-	<<sprite simon1 icon>>
+	<<sprite simon.pissed icon>>
 	Simon: Não... Não! Ele se esgueirou aqui sozinho, eu não tive nada a ver com isso, eu só encontrei ele.
-	<<sprite guy2 icon>>
-	Benito: Ele ta falando a verdade Jo, foi ideia minha...
-	<<sprite joodie1 icon>>
+	<<sprite benito.fear icon>>
+	Benito: Ele ta falando a verdade Jo, f- foi ideia minha...
+	<<sprite joodie.mad icon>>
 	Joodie: Eu não quero mais UMA palavra de você!
 	Joodie: Quando eu tiver de entrar em um barco e te trazer de volta pra casa, a gente vai ter uma boa conversa. Esse mundo não é uma brincadeira, Nito.
+	<<sprite joodie.neutral icon>>
 	Joodie: Centenas de pessoas e famílias estão morrendo todos os dias, você estava seguro nas montanhas, não tem motivo pra fazer uma aventura dessas. Ou você quer terminar igual o seu pai?
-	<<sprite guy2 icon>>
+	<<sprite benito.fear icon>>
 	Benito: Desculpa Jo... Eu... Não tava pensando direito...
-	<<sprite joodie1 icon>>
+	<<sprite joodie.neutral icon>>
 	Joodie: Tá tudo bem... Vamos nos acomodar, deixar você se familiarizar com a tripulação.
 	Joodie: Vamos passar longas noites juntos...
 	<<removesprite icon>>
@@ -67,15 +78,18 @@ title: joodie_conversa_privada
 title: sidequest1_dispositivo
 ---
 	<<darken>>
-	<<sprite joodie1 icon>>
+	<<sprite joodie.neutral icon>>
 	Joodie: Comandante. Você mencionou o dispositivo de navegação?
+	<<sprite commandant icon>>
 	Comandante Desconhecido: Sim. O maldito aparelho caiu e se partiu. Três pedaços espalhados pelo navio. Sem o dispositivo completo, voamos às cegas acima do mar.
 	Comandante Desconhecido: Precisamos que alguém o recolha antes que percamos a rota. Já temos problemas suficientes sem nos perdermos sobre o oceano.
-	<<sprite simon1 icon>>
+	<<sprite simon.smug icon>>
 	Simon: Deixa com a gente, Comandante.
+	<<sprite commandant icon>>
 	Comandante Desconhecido: Torço para que não me decepcione desta vez, Aspirante.
 	<<removesprite icon>>
 	Narração: Objetivo atualizado. Encontre as três partes do dispositivo espalhadas pelo navio.
+	<<add_objective "Encontrar as três partes do dispositivo">>
 	<<brighten>>
 ===
 
@@ -95,29 +109,36 @@ title: sidequest2_vela
 	<<brighten>>
 ===
 
-title: sidequest3_pistola
+title: sidequest3_rat
 ---
 	<<darken>>
-	Soldado: Eu perdi minha pistola! Se o Comandante descobrir, eu viro comida de peixe!
-	<<sprite guy2 icon>>
-	Benito: A gente pode te ajudar a procurar.
-	Soldado: Acho que andei pelos baús do deck depois de ontem à noite... Se você puder vasculhar por mim, eu fico no seu débito.
+	Zelador: Eu ouvi um barulho estranho aqui dentro... queria ver, mas estou bem ocupado aqui.
+	<<sprite benito.neutral icon>>
+	Benito: A gente pode te ajudar a investigar.
+	<<removesprite icon>>
+	Zelador: Está me fazendo um grande favor, menino! Se quiser tomar o crédito pro comandante, pode ir.
 	<<removesprite icon>>
 	<<brighten>>
 ===
 
-title: sidequest3_pistola_resultado
+title: sidequest3_rat_resultado
 ---
 	<<darken>>
-	Narração: Dentro de um dos baús do deck, escondida sob lonas de reposição, está a pistola do soldado. E junto a ela, reluzindo entre os pertences, uma peça metálica — a terceira parte do dispositivo de navegação.
-	<<sprite guy2 icon>>
-	Benito: Achei!
-	<<sprite simon1 icon>>
-	Simon: E olha só... A última parte do dispositivo estava aqui também.
-	Soldado: Minha pistola! Obrigado! Eu nunca mais bebo antes de guardar meus pertences...
+	Zelador: Eu ouvi o que houve, mas não queria olhar por medo...
+	Zelador: Desculpa não chamar por ajuda. Se quiser tomar o crédito pro comandante, pode ir.
+	<<sprite simon.pissed icon>>
+	Simon: Covarde. Não tem mais nada a oferecer pelo inferno que enfrentamos?
+	<<removesprite icon>>
+	Zelador: Olha, não tenho muita coisa... mas tenho isso.
+	Narração: O Zelador tira algo do seu bolso...
+	Narração: O covarde tem a terceira parte do dispositivo de navegação.
+	<<sprite benito.happy icon>>
+	Benito: Achamos!
+	<<sprite simon.smug icon>>
+	Simon: E olha só... Você não foi tão inútil afinal.
 	<<removesprite icon>>
 	<<progress sq3_pistola_done>>
-	Narração: Objetivo atualizado. Entregue o dispositivo completo à Joodie.
+	Narração: Você obteu mais uma peça do dispositivo. Mas como juntá-las...?
 	<<brighten>>
 ===
 
@@ -143,14 +164,15 @@ title: ataque_mutante_intro
 ---
 	<<darken>>
 	Vigia: CONTATO! FORMAÇÃO DE BATALHA! ESPUMA! SOBE O CASCO, SOBE O CASCO!
-	Narração: O Highwaker navegava em modo híbrido — propulsores em economia, casco levemente suspenso sobre a superfície do oceano. O vigia avistou uma grande concentração de movimento abaixo, gerando espuma e ondas artificiais. Deu a ordem de aumentar a potência, mas era tarde demais.
-	<<sprite joodie1 icon>>
+	<<sprite benito.fear icon>>
+	Benito: HÃ?! O QUE ESTÁ ACONTECENDO?!
+	<<sprite simon.mad icon>>
+	Simon: Estamos sob ataque!
+	<<sprite joodie.mad icon>>
 	Joodie: Formação! Agora!
-	<<sprite simon1 icon>>
+	<<sprite simon.pissed icon>>
 	Simon: Eles já estão subindo o casco!
-	Narração: Quatro Mutantes saltaram do oceano para o deck do Highwaker. Corpos humanos minimamente decompostos, preservados pela pressão das profundezas. Águas-vivas cobriam suas cabeças por completo. Tentáculos enrolados nos ombros e braços revelavam, à meia-luz, uniformes de embarcações antigas e perdidas.
-	Narração: Joodie, Simon e Benito foram encurralados. Não havia saída.
-	<<sprite joodie1 icon>>
+	<<sprite joodie.mad icon>>
 	Joodie: Fica atrás de mim.
 	<<removesprite icon>>
 	<<progress startencounter_mutantes>>

@@ -943,17 +943,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 3979946562315360589, guid: 1b5d265cb40a5da4d92a65bc667f3bf4, type: 3}
   m_PrefabInstance: {fileID: 1932171731340053249}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &6440874130978541414 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4878215429151638631, guid: 1b5d265cb40a5da4d92a65bc667f3bf4, type: 3}
-  m_PrefabInstance: {fileID: 1932171731340053249}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &8341857253655151116 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7571757182840129805, guid: 1b5d265cb40a5da4d92a65bc667f3bf4, type: 3}
@@ -985,8 +974,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ObjectiveManager
   activeObjectives: []
   completedObjectives: []
-  questNameText: {fileID: 2109609197482576077}
-  questDescriptionText: {fileID: 6440874130978541414}
-  objectiveUIPanel: {fileID: 8341857253655151116}
+  questListPanel: {fileID: 0}
+  questListContainer: {fileID: 0}
+  questNameButtonPrefab: {fileID: 0}
+  questDetailsPanel: {fileID: 0}
+  selectedQuestNameText: {fileID: 0}
+  selectedQuestDescText: {fileID: 0}
+  selectedQuestProgressText: {fileID: 0}
+  closeDetailsButton: {fileID: 0}
+  openQuestLogButton: {fileID: 0}
+  closeQuestLogButton: {fileID: 0}
+  activeQuestColor: {r: 1, g: 1, b: 1, a: 1}
+  completedQuestColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   allObjectives:
   - {fileID: 11400000, guid: 635105a5d85494b4993178824561af05, type: 2}

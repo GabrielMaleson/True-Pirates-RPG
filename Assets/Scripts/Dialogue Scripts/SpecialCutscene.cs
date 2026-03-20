@@ -21,14 +21,13 @@ public class SpecialCutsceneScript : MonoBehaviour
     [Header("Characters")]
     public GameObject simon;
     public GameObject timon;
-    public GameObject momo;
     public GameObject player;
 
     [Header("UI")]
     public Sprite surpriseSprite;
 
     [Header("Encounter")]
-    public EncounterFile encounterToStart; // Assign in inspector for the encounter command
+    public EncounterFile encounterToStart;
 
     [Header("References")]
     public DialogueRunner dialogueRunner;
@@ -38,14 +37,11 @@ public class SpecialCutsceneScript : MonoBehaviour
     private Animator playerAnimator;
     private Animator simonAnimator;
     private Animator timonAnimator;
-    private Animator momoAnimator;
     private SpriteRenderer simonSpriteRenderer;
     private SpriteRenderer timonSpriteRenderer;
-    private SpriteRenderer momoSpriteRenderer;
     private GameObject notificationObject;
     private SpriteRenderer notificationSpriteRenderer;
 
-    // Reference to the EncounterStarter to reuse its functionality
     private EncounterStarter encounterStarter;
 
     private void Start()
@@ -53,14 +49,12 @@ public class SpecialCutsceneScript : MonoBehaviour
         if (dialogueRunner == null)
             dialogueRunner = FindFirstObjectByType<DialogueRunner>();
 
-        // Try to find an EncounterStarter in the scene (or create a temporary one)
         encounterStarter = FindFirstObjectByType<EncounterStarter>();
 
         FindNotificationObject();
         FindPlayerComponents();
         FindSimonComponents();
         FindTimonComponents();
-        FindMomoComponents();
 
         if (doorClose != null) doorClose.SetActive(true);
         if (doorOpen != null) doorOpen.SetActive(false);
@@ -115,14 +109,6 @@ public class SpecialCutsceneScript : MonoBehaviour
         }
     }
 
-    private void FindMomoComponents()
-    {
-        if (momo != null)
-        {
-            momoAnimator = momo.GetComponent<Animator>();
-            momoSpriteRenderer = momo.GetComponent<SpriteRenderer>();
-        }
-    }
 
     private void RegisterYarnCommands()
     {
@@ -134,12 +120,11 @@ public class SpecialCutsceneScript : MonoBehaviour
             dialogueRunner.AddCommandHandler("doorclose", DoorClose);
             dialogueRunner.AddCommandHandler("simonenter", SimonEnter);
             dialogueRunner.AddCommandHandler("timonenter", TimonEnter);
-            dialogueRunner.AddCommandHandler("momogrr", MomoGrr);
             dialogueRunner.AddCommandHandler("simonflip", SimonFlip);
             dialogueRunner.AddCommandHandler("guysleave", GuysLeave);
             dialogueRunner.AddCommandHandler("playerphew", PlayerPhew);
             dialogueRunner.AddCommandHandler("playerflip", PlayerFlip);
-            dialogueRunner.AddCommandHandler("startencounter", StartEncounter); // NEW COMMAND
+            dialogueRunner.AddCommandHandler("startencounter", StartEncounter);
 
             Debug.Log("Yarn commands registered successfully");
         }
@@ -155,9 +140,12 @@ public class SpecialCutsceneScript : MonoBehaviour
             Debug.Log($"Notification sprite changed to: {surpriseSprite.name}");
         }
         Debug.Log("tried enabling surprise");
-        Color color = notificationSpriteRenderer.color;
-        color.a = 1f;
-        notificationSpriteRenderer.color = color;
+        if (notificationSpriteRenderer != null)
+        {
+            Color color = notificationSpriteRenderer.color;
+            color.a = 1f;
+            notificationSpriteRenderer.color = color;
+        }
     }
 
     private void Runaway()
@@ -166,7 +154,6 @@ public class SpecialCutsceneScript : MonoBehaviour
         {
             StartCoroutine(MoveToPoint(player, playerPoint.position, true));
         }
-        StartCoroutine(MoveToPointAfterDelay(momo, playerPointB.position, 0.3f));
         if (notificationSpriteRenderer != null)
             notificationSpriteRenderer.gameObject.SetActive(false);
     }
@@ -201,12 +188,6 @@ public class SpecialCutsceneScript : MonoBehaviour
         }
     }
 
-    private void MomoGrr()
-    {
-        StartCoroutine(MoveToPointAfterDelay(momo, pointD.position, 0.3f));
-        StartCoroutine(MoveToPointAfterDelay(simon, pointE.position, 1f));
-    }
-
     private void SimonFlip()
     {
         if (simonSpriteRenderer != null)
@@ -237,7 +218,6 @@ public class SpecialCutsceneScript : MonoBehaviour
         }
     }
 
-    // NEW: Yarn command to start an encounter
     private void StartEncounter()
     {
         Debug.Log("StartEncounter command called");
@@ -248,27 +228,14 @@ public class SpecialCutsceneScript : MonoBehaviour
             return;
         }
 
-        // Disable player movement during transition
         if (playerMovement != null)
             playerMovement.enabled = false;
 
-        // Use existing EncounterStarter functionality or create our own
         StartCoroutine(StartEncounterCoroutine());
-    }
-
-    // Overload that accepts an encounter name (if you want to specify which encounter)
-    private void StartEncounter(string encounterName)
-    {
-        Debug.Log($"StartEncounter command called with: {encounterName}");
-
-        // You could implement a dictionary of encounters here
-        // For now, just use the assigned one
-        StartEncounter();
     }
 
     private IEnumerator StartEncounterCoroutine()
     {
-        // Get or create EncounterData
         EncounterData encounterData = FindFirstObjectByType<EncounterData>();
         if (encounterData == null)
         {
@@ -277,7 +244,6 @@ public class SpecialCutsceneScript : MonoBehaviour
             encounterData = dataObj.AddComponent<EncounterData>();
         }
 
-        // Get player inventory
         SistemaInventario inventory = FindFirstObjectByType<SistemaInventario>();
         if (inventory == null)
         {
@@ -285,19 +251,11 @@ public class SpecialCutsceneScript : MonoBehaviour
             yield break;
         }
 
-        // Store encounter starter reference (this game object)
         encounterData.encounterStarterObject = gameObject;
-
-        // Store player inventory
         encounterData.playerInventory = inventory;
-
-        // Store the encounter file
         encounterData.encounterFile = encounterToStart;
-
-        // Store player's current party state
         encounterData.playerPartyMembers = inventory.GetPartyMembersForCombat();
 
-        // Store enemy data from encounter file
         encounterData.enemyPartyMembers.Clear();
         encounterData.enemyPrefabs.Clear();
 
@@ -315,20 +273,18 @@ public class SpecialCutsceneScript : MonoBehaviour
             }
         }
 
+        encounterData.CalculateRewards();
 
-        // Check if combat scene exists in build
         if (!Application.CanStreamedLevelBeLoaded("Combat"))
         {
             Debug.LogError("Combat scene is not in Build Settings!");
             yield break;
         }
 
-        // Create scene manager and load combat
         GameObject sceneObj = new GameObject("PreviousScene");
         sceneObj.AddComponent<PreviousScene>();
         sceneObj.GetComponent<PreviousScene>().UnloadScene();
 
-        // Load combat scene
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("Combat", LoadSceneMode.Additive);
 
         while (!asyncLoad.isDone)
@@ -342,7 +298,7 @@ public class SpecialCutsceneScript : MonoBehaviour
     private IEnumerator MoveToPointAfterDelay(GameObject character, Vector3 target, float delay)
     {
         yield return new WaitForSeconds(delay);
-        StartCoroutine(MoveToPoint(character, target, true));
+        yield return StartCoroutine(MoveToPoint(character, target, true));
     }
 
     private IEnumerator MoveToPoint(GameObject character, Vector3 target, bool useAnimator)

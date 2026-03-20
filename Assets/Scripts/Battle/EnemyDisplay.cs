@@ -53,6 +53,7 @@ public class EnemyUI : MonoBehaviour
         {
             healthBar.type = Image.Type.Filled;
             healthBar.fillMethod = Image.FillMethod.Horizontal;
+            healthBar.fillOrigin = 0; // Left to right fill
         }
 
         UpdateDisplay();
@@ -76,8 +77,10 @@ public class EnemyUI : MonoBehaviour
     {
         if (memberState != null)
         {
-            // Update HP text and bar
+            // Update HP text
             hpText.text = $"{memberState.currentHP}/{memberState.MaxHP}";
+
+            // Update health bar fill amount
             if (healthBar != null)
             {
                 float hpPercent = (float)memberState.currentHP / memberState.MaxHP;
@@ -123,7 +126,9 @@ public class EnemyUI : MonoBehaviour
 
         // Set health bar to 0
         if (healthBar != null)
+        {
             healthBar.fillAmount = 0f;
+        }
 
         HideTargetButton();
     }

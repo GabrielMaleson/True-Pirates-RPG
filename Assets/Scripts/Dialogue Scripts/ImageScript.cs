@@ -50,9 +50,13 @@ public class DialogueManager : MonoBehaviour
     private MovimentacaoExploracao playerMovement;
     private PartyMenuManager partyMenuManager;
 
+    [Header("Skip Button")]
+    public Button skipButton; // Assign in inspector
+    public int skipCount = 30; // Number of times to call next
+
     private static DialogueManager instance;
     private static Dictionary<string, Image> activeImages = new Dictionary<string, Image>();
-    public DialogueRunner dialogueRunner;
+    public DialogueRunner dialogueRunner; // Make this public
 
     private void Awake()
     {
@@ -75,6 +79,8 @@ public class DialogueManager : MonoBehaviour
                 objectivePanel.GetComponent<CanvasGroup>().alpha = 0f;
 
             dialogueRunner = GetComponent<DialogueRunner>();
+            if (dialogueRunner == null)
+                dialogueRunner = FindFirstObjectByType<DialogueRunner>();
         }
         else
         {
@@ -92,6 +98,12 @@ public class DialogueManager : MonoBehaviour
             playerMovement = playerObject.GetComponent<MovimentacaoExploracao>();
 
         partyMenuManager = FindFirstObjectByType<PartyMenuManager>();
+
+        // Set up skip button
+        if (skipButton != null)
+        {
+            skipButton.onClick.AddListener(SkipDialogue);
+        }
     }
 
     private void OnValidate()
@@ -119,8 +131,13 @@ public class DialogueManager : MonoBehaviour
     // Method to disable player movement
     public void DisablePlayerControl()
     {
-        ForceFindPlayer();
-        if (instance.graphicRaycaster != null)
+        instance.playerMovement = FindAnyObjectByType<MovimentacaoExploracao>();
+        if (playerObject != null)
+        {
+            Rigidbody2D playerRigidbody = playerObject.GetComponent<Rigidbody2D>();
+            playerRigidbody.Sleep();
+        }
+            if (instance.graphicRaycaster != null)
             instance.graphicRaycaster.enabled = true;
         if (playerMovement != null)
             playerMovement.enabled = false;
@@ -132,13 +149,45 @@ public class DialogueManager : MonoBehaviour
     // Method to enable player movement
     public void EnablePlayerControl()
     {
+        instance.playerMovement = FindAnyObjectByType<MovimentacaoExploracao>();
         if (playerMovement != null)
             playerMovement.enabled = true;
+        if (playerObject != null)
+        {
+            Rigidbody2D playerRigidbody = playerObject.GetComponent<Rigidbody2D>();
+            playerRigidbody.WakeUp();
+        }
 
         if (instance.graphicRaycaster != null)
             instance.graphicRaycaster.enabled = false;
         if (partyMenuManager != null)
             partyMenuManager.SetCanOpenMenu(true);
+    }
+
+    // Skip dialogue function - calls next line 30 times rapidly
+    public void SkipDialogue()
+    {
+        if (dialogueRunner == null) return;
+
+        Debug.Log($"Skipping {skipCount} lines of dialogue...");
+        StartCoroutine(SkipDialogueCoroutine());
+    }
+
+    private IEnumerator SkipDialogueCoroutine()
+    {
+        for (int i = 0; i < skipCount; i++)
+        {
+            if (dialogueRunner != null && dialogueRunner.IsDialogueRunning)
+            {
+                dialogueRunner.RequestNextLine();
+                yield return new WaitForSeconds(0.05f); // Small delay between skips
+            }
+            else
+            {
+                break; // Exit if dialogue ended
+            }
+        }
+        Debug.Log("Skip complete");
     }
 
     [YarnCommand("sprite")]
@@ -317,50 +366,37 @@ public class DialogueManager : MonoBehaviour
     }
 
     [YarnCommand("darken")]
-    public static void DarkenScreen(float alpha = 0f, float duration = 0.5f)
+    public static void DarkenScreen(float alpha = 0.67f, float duration = 0.5f)
     {
         if (instance.blackScreen != null)
         {
             instance.blackScreen.SetActive(true);
             instance.StartCoroutine(instance.FadeScreenRoutine(alpha, duration));
             instance.EnsureContinueButtonInteractable();
-
             // Disable player movement when screen darkens
             instance.DisablePlayerControl();
+            instance.playerMovement.enabled = false;
         }
     }
-    // Replace your StartDialogue method with this async version:
+
     public void StartDialogue(string dialogue)
     {
         if (dialogueRunner == null)
         {
-            dialogueRunner = GetComponentInChildren<DialogueRunner>();
+            dialogueRunner = GetComponent<DialogueRunner>();
             if (dialogueRunner == null)
             {
                 Debug.LogError("DialogueRunner is null! Cannot start dialogue.");
                 return;
             }
         }
-        ForceFindPlayer();
+
         // Disable player control when starting dialogue
         DisablePlayerControl();
 
-        // Start the dialogue (async but we don't need to await it)
-        dialogueRunner.StartDialogue(dialogue);
+        // Start the dialogue
+        _ = dialogueRunner.StartDialogue(dialogue);
         Debug.Log($"Started dialogue: {dialogue}");
-    }
-
-    // Add this method to DialogueManager.cs to force it to find the player
-    public void ForceFindPlayer()
-    {
-        if (playerObject == null)
-            playerObject = GameObject.FindGameObjectWithTag("Player");
-
-        if (playerObject != null && playerMovement == null)
-            playerMovement = playerObject.GetComponent<MovimentacaoExploracao>();
-
-        if (partyMenuManager == null)
-            partyMenuManager = FindFirstObjectByType<PartyMenuManager>();
     }
 
     [YarnCommand("brighten")]
@@ -372,6 +408,7 @@ public class DialogueManager : MonoBehaviour
 
             // Re-enable player movement when screen brightens
             instance.EnablePlayerControl();
+            instance.playerMovement.enabled = true;
         }
     }
 
