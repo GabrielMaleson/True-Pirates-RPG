@@ -86,7 +86,7 @@ title: simonbattleend
 	<<sprite simon.pissed icon>>
 	Simon: Plano?! Que plano?! Se esgueirar no meio da Guerra mais brutal e violenta da história?  
 	Simon: Navegar as nuvens sob um mar cheio de criaturas desconhecidas? Viajar mais de 25 noites até a China, entrar no palácio da Imperatriz e pedir por favorzinho que ela se renda?  
-	<<sprite simon.smug>>
+	<<sprite simon.smug icon>>
 	Simon: Esse é seu plano? 
 	<<sprite benito.fear icon>>
 	Benito: . . .

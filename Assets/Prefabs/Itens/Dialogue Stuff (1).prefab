@@ -144,7 +144,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StaticImageTagManager
   dialogueCanvas: {fileID: 0}
   continueButton: {fileID: 0}
-  graphicRaycaster: {fileID: 9065728636326903153}
+  graphicRaycaster: {fileID: 1933947744084544069}
   objectiveText: {fileID: 3114457005599617238}
   objectivePanel: {fileID: 116645234483854780}
   blackScreen: {fileID: 7404316184502428954}
@@ -332,17 +332,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 8853141719298478513, guid: c4110cf5b3515474eaa375228057de57, type: 3}
   m_PrefabInstance: {fileID: 2025994398391301291}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &9065728636326903153 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7048756849714301402, guid: c4110cf5b3515474eaa375228057de57, type: 3}
-  m_PrefabInstance: {fileID: 2025994398391301291}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &8171764038766951291
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -605,7 +594,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7760039857871663422, guid: a041a2be0bf43d34cb6b9567b8751846, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8116179757987585102, guid: a041a2be0bf43d34cb6b9567b8751846, type: 3}
       propertyPath: m_fontAsset
@@ -802,6 +791,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8860686451375649979, guid: a041a2be0bf43d34cb6b9567b8751846, type: 3}
   m_PrefabInstance: {fileID: 8171764038766951291}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1933947744084544069 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7760039857871663422, guid: a041a2be0bf43d34cb6b9567b8751846, type: 3}
+  m_PrefabInstance: {fileID: 8171764038766951291}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &7060075830181984012 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1197286348458986615, guid: a041a2be0bf43d34cb6b9567b8751846, type: 3}
