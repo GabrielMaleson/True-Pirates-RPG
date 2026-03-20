@@ -53,23 +53,23 @@ public class CombatSystem : MonoBehaviour
     private PartyMemberState currentCharacter;
     private bool isExecutingActions = false;
     private bool isAnimating = false;
-    private bool isPlayerExecuting = false;
+
+    // Single flag that PlayerTurnRoutine waits on — the only way to end a player turn.
+    // Nothing else calls StartNextPlayerTurn directly for player turns.
+    private bool endTurnRequested = false;
 
     private GameObject menubutton;
     private GameObject objbutton2;
 
-    // Store queued actions
+    // Actions queued this turn, in the order they were selected
     private List<QueuedAction> pendingActions = new List<QueuedAction>();
 
-    // Store the state before the first action for undo
-    private int apBeforeTurn;
-    private List<QueuedAction> actionsThisTurn = new List<QueuedAction>();
+    // AP snapshot before each queued action so Undo restores exactly one action's worth of AP
+    private Stack<int> apSnapshots = new Stack<int>();
 
-    // Track defending characters
-    private Dictionary<PartyMemberState, int> defendingCharacters = new Dictionary<PartyMemberState, int>();
-    private Dictionary<PartyMemberState, int> originalDefenseValues = new Dictionary<PartyMemberState, int>();
+    // Characters currently in defend stance (tripled defense vs incoming damage)
+    private HashSet<PartyMemberState> defendingCharacters = new HashSet<PartyMemberState>();
 
-    // Helper class to store queued actions
     [System.Serializable]
     private class QueuedAction
     {
@@ -88,7 +88,7 @@ public class CombatSystem : MonoBehaviour
         {
             this.attack = null;
             this.targets = new List<PartyMemberState>();
-            this.isItem = true;
+            this.isItem = isItem;
         }
     }
 
@@ -96,17 +96,14 @@ public class CombatSystem : MonoBehaviour
     {
         menubutton = GameObject.FindGameObjectWithTag("MenuOpener");
         objbutton2 = GameObject.FindGameObjectWithTag("ObjectiveButtwo");
-        menubutton.SetActive(false);
-        objbutton2.SetActive(false);
+        if (menubutton != null) menubutton.SetActive(false);
+        if (objbutton2 != null) objbutton2.SetActive(false);
+
         EncounterData encounterData = FindFirstObjectByType<EncounterData>();
         if (encounterData != null)
-        {
             InitializeCombatWithData(encounterData);
-        }
         else
-        {
             Debug.LogError("No EncounterData found! Cannot start combat.");
-        }
     }
 
     public void InitializeCombatWithData(EncounterData encounterData)
@@ -114,8 +111,7 @@ public class CombatSystem : MonoBehaviour
         partyMembers.Clear();
         enemies.Clear();
 
-        // Set up party members from player data
-        if (encounterData.playerPartyMembers != null && encounterData.playerPartyMembers.Count > 0)
+        if (encounterData.playerPartyMembers != null)
         {
             for (int i = 0; i < encounterData.playerPartyMembers.Count; i++)
             {
@@ -130,10 +126,7 @@ public class CombatSystem : MonoBehaviour
                     CharacterComponent comp = memberObj.GetComponent<CharacterComponent>();
                     if (comp == null) comp = memberObj.AddComponent<CharacterComponent>();
                     comp.partyMemberState = memberData;
-
-                    // PREPARE FOR BATTLE - This ensures animator controller is set
                     comp.PrepareForBattle();
-
                     memberData.transform = memberObj.transform;
                 }
 
@@ -141,17 +134,15 @@ public class CombatSystem : MonoBehaviour
             }
         }
 
-        // Set up enemies from encounter data
-        if (encounterData.enemyPartyMembers != null && encounterData.enemyPartyMembers.Count > 0)
+        if (encounterData.enemyPartyMembers != null)
         {
             for (int i = 0; i < encounterData.enemyPartyMembers.Count; i++)
             {
                 PartyMemberState enemyData = encounterData.enemyPartyMembers[i];
-                GameObject enemyPrefab = i < encounterData.enemyPrefabs.Count ? encounterData.enemyPrefabs[i] : null;
-
                 if (enemyData == null) continue;
 
-                GameObject prefabToUse = enemyPrefab != null ? enemyPrefab : enemyVisualPrefab;
+                GameObject prefabToUse = (i < encounterData.enemyPrefabs.Count ? encounterData.enemyPrefabs[i] : null)
+                                         ?? enemyVisualPrefab;
 
                 if (prefabToUse != null && i < enemySpawnPoints.Count && enemySpawnPoints[i] != null)
                 {
@@ -161,16 +152,11 @@ public class CombatSystem : MonoBehaviour
                     CharacterComponent comp = enemyObj.GetComponent<CharacterComponent>();
                     if (comp == null) comp = enemyObj.AddComponent<CharacterComponent>();
                     comp.partyMemberState = enemyData;
-
-                    // PREPARE FOR BATTLE - This ensures animator controller is set
                     comp.PrepareForBattle();
-
                     enemyData.transform = enemyObj.transform;
 
                     if (enemyObj.GetComponent<ComplexAI>() == null)
-                    {
                         enemyObj.AddComponent<ComplexAI>();
-                    }
                 }
 
                 enemies.Add(enemyData);
@@ -207,21 +193,19 @@ public class CombatSystem : MonoBehaviour
         foreach (var enemy in enemies)
         {
             if (enemy.currentHP > 0)
-            {
                 enemyTurnQueue.Enqueue(enemy);
-            }
         }
     }
 
+    // ─── Turn Flow ────────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Advances to the next player character's turn.
+    /// This is the ONLY place that starts PlayerTurnRoutine — nothing else should.
+    /// </summary>
     private void StartNextPlayerTurn()
     {
-        if (CheckBattleEnd())
-            return;
-
-        if (currentCharacter != null && defendingCharacters.ContainsKey(currentCharacter))
-        {
-            RemoveDefendBonus(currentCharacter);
-        }
+        if (CheckBattleEnd()) return;
 
         if (playerTurnQueue.Count == 0)
         {
@@ -231,6 +215,9 @@ public class CombatSystem : MonoBehaviour
 
         currentCharacter = playerTurnQueue.Dequeue();
 
+        // Remove any defend bonus from this character's previous round
+        RemoveDefendBonus(currentCharacter);
+
         if (currentCharacter.currentHP <= 0)
         {
             StartNextPlayerTurn();
@@ -238,39 +225,27 @@ public class CombatSystem : MonoBehaviour
         }
 
         currentCharacter.ProcessStatusEffectsOnTurnStart();
+        onCharacterUpdated?.Invoke(currentCharacter);
 
         if (!currentCharacter.CanAct())
         {
-            onCharacterUpdated?.Invoke(currentCharacter);
             StartNextPlayerTurn();
             return;
         }
 
-        // Store initial AP for undo
-        apBeforeTurn = currentCharacter.currentAP;
-        actionsThisTurn.Clear();
+        // Reset per-turn state
+        endTurnRequested = false;
         pendingActions.Clear();
+        apSnapshots.Clear();
 
         currentState = CombatState.PLAYER_TURN;
         onTurnStarted?.Invoke(currentCharacter);
-
         StartCoroutine(PlayerTurnRoutine());
     }
 
     private void StartNextEnemyTurn()
     {
-        if (isPlayerExecuting)
-        {
-            return;
-        }
-
-        if (CheckBattleEnd())
-            return;
-
-        if (currentCharacter != null && defendingCharacters.ContainsKey(currentCharacter))
-        {
-            RemoveDefendBonus(currentCharacter);
-        }
+        if (CheckBattleEnd()) return;
 
         if (enemyTurnQueue.Count == 0)
         {
@@ -288,49 +263,47 @@ public class CombatSystem : MonoBehaviour
         }
 
         currentCharacter.ProcessStatusEffectsOnTurnStart();
+        onCharacterUpdated?.Invoke(currentCharacter);
 
         if (!currentCharacter.CanAct())
         {
-            onCharacterUpdated?.Invoke(currentCharacter);
             StartNextEnemyTurn();
             return;
         }
 
         currentState = CombatState.ENEMY_TURN;
         onTurnStarted?.Invoke(currentCharacter);
-
         StartCoroutine(EnemyTurnRoutine());
     }
 
-    private IEnumerator WaitForPlayerExecution()
-    {
-        float timeout = 5f;
-        float elapsed = 0f;
+    // ─── Coroutines ───────────────────────────────────────────────────────────────
 
-        while (isPlayerExecuting && elapsed < timeout)
-        {
-            elapsed += Time.deltaTime;
-            yield return null;
-        }
-
-        StartNextEnemyTurn();
-    }
-
+    /// <summary>
+    /// Sole driver of player turn completion. Waits for EndTurnAndExecuteActions to set
+    /// the flag, executes queued actions, then advances the turn. Nothing else should
+    /// call StartNextPlayerTurn for player turns.
+    /// </summary>
     private IEnumerator PlayerTurnRoutine()
     {
-        while (currentCharacter.currentAP > 0 && !isExecutingActions && !isAnimating)
-        {
+        // Wait until the UI explicitly ends the turn
+        while (!endTurnRequested)
             yield return null;
+
+        if (pendingActions.Count > 0)
+        {
+            isExecutingActions = true;
+
+            var orderedActions = pendingActions
+                .Where(a => !a.isItem)
+                .OrderByDescending(a => a.attack != null ? a.attack.actionPointCost : 0)
+                .ToList();
+
+            yield return StartCoroutine(ExecuteActionQueue(orderedActions));
+
+            isExecutingActions = false;
         }
 
-        if (pendingActions.Count > 0 && !isExecutingActions)
-        {
-            ExecuteActionsInOrder();
-        }
-        else
-        {
-            StartNextPlayerTurn();
-        }
+        StartNextPlayerTurn();
     }
 
     private IEnumerator EnemyTurnRoutine()
@@ -349,178 +322,44 @@ public class CombatSystem : MonoBehaviour
         {
             selectedAction = GetHighestDamageAction(currentCharacter);
             if (selectedAction != null)
-            {
-                targets = GetTargets(selectedAction.effects[0].targetType,
-                                     selectedAction.effects[0].numberOfTargets);
-            }
+                targets = GetTargets(selectedAction.effects[0].targetType, selectedAction.effects[0].numberOfTargets);
         }
 
         if (selectedAction != null)
         {
             yield return StartCoroutine(ExecuteAttackWithAnimation(currentCharacter, selectedAction, targets));
 
-            onActionExecuted?.Invoke(currentCharacter, selectedAction, targets);
-            onCharacterUpdated?.Invoke(currentCharacter);
-        }
-
-        StartNextEnemyTurn();
-    }
-
-    private AttackFile GetHighestDamageAction(PartyMemberState character)
-    {
-        AttackFile highestDamageAction = null;
-        int highestDamage = 0;
-
-        foreach (var attack in character.learnedAttacks)
-        {
-            if (attack.partyMemberOnly && enemies.Contains(character))
-                continue;
-
-            int totalDamage = 0;
-            foreach (var effect in attack.effects)
+            if (!CheckBattleEnd())
             {
-                if (effect.targetType == TargetType.Enemy &&
-                    (effect.effectType == EffectType.Damage || effect.effectType == EffectType.Attack))
-                {
-                    totalDamage += effect.value;
-                }
-            }
-
-            if (totalDamage > highestDamage)
-            {
-                highestDamage = totalDamage;
-                highestDamageAction = attack;
+                onActionExecuted?.Invoke(currentCharacter, selectedAction, targets);
+                onCharacterUpdated?.Invoke(currentCharacter);
             }
         }
 
-        return highestDamageAction;
-    }
-
-    public void EndTurnAndExecuteActions()
-    {
-        if (currentState == CombatState.PLAYER_TURN && !isExecutingActions && !isAnimating)
-        {
-            if (pendingActions.Count > 0)
-            {
-                ExecuteActionsInOrder();
-            }
-            else
-            {
-                StartNextPlayerTurn();
-            }
-        }
-    }
-
-    public void EndPlayerTurn()
-    {
-        EndTurnAndExecuteActions();
-    }
-
-    public void SelectPlayerAction(AttackFile action, List<PartyMemberState> targets)
-    {
-        if (!partyMembers.Contains(currentCharacter) || currentState != CombatState.PLAYER_TURN)
-            return;
-
-        if (currentCharacter.currentAP >= action.actionPointCost && !isExecutingActions && !isAnimating)
-        {
-            QueuedAction newAction = new QueuedAction(action, targets);
-            pendingActions.Add(newAction);
-            actionsThisTurn.Add(newAction);
-
-            currentCharacter.currentAP -= action.actionPointCost;
-            onCharacterUpdated?.Invoke(currentCharacter);
-        }
-    }
-
-    public void UseItem(List<PartyMemberState> targets)
-    {
-        if (!partyMembers.Contains(currentCharacter) || currentState != CombatState.PLAYER_TURN)
-            return;
-
-        const int itemAPCost = 5;
-
-        if (currentCharacter.currentAP >= itemAPCost && !isExecutingActions && !isAnimating)
-        {
-            QueuedAction newAction = new QueuedAction(true);
-            pendingActions.Add(newAction);
-            actionsThisTurn.Add(newAction);
-
-            currentCharacter.currentAP -= itemAPCost;
-            onCharacterUpdated?.Invoke(currentCharacter);
-        }
-    }
-
-    public void UndoLastAction()
-    {
-        if (!partyMembers.Contains(currentCharacter) || currentState != CombatState.PLAYER_TURN)
-            return;
-
-        if (actionsThisTurn.Count > 0)
-        {
-            QueuedAction lastAction = actionsThisTurn[actionsThisTurn.Count - 1];
-            actionsThisTurn.RemoveAt(actionsThisTurn.Count - 1);
-            pendingActions.Remove(lastAction);
-
-            currentCharacter.currentAP = apBeforeTurn;
-
-            onCharacterUpdated?.Invoke(currentCharacter);
-
-            Debug.Log($"Undid last action. AP restored to {apBeforeTurn}. Remaining queued: {pendingActions.Count}");
-        }
-    }
-
-    public bool HasPendingActions()
-    {
-        return pendingActions.Count > 0;
-    }
-
-    private void ExecuteActionsInOrder()
-    {
-        if (isExecutingActions)
-            return;
-
-        isExecutingActions = true;
-        isPlayerExecuting = true;
-
-        var orderedActions = pendingActions
-            .Where(a => !a.isItem)
-            .OrderByDescending(a => a.attack != null ? a.attack.actionPointCost : 0)
-            .ToList();
-
-        StartCoroutine(ExecuteActionQueue(orderedActions));
+        if (!CheckBattleEnd())
+            StartNextEnemyTurn();
     }
 
     private IEnumerator ExecuteActionQueue(List<QueuedAction> actions)
     {
-        var actionsToProcess = new List<QueuedAction>(actions);
-
-        foreach (var queuedAction in actionsToProcess)
+        foreach (var action in actions)
         {
-            if (!pendingActions.Contains(queuedAction))
-                continue;
+            if (action.isItem || action.attack == null) continue;
+            if (action.targets == null || action.targets.Count == 0) continue;
+            if (CheckBattleEnd()) yield break;
 
-            AttackFile action = queuedAction.attack;
-            List<PartyMemberState> targets = queuedAction.targets;
+            yield return StartCoroutine(ExecuteAttackWithAnimation(currentCharacter, action.attack, action.targets));
 
-            if (targets != null && targets.Count > 0)
-            {
-                pendingActions.Remove(queuedAction);
+            if (CheckBattleEnd()) yield break;
 
-                yield return StartCoroutine(ExecuteAttackWithAnimation(currentCharacter, action, targets));
-
-                onActionExecuted?.Invoke(currentCharacter, action, targets);
-                onCharacterUpdated?.Invoke(currentCharacter);
-            }
+            onActionExecuted?.Invoke(currentCharacter, action.attack, action.targets);
+            onCharacterUpdated?.Invoke(currentCharacter);
 
             yield return new WaitForSeconds(0.2f);
         }
 
-        pendingActions.RemoveAll(a => a.isItem);
         pendingActions.Clear();
-        isExecutingActions = false;
-        isPlayerExecuting = false;
-
-        StartNextPlayerTurn();
+        apSnapshots.Clear();
     }
 
     private IEnumerator ExecuteAttackWithAnimation(PartyMemberState user, AttackFile attack, List<PartyMemberState> targets)
@@ -529,9 +368,7 @@ public class CombatSystem : MonoBehaviour
 
         if (attack.battleAnimation != null)
         {
-            yield return attack.battleAnimation.PlayAnimation(user, targets, () => {
-                ApplyAttackEffects(user, attack, targets);
-            });
+            yield return attack.battleAnimation.PlayAnimation(user, targets, () => ApplyAttackEffects(user, attack, targets));
         }
         else
         {
@@ -542,47 +379,106 @@ public class CombatSystem : MonoBehaviour
         isAnimating = false;
     }
 
+    // ─── Public API for UI ────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Signals that the player is done acting. PlayerTurnRoutine picks this up and
+    /// executes queued actions before advancing the turn. Safe to call multiple times.
+    /// </summary>
+    public void EndTurnAndExecuteActions()
+    {
+        if (currentState != CombatState.PLAYER_TURN || isExecutingActions || endTurnRequested)
+            return;
+
+        endTurnRequested = true;
+    }
+
+    public void EndPlayerTurn() => EndTurnAndExecuteActions();
+
+    public void SelectPlayerAction(AttackFile action, List<PartyMemberState> targets)
+    {
+        if (currentCharacter == null || !partyMembers.Contains(currentCharacter)) return;
+        if (currentState != CombatState.PLAYER_TURN || isExecutingActions || isAnimating) return;
+        if (currentCharacter.currentAP < action.actionPointCost) return;
+
+        apSnapshots.Push(currentCharacter.currentAP);
+        currentCharacter.currentAP -= action.actionPointCost;
+        pendingActions.Add(new QueuedAction(action, targets));
+        onCharacterUpdated?.Invoke(currentCharacter);
+    }
+
+    public void UseItem(List<PartyMemberState> targets)
+    {
+        if (currentCharacter == null || !partyMembers.Contains(currentCharacter)) return;
+        if (currentState != CombatState.PLAYER_TURN || isExecutingActions || isAnimating) return;
+
+        const int itemAPCost = 5;
+        if (currentCharacter.currentAP < itemAPCost) return;
+
+        apSnapshots.Push(currentCharacter.currentAP);
+        currentCharacter.currentAP -= itemAPCost;
+        pendingActions.Add(new QueuedAction(true));
+        onCharacterUpdated?.Invoke(currentCharacter);
+    }
+
+    /// <summary>
+    /// Removes only the last queued action and restores exactly that action's AP cost.
+    /// </summary>
+    public void UndoLastAction()
+    {
+        if (currentCharacter == null || !partyMembers.Contains(currentCharacter)) return;
+        if (currentState != CombatState.PLAYER_TURN || isExecutingActions) return;
+        if (pendingActions.Count == 0 || apSnapshots.Count == 0) return;
+
+        pendingActions.RemoveAt(pendingActions.Count - 1);
+        currentCharacter.currentAP = apSnapshots.Pop();
+        onCharacterUpdated?.Invoke(currentCharacter);
+    }
+
+    public bool HasPendingActions() => pendingActions.Count > 0;
+
+    // ─── Combat Logic ─────────────────────────────────────────────────────────────
+
     private void ApplyAttackEffects(PartyMemberState user, AttackFile attack, List<PartyMemberState> targets)
     {
         foreach (var effect in attack.effects)
         {
-            int accuracyRoll = Random.Range(0, 101);
-            bool isSuccess = accuracyRoll <= effect.accuracy;
+            bool isSuccess = Random.Range(0, 101) <= effect.accuracy;
+            bool shouldApply = (isSuccess && effect.triggersOn == EffectTrigger.OnSuccess) ||
+                               (!isSuccess && effect.triggersOn == EffectTrigger.OnMiss);
 
-            if ((isSuccess && effect.triggersOn == EffectTrigger.OnSuccess) ||
-                (!isSuccess && effect.triggersOn == EffectTrigger.OnMiss))
-            {
+            if (shouldApply)
                 ApplyEffect(user, targets, effect);
-            }
         }
-
-        CheckBattleEnd();
     }
 
     private void ApplyEffect(PartyMemberState user, List<PartyMemberState> targets, EffectData effect)
     {
         foreach (var target in targets)
         {
-            if (target == null || target.currentHP <= 0)
-                continue;
+            if (target == null || target.currentHP <= 0) continue;
 
             switch (effect.effectType)
             {
                 case EffectType.Damage:
-                    int damage = Mathf.Max(1, effect.value + user.Attack - target.Defense);
+                {
+                    int defense = IsDefending(target) ? target.Defense * 3 : target.Defense;
+                    int damage = Mathf.Max(1, effect.value + user.Attack - defense);
                     target.TakeDamage(damage);
                     onCharacterUpdated?.Invoke(target);
                     break;
-
+                }
+                case EffectType.Attack:
+                {
+                    int defense = IsDefending(target) ? target.Defense * 3 : target.Defense;
+                    int damage = Mathf.Max(1, user.Attack + effect.value - defense);
+                    target.TakeDamage(damage);
+                    onCharacterUpdated?.Invoke(target);
+                    break;
+                }
                 case EffectType.Heal:
                 case EffectType.HP_Restore:
                     target.Heal(effect.value);
-                    onCharacterUpdated?.Invoke(target);
-                    break;
-
-                case EffectType.Attack:
-                    int attackDamage = Mathf.Max(1, user.Attack + effect.value - target.Defense);
-                    target.TakeDamage(attackDamage);
                     onCharacterUpdated?.Invoke(target);
                     break;
 
@@ -608,134 +504,129 @@ public class CombatSystem : MonoBehaviour
                     break;
 
                 case EffectType.Buff:
-                    if (effect.statModifiers != null && effect.statModifiers.Count > 0)
-                    {
-                        foreach (var modifier in effect.statModifiers)
-                        {
-                            switch (modifier.statType)
-                            {
-                                case StatType.Attack:
-                                    target.ModifyAttack(modifier.valorModificador);
-                                    break;
-                                case StatType.Defense:
-                                    target.ModifyDefense(modifier.valorModificador);
-                                    break;
-                            }
-                        }
-                        onCharacterUpdated?.Invoke(target);
-                    }
+                    ApplyStatModifiers(target, effect.statModifiers, 1);
                     break;
 
                 case EffectType.Debuff:
-                    if (effect.statModifiers != null && effect.statModifiers.Count > 0)
-                    {
-                        foreach (var modifier in effect.statModifiers)
-                        {
-                            switch (modifier.statType)
-                            {
-                                case StatType.Attack:
-                                    target.ModifyAttack(-modifier.valorModificador);
-                                    break;
-                                case StatType.Defense:
-                                    target.ModifyDefense(-modifier.valorModificador);
-                                    break;
-                            }
-                        }
-                        onCharacterUpdated?.Invoke(target);
-                    }
+                    ApplyStatModifiers(target, effect.statModifiers, -1);
                     break;
 
                 case EffectType.MultiHit:
                     for (int i = 0; i < effect.hitCount; i++)
                     {
-                        int multiDamage = Mathf.Max(1, (effect.value + user.Attack - target.Defense) / effect.hitCount);
-                        target.TakeDamage(multiDamage);
-
-                        if (target.currentHP <= 0)
-                            break;
+                        int defense = IsDefending(target) ? target.Defense * 3 : target.Defense;
+                        int damage = Mathf.Max(1, (effect.value + user.Attack - defense) / effect.hitCount);
+                        target.TakeDamage(damage);
+                        if (target.currentHP <= 0) break;
                     }
                     onCharacterUpdated?.Invoke(target);
                     break;
             }
         }
+    }
 
-        CheckBattleEnd();
+    private void ApplyStatModifiers(PartyMemberState target, List<StatModifier> modifiers, int sign)
+    {
+        if (modifiers == null || modifiers.Count == 0) return;
+
+        foreach (var modifier in modifiers)
+        {
+            switch (modifier.statType)
+            {
+                case StatType.Attack:  target.ModifyAttack(modifier.valorModificador * sign);  break;
+                case StatType.Defense: target.ModifyDefense(modifier.valorModificador * sign); break;
+            }
+        }
+        onCharacterUpdated?.Invoke(target);
+    }
+
+    private AttackFile GetHighestDamageAction(PartyMemberState character)
+    {
+        AttackFile best = null;
+        int bestDamage = 0;
+
+        foreach (var attack in character.learnedAttacks)
+        {
+            if (attack.partyMemberOnly && enemies.Contains(character)) continue;
+
+            int totalDamage = attack.effects
+                .Where(e => e.targetType == TargetType.Enemy &&
+                            (e.effectType == EffectType.Damage || e.effectType == EffectType.Attack))
+                .Sum(e => e.value);
+
+            if (totalDamage > bestDamage)
+            {
+                bestDamage = totalDamage;
+                best = attack;
+            }
+        }
+
+        return best;
     }
 
     private List<PartyMemberState> GetTargets(TargetType targetType, int numberOfTargets)
     {
-        List<PartyMemberState> potentialTargets = targetType == TargetType.Ally ? partyMembers : enemies;
-        potentialTargets = potentialTargets.Where(t => t.currentHP > 0).ToList();
+        var pool = (targetType == TargetType.Ally ? partyMembers : enemies)
+            .Where(t => t.currentHP > 0)
+            .ToList();
 
-        if (potentialTargets.Count == 0)
-            return new List<PartyMemberState>();
+        if (pool.Count == 0) return new List<PartyMemberState>();
 
-        List<PartyMemberState> selectedTargets = new List<PartyMemberState>();
-        int targetsToSelect = Mathf.Min(numberOfTargets, potentialTargets.Count);
+        var selected = new List<PartyMemberState>();
+        int count = Mathf.Min(numberOfTargets, pool.Count);
 
-        for (int i = 0; i < targetsToSelect; i++)
+        for (int i = 0; i < count; i++)
         {
-            int randomIndex = Random.Range(0, potentialTargets.Count);
-            selectedTargets.Add(potentialTargets[randomIndex]);
-            potentialTargets.RemoveAt(randomIndex);
+            int idx = Random.Range(0, pool.Count);
+            selected.Add(pool[idx]);
+            pool.RemoveAt(idx);
         }
 
-        return selectedTargets;
+        return selected;
     }
 
+    // ─── Defend ───────────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Marks a character as defending. Defend is removed at the start of that character's
+    /// next turn, so it is active through all enemy attacks in the current round.
+    /// </summary>
     public void ApplyDefendBonus(PartyMemberState character)
     {
         if (character == null) return;
-
-        if (!originalDefenseValues.ContainsKey(character))
-        {
-            originalDefenseValues[character] = character.Defense;
-        }
-
-        defendingCharacters[character] = character.Defense * 3;
-
+        defendingCharacters.Add(character);
         onCharacterUpdated?.Invoke(character);
     }
 
     public void RemoveDefendBonus(PartyMemberState character)
     {
         if (character == null) return;
-
-        if (originalDefenseValues.ContainsKey(character))
-        {
-            originalDefenseValues.Remove(character);
-        }
-
-        if (defendingCharacters.ContainsKey(character))
-        {
-            defendingCharacters.Remove(character);
-        }
-
-        onCharacterUpdated?.Invoke(character);
+        if (defendingCharacters.Remove(character))
+            onCharacterUpdated?.Invoke(character);
     }
 
-    public bool IsDefending(PartyMemberState character)
-    {
-        return defendingCharacters.ContainsKey(character);
-    }
+    public bool IsDefending(PartyMemberState character) => defendingCharacters.Contains(character);
+
+    // ─── Battle End ───────────────────────────────────────────────────────────────
 
     private bool CheckBattleEnd()
     {
         if (currentState == CombatState.VICTORY || currentState == CombatState.DEFEAT)
             return true;
 
-        bool allPartyDowned = partyMembers.All(p => p.currentHP <= 0);
+        bool allPartyDowned  = partyMembers.All(p => p.currentHP <= 0);
         bool allEnemiesDowned = enemies.All(e => e.currentHP <= 0);
 
         if (allEnemiesDowned)
         {
             currentState = CombatState.VICTORY;
-            onCombatEnded?.Invoke(CombatState.VICTORY);
             AwardExperience();
+            onCombatEnded?.Invoke(CombatState.VICTORY);
             StartCoroutine(ReturnToMapAfterDelay(2f));
             return true;
         }
-        else if (allPartyDowned)
+
+        if (allPartyDowned)
         {
             currentState = CombatState.DEFEAT;
             onCombatEnded?.Invoke(CombatState.DEFEAT);
@@ -748,8 +639,9 @@ public class CombatSystem : MonoBehaviour
 
     private IEnumerator ReturnToMapAfterDelay(float delay)
     {
-        menubutton.SetActive(true);
-        objbutton2.SetActive(true);
+        if (menubutton != null) menubutton.SetActive(true);
+        if (objbutton2 != null) objbutton2.SetActive(true);
+
         yield return new WaitForSeconds(delay);
 
         EncounterData encounterData = FindFirstObjectByType<EncounterData>();
@@ -758,9 +650,7 @@ public class CombatSystem : MonoBehaviour
         if (previousScene != null)
         {
             if (currentState == CombatState.VICTORY && encounterData != null)
-            {
                 encounterData.combatVictory = true;
-            }
 
             previousScene.LoadScene();
             SceneManager.UnloadSceneAsync("Combat");
@@ -770,28 +660,18 @@ public class CombatSystem : MonoBehaviour
     private void AwardExperience()
     {
         EncounterData encounterData = FindFirstObjectByType<EncounterData>();
-        if (encounterData != null)
-        {
-            encounterData.combatVictory = true;
-            encounterData.CalculateRewards();
+        if (encounterData == null) return;
 
-            encounterData.ApplyCombatRewards();
-        }
+        encounterData.combatVictory = true;
+        encounterData.CalculateRewards();
+        encounterData.ApplyCombatRewards();
 
-        int totalExp = encounterData.totalExpReward;
         foreach (var member in partyMembers.Where(p => p.currentHP > 0))
-        {
-            member.GainExperience(totalExp);
-        }
+            member.GainExperience(encounterData.totalExpReward);
     }
 
-    public PartyMemberState GetCurrentCharacter()
-    {
-        return currentCharacter;
-    }
+    // ─── Accessors ────────────────────────────────────────────────────────────────
 
-    public bool IsPlayerTurn()
-    {
-        return currentState == CombatState.PLAYER_TURN;
-    }
+    public PartyMemberState GetCurrentCharacter() => currentCharacter;
+    public bool IsPlayerTurn() => currentState == CombatState.PLAYER_TURN;
 }
