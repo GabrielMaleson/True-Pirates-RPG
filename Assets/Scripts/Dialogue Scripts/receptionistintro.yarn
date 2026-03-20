@@ -35,7 +35,9 @@
 	<<sprite guy1 icon>>
 	<<sprite guyphew image>>
 	Benito: (Aquela insígnia deles...)
-	<<sprite guy2 icon>>
+	<<removesprite icon>>
+	Narração: Benito inspeciona os uniformes dos soldados.
+	Narração: "<b><color=\#ff0000>Resistência Peruana - Morte aos Afogadores</color></b>"
 	Benito: ...
 	<<removesprite image>>
 	<<guysleave>>
@@ -131,7 +133,6 @@ title: cantprogressyet
 	Simon: Espera aí. Temos que falar com meu comandante.
 	Simon: Se você quer ficar aqui, o MÍNIMO que deveria fazer é obedecer.
 	<<removesprite icon>>
-	<<unfreeze>>
 	<<brighten>>
 ===
 
@@ -140,7 +141,7 @@ title: shopkeep
 	<<darken>>
 	Cara No Intervalo: O que você tá olhando? Não tá vendo que eu to na minha...
 	Cara No Intervalo: Espera. Você não é desse navio. Simon, porque você deixou esse pivete andar aqui?
-	Cara No Intervalo: Quer saber? Não me importo o suficiente para te ouvir. Também não estou fazendo o que eu devia."
+	Cara No Intervalo: Quer saber? Não me importo o suficiente para te ouvir. Também não estou fazendo o que eu devia.
 	Cara No Intervalo: Eu geralmente vendo as armas extras para os cidadãos enquanto ninguém olha, então se você tem algum interesse... eu sou seu homem.
 	<<brighten>>
 ===
