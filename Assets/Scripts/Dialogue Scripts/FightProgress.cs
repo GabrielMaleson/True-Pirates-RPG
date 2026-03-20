@@ -47,8 +47,6 @@ public class FightProgress : MonoBehaviour
         if (dialogueManager != null && dialogueManager.dialogueRunner != null)
         {
             dialogueRunner = dialogueManager.dialogueRunner;
-
-            dialogueRunner.AddCommandHandler("unfreeze", UnfreezePlayer);
             commandsRegistered = true;
             Debug.Log("FightProgress: Registered unfreeze command successfully");
         }
@@ -79,7 +77,6 @@ public class FightProgress : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            StartCoroutine(MoveToPoint(Player, retreat.position, true));
             if (dialogueManager != null)
                 dialogueManager.StartDialogue("cantprogressyet");
         }
@@ -94,114 +91,4 @@ public class FightProgress : MonoBehaviour
         Destroy(this);
     }
 
-    private IEnumerator MoveToPoint(GameObject character, Vector3 target, bool useAnimator)
-    {
-        if (doingthing)
-        {
-            yield break;
-        }
-        doingthing = true;
-
-        // Disable player movement script temporarily
-        if (playerMovement != null)
-            playerMovement.enabled = false;
-
-        Animator anim = character.GetComponent<Animator>();
-        SpriteRenderer sprite = character.GetComponent<SpriteRenderer>();
-        float speed = 5f;
-
-        float originalY = character.transform.position.y;
-        Vector3 lockedTarget = new Vector3(target.x, originalY, target.z);
-
-        if (useAnimator && anim != null)
-        {
-            anim.SetBool("Andando", true);
-        }
-
-        Vector3 startPos = character.transform.position;
-        float distance = Mathf.Abs(lockedTarget.x - startPos.x);
-        float duration = distance / speed;
-        float elapsed = 0f;
-
-        if (distance < 0.01f)
-        {
-            if (useAnimator && anim != null)
-                anim.SetBool("Andando", false);
-            doingthing = false;
-            yield break;
-        }
-
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            float t = elapsed / duration;
-
-            float newX = Mathf.Lerp(startPos.x, lockedTarget.x, t);
-            character.transform.position = new Vector3(newX, originalY, character.transform.position.z);
-
-            if (sprite != null)
-            {
-                float direction = lockedTarget.x - character.transform.position.x;
-                if (Mathf.Abs(direction) > 0.1f)
-                {
-                    sprite.flipX = direction < 0;
-                }
-            }
-
-            yield return null;
-        }
-
-        // Ensure exact position
-        character.transform.position = new Vector3(lockedTarget.x, originalY, character.transform.position.z);
-
-        if (useAnimator && anim != null)
-        {
-            anim.SetBool("Andando", false);
-        }
-
-        // Freeze X position after reaching destination
-        FreezePlayerPosition();
-
-        doingthing = false;
-    }
-
-    private void FreezePlayerPosition()
-    {
-        if (Player != null)
-        {
-            isPositionFrozen = true;
-            frozenXPosition = Player.transform.position.x;
-        }
-    }
-
-    private void UnfreezePlayer()
-    {
-        isPositionFrozen = false;
-
-        // Re-enable player movement
-        if (playerMovement != null)
-            playerMovement.enabled = true;
-
-        Debug.Log("Player X position unfrozen");
-    }
-
-    // Yarn command handler - must match the signature expected by AddCommandHandler
-    private void UnfreezePlayer(string[] parameters)
-    {
-        Debug.Log("Unfreeze command received with " + parameters.Length + " parameters");
-        UnfreezePlayer();
-    }
-
-    private void OnDestroy()
-    {
-        // Unregister Yarn command
-        if (dialogueRunner != null && commandsRegistered)
-        {
-            dialogueRunner.RemoveCommandHandler("unfreeze");
-            Debug.Log("FightProgress: Unregistered unfreeze command");
-        }
-
-        // Cancel any pending invoke
-        CancelInvoke();
-    }
 }

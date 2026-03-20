@@ -4609,6 +4609,9 @@ MonoBehaviour:
   maxInventorySize: 30
   moedas: 0
   gameProgress: []
+  pickupNotificationPrefab: {fileID: 4256179268038286830, guid: 7d0bec65b222b9a48bdc44b88209373d, type: 3}
+  notificationSpawnPoint: {fileID: 0}
+  notificationOffsetY: 2
 --- !u!114 &3193728564909431463
 MonoBehaviour:
   m_ObjectHideFlags: 0

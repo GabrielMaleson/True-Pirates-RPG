@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using TMPro;
 
 public class SistemaInventario : MonoBehaviour
 {
@@ -12,13 +13,17 @@ public class SistemaInventario : MonoBehaviour
     [Header("Inventory")]
     public List<SlotInventario> inventario = new List<SlotInventario>();
     public int maxInventorySize = 30;
-    private SaveLoadManager saveLoadManager;
 
     [Header("Economy")]
     public int moedas = 0;
 
     [Header("Game Progress")]
     public List<string> gameProgress = new List<string>();
+
+    [Header("Pickup Notification")]
+    public GameObject pickupNotificationPrefab; // Prefab with ControladorTextoDano script
+    public Canvas targetCanvas; // The canvas to spawn notifications on
+    public float notificationOffsetY = -50f; // Offset from top (negative to go down from top)
 
     // Events
     public event Action onInventarioMudou;
@@ -40,9 +45,16 @@ public class SistemaInventario : MonoBehaviour
 
     private void Start()
     {
-        saveLoadManager = FindFirstObjectByType<SaveLoadManager>();
         // Initialize party members if needed
         InitializePartyMembers();
+
+        // Find canvas if not assigned
+        if (targetCanvas == null)
+        {
+            targetCanvas = FindFirstObjectByType<Canvas>();
+            if (targetCanvas == null)
+                Debug.LogError("No Canvas found in scene! Pickup notifications will not appear.");
+        }
     }
 
     private void InitializePartyMembers()
@@ -57,10 +69,35 @@ public class SistemaInventario : MonoBehaviour
         }
     }
 
-    public void SaveGame()
+    // Show pickup notification on canvas
+    private void ShowPickupNotification(DadosItem item, int quantidade)
     {
-        saveLoadManager.SaveGame();
-}
+        if (pickupNotificationPrefab == null || targetCanvas == null) return;
+
+        // Instantiate notification as child of canvas
+        GameObject notification = Instantiate(pickupNotificationPrefab, targetCanvas.transform);
+
+        // Position at top center of screen with offset
+        RectTransform rectTransform = notification.GetComponent<RectTransform>();
+        if (rectTransform != null)
+        {
+            // Position at top center of canvas
+            rectTransform.anchorMin = new Vector2(0.5f, 1f);
+            rectTransform.anchorMax = new Vector2(0.5f, 1f);
+            rectTransform.pivot = new Vector2(0.5f, notificationOffsetY);
+            rectTransform.anchoredPosition = new Vector2(0, notificationOffsetY);
+        }
+
+        // Set text
+        TextMeshProUGUI textComponent = notification.GetComponent<TextMeshProUGUI>();
+        if (textComponent != null)
+        {
+            string itemName = item != null ? item.nomeDoItem : "Item";
+            string quantityText = quantidade > 1 ? $" x{quantidade}" : "";
+            textComponent.text = $"{itemName}{quantityText} obtido!";
+        }
+
+    }
 
     // Inventory Methods
     public void AdicionarItem(DadosItem itemParaAdicionar, int quantidade)
@@ -78,6 +115,10 @@ public class SistemaInventario : MonoBehaviour
                 if (inventario[i].dadosDoItem == itemParaAdicionar)
                 {
                     inventario[i].AdicionarQuantidade(quantidade);
+
+                    // Show pickup notification
+                    ShowPickupNotification(itemParaAdicionar, quantidade);
+
                     onInventarioMudou?.Invoke();
                     return;
                 }
@@ -86,6 +127,10 @@ public class SistemaInventario : MonoBehaviour
 
         SlotInventario novoSlot = new SlotInventario(itemParaAdicionar, quantidade);
         inventario.Add(novoSlot);
+
+        // Show pickup notification
+        ShowPickupNotification(itemParaAdicionar, quantidade);
+
         onInventarioMudou?.Invoke();
     }
 
@@ -139,14 +184,11 @@ public class SistemaInventario : MonoBehaviour
     // Party Member Methods
     public List<PartyMemberState> GetPartyMembersForCombat()
     {
-        // Return a copy of the list (references are fine, we want to modify the same objects)
         return new List<PartyMemberState>(partyMembers);
     }
 
     public void UpdatePartyMembersFromCombat(List<PartyMemberState> combatPartyMembers)
     {
-        // The references are the same, so no need to copy back
-        // But we can trigger an update event
         onPartyUpdated?.Invoke();
     }
 
@@ -184,16 +226,13 @@ public class SistemaInventario : MonoBehaviour
         var member = partyMembers[partyIndex];
         if (member == null) return false;
 
-        // Check if item exists in inventory
         if (!TemItem(weaponItem, 1)) return false;
 
-        // Unequip current weapon and add back to inventory
         if (member.weapon != null)
         {
             AdicionarItem(member.weapon, 1);
         }
 
-        // Equip new weapon
         if (member.EquipWeapon(weaponItem))
         {
             RemoverItem(weaponItem, 1);
