@@ -11,19 +11,27 @@ public class NPCTalker : MonoBehaviour
     public GameObject Activator;
     public GameObject Activator2;
     public GameObject Killer;
+    public bool compassquest = false;
     void Start()
     {
         dialogue = FindFirstObjectByType<DialogueManager>();
+
+        SistemaInventario inventory = SistemaInventario.Instance;
     }
 
     void Update()
     {
-        if (!hasstarted && playerInRange)
+        if (!hasstarted && playerInRange && !compassquest)
         {
             ShowPopup();
         }
 
-        if (!hasstarted && playerInRange && Input.GetKeyDown(KeyCode.Space))
+        if (playerInRange && SistemaInventario.Instance.HasProgress("compass"))
+        {
+            compassquest = false;
+        }
+
+        if (!hasstarted && !compassquest && playerInRange && Input.GetKeyDown(KeyCode.Space))
         {
             hasstarted = true;
             dialogue.StartDialogue(thething);

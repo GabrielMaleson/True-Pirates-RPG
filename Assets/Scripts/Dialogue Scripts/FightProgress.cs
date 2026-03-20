@@ -10,6 +10,7 @@ public class FightProgress : MonoBehaviour
     public GameObject foe;
     public GameObject Player;
     public Transform retreat;
+    public GameObject Killer;
     public bool isBoss;
     public bool doingthing = false;
 
@@ -59,9 +60,14 @@ public class FightProgress : MonoBehaviour
 
     private void Update()
     {
-        if (sistemaInventario != null && sistemaInventario.HasProgress("mutantfought"))
+        if (sistemaInventario != null && sistemaInventario.HasProgress("mutanttime"))
         {
             NextMoment();
+        }
+
+        if (sistemaInventario != null && sistemaInventario.HasProgress("mutantbosstime"))
+        {
+            NextestMoment();
         }
 
         // Keep player at frozen X position if frozen
@@ -83,6 +89,17 @@ public class FightProgress : MonoBehaviour
     }
 
     private void NextMoment()
+    {
+        scamps.SetActive(true);
+        if (foe != null)
+            foe.SetActive(true);
+        if (Killer != null)
+        {
+            Destroy(this);
+        }
+    }
+
+    private void NextestMoment()
     {
         if (scamps != null)
             Destroy(scamps);

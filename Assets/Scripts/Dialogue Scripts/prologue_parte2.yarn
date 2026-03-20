@@ -86,7 +86,7 @@ title: joodie_conversa_privada
 	<<brighten>>
 ===
 
-title: sidequest1_dispositivo
+title: commandant_true
 ---
 	<<darken>>
 	<<sprite joodie.neutral icon>>
@@ -95,12 +95,14 @@ title: sidequest1_dispositivo
 	Comandante Desconhecido: Sim. O maldito aparelho caiu e se partiu. Três pedaços espalhados pelo navio. Sem o dispositivo completo, voamos às cegas acima do mar.
 	Comandante Desconhecido: Precisamos que alguém o recolha antes que percamos a rota. Já temos problemas suficientes sem nos perdermos sobre o oceano.
 	<<sprite simon.smug icon>>
-	Simon: Deixa com a gente, Comandante.
+	Simon: Então não se preocupe, pois temos EXATAMENTE isso.
 	<<sprite commandant icon>>
-	Comandante Desconhecido: Torço para que não me decepcione desta vez, Aspirante.
+	Comandante Desconhecido: Está me zoando, Aspirante? Quantas ameças devo fazer até você lembrar onde você está?
+	<<sprite simon.mad icon>>
+	Simon: Não, estou falando a verdade.
+	<<sprite benito.confused icon>>
+	Benito: É verdade, senhor. Temos o dispositivo!
 	<<removesprite icon>>
-	Narração: Objetivo atualizado. Encontre as três partes do dispositivo espalhadas pelo navio.
-	<<add_objective "Encontrar as três partes do dispositivo">>
 	<<brighten>>
 ===
 

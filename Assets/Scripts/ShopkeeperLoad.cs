@@ -31,20 +31,11 @@ public class ShopkeeperLoad : MonoBehaviour
                 playerMovement = Player.GetComponent<MovimentacaoExploracao>();
             playerMovement.enabled = false;
             dialogue.StartDialogue("shopkeep");
-        }
-        if (playerInRange && Input.GetKeyDown(KeyCode.Space)) 
-        {
-            Ugh++;
-        }
-        if (Ugh > 6f)
-        {
             shop.SetActive(true);
-            Destroy(this);
             playerMovement.enabled = true;
+            Destroy(this);
         }
     }
-
-
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
