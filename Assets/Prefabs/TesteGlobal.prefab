@@ -4508,7 +4508,6 @@ GameObject:
   - component: {fileID: 7924082044616631942}
   - component: {fileID: 7268918558665327555}
   - component: {fileID: 8983900881636473733}
-  - component: {fileID: 3193728564909431463}
   - component: {fileID: 8726729590948204646}
   - component: {fileID: 1769668878260593955}
   m_Layer: 0
@@ -4581,20 +4580,6 @@ MonoBehaviour:
   pickupNotificationPrefab: {fileID: 4256179268038286830, guid: 7d0bec65b222b9a48bdc44b88209373d, type: 3}
   targetCanvas: {fileID: 1986476068124598944}
   notificationOffsetY: 3
---- !u!114 &3193728564909431463
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7226621843539595999}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 83db6f5318533cc4cae743a1e13d0bba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ControleUI
-  painelInventario: {fileID: 2691680425406012146}
-  painelCrafting: {fileID: 6432495866103256976}
 --- !u!114 &8726729590948204646
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4609,41 +4594,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CraftingSimples
   inventario: {fileID: 8983900881636473733}
   recipes:
-  - recipeName: "Po\xE7\xE3o Vida"
+  - recipeName: "Dispositivo de Navega\xE7\xE3o"
     requiredItems:
-    - item: {fileID: 11400000, guid: 9f2d6a8fb4c76884e9ed4fba87936880, type: 2}
+    - item: {fileID: 11400000, guid: d6c02d5a193db474bb40dbc3041facdd, type: 2}
       quantidade: 1
-    - item: {fileID: 11400000, guid: 16ba8d91053e03d4192431569859c188, type: 2}
+    - item: {fileID: 11400000, guid: 0bc5b023053cfac40a492cca47a01c4a, type: 2}
+      quantidade: 1
+    - item: {fileID: 11400000, guid: fe229a478bd977c439c057922e813cf9, type: 2}
       quantidade: 1
     results:
-    - item: {fileID: 11400000, guid: 429c578530f4a9044ad0af2628215113, type: 2}
-      quantidade: 1
-  - recipeName: "Po\xE7\xE3o Morte"
-    requiredItems:
-    - item: {fileID: 11400000, guid: 9f2d6a8fb4c76884e9ed4fba87936880, type: 2}
-      quantidade: 1
-    - item: {fileID: 11400000, guid: 047e6447ea8b999428b87f05837025cc, type: 2}
-      quantidade: 3
-    results:
-    - item: {fileID: 11400000, guid: c864c74d835731d4b833d9313ba5fbab, type: 2}
-      quantidade: 1
-  - recipeName: Espada Morte
-    requiredItems:
-    - item: {fileID: 11400000, guid: b2674fc773674fd4699085e018fafe0a, type: 2}
-      quantidade: 1
-    - item: {fileID: 11400000, guid: c864c74d835731d4b833d9313ba5fbab, type: 2}
-      quantidade: 1
-    results:
-    - item: {fileID: 11400000, guid: 96b3984d85a0bac4ba2944d387081fa4, type: 2}
-      quantidade: 1
-  - recipeName: Escudo Vida
-    requiredItems:
-    - item: {fileID: 11400000, guid: dcc1005cefe96a9478a682dcc28fb1c0, type: 2}
-      quantidade: 1
-    - item: {fileID: 11400000, guid: 429c578530f4a9044ad0af2628215113, type: 2}
-      quantidade: 1
-    results:
-    - item: {fileID: 11400000, guid: 7840db85a48c5b74f98f7e580208eef1, type: 2}
+    - item: {fileID: 11400000, guid: efba88d2613c12749be49b6703a165af, type: 2}
       quantidade: 1
 --- !u!114 &1769668878260593955
 MonoBehaviour:
