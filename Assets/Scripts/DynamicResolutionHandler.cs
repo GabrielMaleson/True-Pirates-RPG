@@ -85,7 +85,10 @@ public class DynamicResolutionHandler : MonoBehaviour
         // FindObjectsByType searches all loaded scenes including additive ones
         CanvasScaler[] all = FindObjectsByType<CanvasScaler>(FindObjectsSortMode.None);
         foreach (var scaler in all)
-            canvasScalers.Add(scaler);
+        {
+            if (!scaler.CompareTag("Ignore"))
+                canvasScalers.Add(scaler);
+        }
 
         ApplyToAll();
     }
