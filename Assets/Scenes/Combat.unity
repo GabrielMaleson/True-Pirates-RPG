@@ -1708,8 +1708,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -2, y: 0}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchoredPosition: {x: -1, y: 0}
+  m_SizeDelta: {x: 202, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &932890561
 MonoBehaviour:
@@ -2003,7 +2003,7 @@ MonoBehaviour:
   partyMemberUIPrefab: {fileID: 6974297528663458817, guid: 4bb7a5674260fa44b9075157c209fb14, type: 3}
   enemyUIPrefab: {fileID: 6974297528663458817, guid: 280190369e81ff14cac23d8f61d50442, type: 3}
   actionButtonPrefab: {fileID: 6544876395421401408, guid: 1e0528f4658c86f44ba0032144b19670, type: 3}
-  actionMenuPanel: {fileID: 0}
+  actionMenuPanel: {fileID: 1386066305}
   attackButtonGrid: {fileID: 746583915}
   itemButtonGrid: {fileID: 1161163998}
   attacksMenuButton: {fileID: 1940569303}
@@ -2507,7 +2507,7 @@ GameObject:
   - component: {fileID: 1386066307}
   - component: {fileID: 1386066310}
   m_Layer: 5
-  m_Name: ActionPanel
+  m_Name: Action Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3892,7 +3892,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1940569304}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 566257890}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1940569304
 MonoBehaviour:
   m_ObjectHideFlags: 0
