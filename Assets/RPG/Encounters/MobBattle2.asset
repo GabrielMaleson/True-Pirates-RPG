@@ -15,14 +15,23 @@ MonoBehaviour:
   encounterName: ratbattle
   encounterIcon: {fileID: 21300000, guid: 3c311fccc1bc3470d85f8915b9df0227, type: 3}
   enemies:
-  - characterData: {fileID: 11400000, guid: 3477d9bdb332f6347a5e175785076f35, type: 2}
-    enemyPrefab: {fileID: 6974297528663458817, guid: 391be075ecde2e44495ced23336f447e, type: 3}
-    level: 1
+  - characterData: {fileID: 11400000, guid: d27c910e17b8b1f4facb5d0ca3cda757, type: 2}
+    enemyPrefab: {fileID: 0}
+    level: 0
     overrideHP: 0
-    additionalAttacks:
-    - {fileID: 11400000, guid: d369b83fa4db8f04bac4c9db9dfa92b2, type: 2}
-    - {fileID: 11400000, guid: d9c158eca45a3d14eb29938036df67f2, type: 2}
-    - {fileID: 11400000, guid: c8b51e9b639870241a24cc09b8d2fc01, type: 2}
+    additionalAttacks: []
+    enemySpecificDrops: []
+  - characterData: {fileID: 11400000, guid: d27c910e17b8b1f4facb5d0ca3cda757, type: 2}
+    enemyPrefab: {fileID: 0}
+    level: 0
+    overrideHP: 0
+    additionalAttacks: []
+    enemySpecificDrops: []
+  - characterData: {fileID: 11400000, guid: d27c910e17b8b1f4facb5d0ca3cda757, type: 2}
+    enemyPrefab: {fileID: 0}
+    level: 0
+    overrideHP: 0
+    additionalAttacks: []
     enemySpecificDrops: []
   baseGoldReward: 100
   baseExpReward: 100

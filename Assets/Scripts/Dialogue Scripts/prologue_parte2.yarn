@@ -271,7 +271,6 @@ title: pos_batalha_nepal
 	<<sprite joodie1 icon>>
 	Joodie: Vamos reportar isso pro Comandante, seguimos em rota a Portugal em altimetria alta. Lá falamos com o conselho da resistência.
 	<<removesprite icon>>
-	Narração: Objetivo atualizado.
-	<<add_objective "Reportar ao Comandante sobre a Matriz Sináptica">>
 	<<brighten>>
+	<<sceneload Finale>>
 ===
