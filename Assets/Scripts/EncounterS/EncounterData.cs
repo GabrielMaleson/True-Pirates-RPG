@@ -61,6 +61,10 @@ public class EncounterData : MonoBehaviour
                         playerInventory.AdicionarItem(drop.item, quantity);
                     }
                 }
+                if (encounterFile.progress)
+                {
+                    playerInventory.AddProgress(encounterFile.progressAdd);
+                }
             }
         }
     }

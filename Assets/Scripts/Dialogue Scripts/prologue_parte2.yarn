@@ -219,11 +219,11 @@ title: fase2_matriz_sinaptica
 	<<darken>>
 	Narração: Com o segundo Mutante caindo, um som pesado e úmido ecoa pelo casco metálico do Highwaker. Dedos longos e pálidos se agarram na borda lateral do navio.
 	Narração: A Matriz Sináptica escala o casco lentamente. Sua forma é maior que a dos outros — mais densa, os tentáculos mais espessos, pulsando com bioluminescência. Dois Mutantes a seguem de perto.
-	<<sprite joodie1 icon>>
+	<<sprite joodie.mad icon>>
 	Joodie: Segurem a formação!
-	<<sprite simon1 icon>>
+	<<sprite simon.pissed icon>>
 	Simon: O que diabos é isso...
-	<<sprite joodie1 icon>>
+	<<sprite joodie.mad icon>>
 	Joodie: Não importa. Mantém a linha!
 	<<removesprite icon>>
 	<<progress startencounter_matriz>>
@@ -271,7 +271,6 @@ title: pos_batalha_nepal
 	<<sprite joodie1 icon>>
 	Joodie: Vamos reportar isso pro Comandante, seguimos em rota a Portugal em altimetria alta. Lá falamos com o conselho da resistência.
 	<<removesprite icon>>
-	Narração: Objetivo atualizado.
-	<<add_objective "Reportar ao Comandante sobre a Matriz Sináptica">>
 	<<brighten>>
+	<<sceneload Finale>>
 ===
