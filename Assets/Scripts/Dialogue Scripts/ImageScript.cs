@@ -30,7 +30,6 @@ public class DialogueManager : MonoBehaviour
     public GraphicRaycaster graphicRaycaster;
     public TextMeshProUGUI objectiveText;
     public GameObject objectivePanel;
-    public GameObject blackScreen;
 
     [Header("Image Display")]
     public List<Sprite> sprites = new List<Sprite>();
@@ -365,15 +364,9 @@ public class DialogueManager : MonoBehaviour
     [YarnCommand("darken")]
     public static void DarkenScreen(float alpha = 0.37f, float duration = 0.5f)
     {
-        if (instance.blackScreen != null)
-        {
-            if (instance.graphicRaycaster != null)
-                instance.graphicRaycaster.enabled = true;
-            instance.blackScreen.SetActive(true);
-            instance.StartCoroutine(instance.FadeScreenRoutine(alpha, duration));
-            instance.DisablePlayerControl();
-            instance.playerMovement.enabled = false;
-        }
+        if (instance.graphicRaycaster != null)
+            instance.graphicRaycaster.enabled = true;
+        instance.DisablePlayerControl();
     }
 
     public void StartDialogue(string dialogue)
@@ -399,97 +392,11 @@ public class DialogueManager : MonoBehaviour
     [YarnCommand("brighten")]
     public static void BrightenScreen(float duration = 0.5f)
     {
-        if (instance.blackScreen != null)
-        {
-            instance.StartCoroutine(instance.FadeScreenRoutine(0f, duration, true));
-
-            // Re-enable player movement when screen brightens
-            instance.EnablePlayerControl();
-            if (instance.graphicRaycaster != null)
-                instance.graphicRaycaster.enabled = false;
-            instance.playerMovement.enabled = true;
-        }
+        instance.EnablePlayerControl();
+        if (instance.graphicRaycaster != null)
+            instance.graphicRaycaster.enabled = false;
     }
 
-    [YarnCommand("blackout")]
-    public static void Blackout(float duration = 1.0f)
-    {
-        if (instance.blackScreen != null)
-        {
-            instance.blackScreen.SetActive(true);
-            instance.StartCoroutine(instance.BlackoutRoutine(duration));
-            instance.EnsureContinueButtonInteractable();
-
-            // Disable player movement during blackout
-            instance.DisablePlayerControl();
-        }
-    }
-
-    private IEnumerator FadeScreenRoutine(float targetAlpha, float duration, bool deactivateAtEnd = false)
-    {
-        Image blackScreenImage = blackScreen.GetComponent<Image>();
-        if (blackScreenImage == null) yield break;
-
-        Color startColor = blackScreenImage.color;
-        Color targetColor = new Color(startColor.r, startColor.g, startColor.b, targetAlpha);
-
-        float elapsedTime = 0f;
-
-        while (elapsedTime < duration)
-        {
-            elapsedTime += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsedTime / duration);
-
-            blackScreenImage.color = Color.Lerp(startColor, targetColor, t);
-            yield return null;
-        }
-
-        blackScreenImage.color = targetColor;
-
-        if (deactivateAtEnd && targetAlpha <= 0f)
-        {
-            blackScreen.SetActive(false);
-        }
-    }
-
-    private IEnumerator BlackoutRoutine(float duration)
-    {
-        Image blackScreenImage = blackScreen.GetComponent<Image>();
-        if (blackScreenImage == null) yield break;
-
-        Color transparent = new Color(0f, 0f, 0f, 0f);
-        Color opaque = new Color(0f, 0f, 0f, 1f);
-
-        float halfDuration = duration / 2f;
-        float elapsedTime = 0f;
-
-        while (elapsedTime < halfDuration)
-        {
-            elapsedTime += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsedTime / halfDuration);
-            blackScreenImage.color = Color.Lerp(transparent, opaque, t);
-            yield return null;
-        }
-
-        blackScreenImage.color = opaque;
-        yield return new WaitForSeconds(0.1f);
-
-        elapsedTime = 0f;
-        while (elapsedTime < halfDuration)
-        {
-            elapsedTime += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsedTime / halfDuration);
-            blackScreenImage.color = Color.Lerp(opaque, transparent, t);
-            yield return null;
-        }
-
-        blackScreenImage.color = transparent;
-        blackScreen.SetActive(false);
-        EnableRaycaster();
-
-        // Re-enable player movement after blackout completes
-        EnablePlayerControl();
-    }
 
     [YarnCommand("playsound")]
     public static void PlaySound(string soundName)
