@@ -67094,7 +67094,6 @@ GameObject:
   - component: {fileID: 1547378136}
   - component: {fileID: 1547378135}
   - component: {fileID: 1547378134}
-  - component: {fileID: 1547378133}
   m_Layer: 0
   m_Name: SidequestGiver
   m_TagString: Untagged
@@ -67117,24 +67116,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1554634215}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1547378133
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1547378131}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 99564eff12ddee84d8310bf344c9d3a3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ChestScript
-  item: {fileID: 11400000, guid: 0bc5b023053cfac40a492cca47a01c4a, type: 2}
-  quantidade: 1
-  spriteRenderer: {fileID: 0}
-  openchest: {fileID: 0}
-  isgay: 1
-  isnot: 1
 --- !u!114 &1547378134
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -70480,6 +70461,7 @@ GameObject:
   - component: {fileID: 1933411264}
   - component: {fileID: 1933411263}
   - component: {fileID: 1933411262}
+  - component: {fileID: 1933411265}
   m_Layer: 0
   m_Name: SidequestGiver (1)
   m_TagString: Untagged
@@ -70628,6 +70610,24 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &1933411265
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1933411260}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99564eff12ddee84d8310bf344c9d3a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChestScript
+  item: {fileID: 11400000, guid: 0bc5b023053cfac40a492cca47a01c4a, type: 2}
+  quantidade: 1
+  spriteRenderer: {fileID: 0}
+  openchest: {fileID: 0}
+  isgay: 1
+  isnot: 1
 --- !u!1 &1938780277
 GameObject:
   m_ObjectHideFlags: 0

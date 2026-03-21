@@ -24,15 +24,8 @@ public class ShopkeeperLoad : MonoBehaviour
         if (!hasstarted && playerInRange && Input.GetKeyDown(KeyCode.Space))
         {
             hasstarted = true;
-            if (Player == null)
-                Player = GameObject.FindGameObjectWithTag("Player");
-
-            if (Player != null)
-                playerMovement = Player.GetComponent<MovimentacaoExploracao>();
-            playerMovement.enabled = false;
             dialogue.StartDialogue("shopkeep");
             shop.SetActive(true);
-            playerMovement.enabled = true;
             Destroy(this);
         }
     }
