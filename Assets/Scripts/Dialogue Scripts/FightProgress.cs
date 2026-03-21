@@ -7,11 +7,11 @@ public class FightProgress : MonoBehaviour
     public DialogueManager dialogueManager;
     public SistemaInventario sistemaInventario;
     public GameObject scamps;
-    public GameObject foe;
+    public GameObject foe1;
+    public GameObject foe2;
     public GameObject Player;
     public Transform retreat;
     public GameObject Killer;
-    public bool isBoss;
     public bool doingthing = false;
 
     // Freeze position variables
@@ -91,8 +91,8 @@ public class FightProgress : MonoBehaviour
     private void NextMoment()
     {
         scamps.SetActive(true);
-        if (foe != null)
-            foe.SetActive(true);
+        if (foe1 != null)
+            foe1.SetActive(true);
         if (Killer != null)
         {
             Destroy(this);
@@ -103,8 +103,8 @@ public class FightProgress : MonoBehaviour
     {
         if (scamps != null)
             Destroy(scamps);
-        if (foe != null)
-            foe.SetActive(true);
+        if (foe2 != null)
+            foe2.SetActive(true);
         Destroy(this);
     }
 

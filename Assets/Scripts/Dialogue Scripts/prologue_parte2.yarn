@@ -102,6 +102,8 @@ title: commandant_true
 	Simon: Não, estou falando a verdade.
 	<<sprite benito.confused icon>>
 	Benito: É verdade, senhor. Temos o dispositivo!
+	<<sprite commandant icon>>
+	Comandante Desconhecido: Hmmm... então lhe julguei mal, Aspirante. Ok. Vá para o leme e entregue isso para a pessoa lá.  
 	<<removesprite icon>>
 	<<brighten>>
 ===
@@ -194,7 +196,7 @@ title: ataque_mutante_intro
 	<<sprite joodie.mad icon>>
 	Joodie: Fica atrás de mim.
 	<<removesprite icon>>
-	<<progress startencounter_mutantes>>
+	<<progress mutanttime>>
 	<<brighten>>
 ===
 
