@@ -219,11 +219,11 @@ title: fase2_matriz_sinaptica
 	<<darken>>
 	Narração: Com o segundo Mutante caindo, um som pesado e úmido ecoa pelo casco metálico do Highwaker. Dedos longos e pálidos se agarram na borda lateral do navio.
 	Narração: A Matriz Sináptica escala o casco lentamente. Sua forma é maior que a dos outros — mais densa, os tentáculos mais espessos, pulsando com bioluminescência. Dois Mutantes a seguem de perto.
-	<<sprite joodie1 icon>>
+	<<sprite joodie.mad icon>>
 	Joodie: Segurem a formação!
-	<<sprite simon1 icon>>
+	<<sprite simon.pissed icon>>
 	Simon: O que diabos é isso...
-	<<sprite joodie1 icon>>
+	<<sprite joodie.mad icon>>
 	Joodie: Não importa. Mantém a linha!
 	<<removesprite icon>>
 	<<progress startencounter_matriz>>

@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EncounterFile
   encounterName: ratbattle
   encounterIcon: {fileID: 21300000, guid: 3c311fccc1bc3470d85f8915b9df0227, type: 3}
+  progress: 1
+  progressAdd: finale
   enemies:
   - characterData: {fileID: 11400000, guid: d27c910e17b8b1f4facb5d0ca3cda757, type: 2}
     enemyPrefab: {fileID: 0}

@@ -7,6 +7,8 @@ public class EncounterFile : ScriptableObject
     [Header("Encounter Details")]
     public string encounterName;
     public Sprite encounterIcon;
+    public bool progress;
+    public string progressAdd;
 
     [Header("Enemies")]
     public List<EncounterEnemyData> enemies = new List<EncounterEnemyData>();
