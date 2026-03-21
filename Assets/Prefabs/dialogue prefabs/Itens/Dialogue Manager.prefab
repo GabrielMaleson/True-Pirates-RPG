@@ -106,7 +106,7 @@ GameObject:
   - component: {fileID: 1952142033187898075}
   - component: {fileID: 123759369923339546}
   m_Layer: 0
-  m_Name: Dialogue Stuff (1)
+  m_Name: Dialogue Manager
   m_TagString: Inventory
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -383,6 +383,14 @@ PrefabInstance:
     - target: {fileID: 6164592069074295717, guid: c4110cf5b3515474eaa375228057de57, type: 3}
       propertyPath: m_PresetInfoIsWorld
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6164592069074295717, guid: c4110cf5b3515474eaa375228057de57, type: 3}
+      propertyPath: m_ReferenceResolution.x
+      value: 1920
+      objectReference: {fileID: 0}
+    - target: {fileID: 6164592069074295717, guid: c4110cf5b3515474eaa375228057de57, type: 3}
+      propertyPath: m_ReferenceResolution.y
+      value: 1080
       objectReference: {fileID: 0}
     - target: {fileID: 7048756849714301402, guid: c4110cf5b3515474eaa375228057de57, type: 3}
       propertyPath: m_Enabled
