@@ -26,5 +26,5 @@ MonoBehaviour:
   guaranteedDrops: []
   randomDrops: []
   isBossEncounter: 0
-  battleMusic: {fileID: 0}
+  battleMusic: {fileID: 8300000, guid: 0cc163690391ac94ca4acc5bc4415560, type: 3}
   battleBackgroundName: 

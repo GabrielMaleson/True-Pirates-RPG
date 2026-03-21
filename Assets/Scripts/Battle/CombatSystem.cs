@@ -111,6 +111,10 @@ public class CombatSystem : MonoBehaviour
         partyMembers.Clear();
         enemies.Clear();
 
+        // Play the encounter's battle music if one is assigned
+        if (encounterData.encounterFile != null && encounterData.encounterFile.battleMusic != null)
+            MusicManager.Instance?.PlayClip(encounterData.encounterFile.battleMusic);
+
         if (encounterData.playerPartyMembers != null)
         {
             for (int i = 0; i < encounterData.playerPartyMembers.Count; i++)
@@ -651,6 +655,8 @@ public class CombatSystem : MonoBehaviour
         {
             if (currentState == CombatState.VICTORY && encounterData != null)
                 encounterData.combatVictory = true;
+
+            MusicManager.Instance?.StopMusic();
 
             previousScene.LoadScene();
             SceneManager.UnloadSceneAsync("Combat");
