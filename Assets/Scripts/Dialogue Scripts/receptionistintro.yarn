@@ -32,6 +32,7 @@
 	<<sprite simon.happy icon>>
 	Simon: Ha. Ha. E você é a pessoa mais engraçada que eu conheço. Tá vendo? Nós dois podemos mentir livremente!
 	<<wait 1>>
+	<<playerflip>>
 	<<sprite benito.confused icon>>
 	Benito: (Aquela insígnia deles...)
 	<<removesprite icon>>

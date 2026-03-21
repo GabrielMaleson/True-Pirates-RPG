@@ -8,7 +8,7 @@ public class ActionButton : MonoBehaviour
     public TextMeshProUGUI actionNameText;
     public TextMeshProUGUI apCostText;
     public Button button;
-
+    public Image image;
     private AttackFile attack;
     private DadosItem item;
     private System.Action onClick;
@@ -28,6 +28,7 @@ public class ActionButton : MonoBehaviour
     public void Initialize(DadosItem itemData, System.Action callback)
     {
         item = itemData;
+        image.sprite = itemData.icone;
         onClick = callback;
 
         actionNameText.text = itemData.nomeDoItem;

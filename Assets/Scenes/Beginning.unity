@@ -12547,6 +12547,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 123759369923339546, guid: 8fcc35ed5f9597044a7f2d1e58fe7d3d, type: 3}
+      propertyPath: 'sprites.Array.data[13]'
+      value: 
+      objectReference: {fileID: 2540799395663346105, guid: 1f7a1843aec19764595e9586c325841c, type: 3}
     - target: {fileID: 710493604109817274, guid: 8fcc35ed5f9597044a7f2d1e58fe7d3d, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0dae1c0bdb169eb479b9e915ac2d682c, type: 3}
-  m_Name: NewCharacter
+  m_Name: Monster
   m_EditorClassIdentifier: Assembly-CSharp::CharacterData
-  characterName: Evil Mob
+  characterName: Mob
   partyIcon: {fileID: 0}
   battlePortrait: {fileID: 0}
   animatorController: {fileID: 0}
@@ -116,5 +116,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  unlockableAttacks: []
+  unlockableAttacks:
+  - attack: {fileID: 11400000, guid: d369b83fa4db8f04bac4c9db9dfa92b2, type: 2}
+    unlockLevel: 0
   baseExpValue: 50

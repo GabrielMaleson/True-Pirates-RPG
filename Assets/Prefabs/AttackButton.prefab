@@ -351,6 +351,7 @@ MonoBehaviour:
   actionNameText: {fileID: 1157755759390099574}
   apCostText: {fileID: 524446584259671965}
   button: {fileID: 5159339156487119333}
+  image: {fileID: 5746514386620092196}
 --- !u!1 &7605054204991743468
 GameObject:
   m_ObjectHideFlags: 0

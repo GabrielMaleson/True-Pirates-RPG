@@ -1,13 +1,10 @@
 fileFormatVersion: 2
-guid: 1f7a1843aec19764595e9586c325841c
+guid: 5cadfbc5b5e48534593fddcd804a9b2f
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7602595512260149774
-    second: Simon.Machucado_0
-  - first:
-      213: 2540799395663346105
-    second: Simon.Machucado_1
+      213: 1152707560950041396
+    second: Mobpngluiz_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -103,35 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Simon.Machucado_0
+      name: Mobpngluiz_0
       rect:
         serializedVersion: 2
-        x: 1639
-        y: 2038
-        width: 4
-        height: 4
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 2fd31c079a72e7690800000000000000
-      internalID: -7602595512260149774
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Simon.Machucado_1
-      rect:
-        serializedVersion: 2
-        x: 34
+        x: 0
         y: 0
-        width: 1980
-        height: 1916
+        width: 395
+        height: 632
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -140,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 9b97a00b69bb24320800000000000000
-      internalID: 2540799395663346105
+      spriteID: 43b855c5b6d3fff00800000000000000
+      internalID: 1152707560950041396
       vertices: []
       indices: 
       edges: []
@@ -150,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: b7524eee4d30ad24baa8c39e8284678c
+    spriteID: 63dc6d9be2e6e59419748d704c3fe87e
     internalID: 0
     vertices: []
     indices: 
@@ -158,12 +133,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries:
-      - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+      entries: []
     nameFileIdTable:
-      Simon.Machucado_0: -7602595512260149774
-      Simon.Machucado_1: 2540799395663346105
+      Mobpngluiz_0: 1152707560950041396
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

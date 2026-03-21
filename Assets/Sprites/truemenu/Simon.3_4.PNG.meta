@@ -1,13 +1,10 @@
 fileFormatVersion: 2
-guid: 1f7a1843aec19764595e9586c325841c
+guid: 2ca46c0a1dee65940927bc91d0952b91
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7602595512260149774
-    second: Simon.Machucado_0
-  - first:
-      213: 2540799395663346105
-    second: Simon.Machucado_1
+      213: -9043858473083764333
+    second: Simon.3_4_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -54,7 +51,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 300
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -103,45 +100,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Simon.Machucado_0
+      name: Simon.3_4_0
       rect:
         serializedVersion: 2
-        x: 1639
-        y: 2038
-        width: 4
-        height: 4
+        x: 759
+        y: 17
+        width: 617
+        height: 1951
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 2fd31c079a72e7690800000000000000
-      internalID: -7602595512260149774
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Simon.Machucado_1
-      rect:
-        serializedVersion: 2
-        x: 34
-        y: 0
-        width: 1980
-        height: 1916
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 9b97a00b69bb24320800000000000000
-      internalID: 2540799395663346105
+      spriteID: 3918fe892a2cd7280800000000000000
+      internalID: -9043858473083764333
       vertices: []
       indices: 
       edges: []
@@ -150,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: b7524eee4d30ad24baa8c39e8284678c
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -158,12 +133,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries:
-      - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+      entries: []
     nameFileIdTable:
-      Simon.Machucado_0: -7602595512260149774
-      Simon.Machucado_1: 2540799395663346105
+      Simon.3_4_0: -9043858473083764333
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

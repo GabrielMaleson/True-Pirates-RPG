@@ -216,7 +216,7 @@ public class SpecialCutsceneScript : MonoBehaviour
     {
         if (player != null && pointD != null && playerMovement != null)
         {
-            StartCoroutine(MoveToPoint(player, pointB.position, true));
+            StartCoroutine(MoveToPoint(player, pointA.position, true));
         }
     }
 
@@ -392,7 +392,6 @@ public class SpecialCutsceneScript : MonoBehaviour
             dialogueRunner.RemoveCommandHandler("playerphew");
             dialogueRunner.RemoveCommandHandler("playerflip");
             dialogueRunner.RemoveCommandHandler("startencounter");
-            dialogueRunner.RemoveCommandHandler("momogrr");
         }
     }
 }

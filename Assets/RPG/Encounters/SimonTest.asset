@@ -22,9 +22,9 @@ MonoBehaviour:
     additionalAttacks: []
     enemySpecificDrops: []
   baseGoldReward: 100
-  baseExpReward: 50
+  baseExpReward: 100
   guaranteedDrops: []
   randomDrops: []
-  isBossEncounter: 0
-  battleMusic: {fileID: 8300000, guid: 0cc163690391ac94ca4acc5bc4415560, type: 3}
+  isBossEncounter: 1
+  battleMusic: {fileID: 8300000, guid: d5792087d6909ff4d814edcbe542a6e6, type: 3}
   battleBackgroundName: 

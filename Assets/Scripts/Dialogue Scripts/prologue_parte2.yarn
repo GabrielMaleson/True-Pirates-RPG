@@ -111,18 +111,32 @@ title: commandant_true
 title: sidequest2_vela
 ---
 	<<darken>>
-	Marinheiro: Por favor! Alguém me ajude com essa vela! Ela vai me esmagar!
-	<<sprite simon1 icon>>
-	Simon: Segurem aqui! Vamos!
+	Soldado Disconhecido 1: Simon, de onde você tirou esse menino? Não faz nem 1 minuto que eu te vi.
+	<<sprite simon.mad icon>>
+	Simon: Como se importasse pra você, Timon...
+	<<removesprite icon>>
+	Timon: É, realmente, não importa muito.
+	Timon: Pivete, uma palavra de conselho...
+	-> Ouvir
+		Timon: (O Simon não dura em lutas, mas ele é extremamente forte.)
+		Timon: (Se você quer sobreviver aqui, não se preocupe com ele.)
+	-> Ignorar
+		Timon: Má decisão, pivete.
 	<<brighten>>
 ===
 
 title: sidequest2_done
 ---
 	<<darken>>
-	Narração: Com esforço conjunto, os três içam a vela e a prendem com segurança.
-	Marinheiro: Graças ao céu... Obrigado! Sem vocês eu teria virado torta de marinheiro.
-	Marinheiro: Olha, não tenho muito para oferecer, mas achei esse troço metálico preso nas cordas da vela. Deve ser de alguém aqui do navio.
+	Timon: O que mais você quer, menino? Já falei tudo que tenho que falar pra você.
+	Timon: Ah, não, espera... você acha que eu tenho algo a te dar, né?
+	Timon: Um tipo de recompensa por me ouvir? É isso?
+	<<sprite benito.happy icon>>
+	Benito: Eu não diria que não!
+	<<removesprite icon>>
+	Timon: Normalmente eu iria tentar gastar seu tempo por me irritar, mas...
+	Timon: Eu realmente tenho um monte de tralha aqui. 
+	Timon: Achei esse troço metálico preso nas cordas da vela. Deve ser de alguém aqui do navio.
 	Narração: O marinheiro entrega um fragmento metálico. É parte do dispositivo de navegação.
 	<<removesprite icon>>
 	<<progress piece2>>
@@ -203,6 +217,8 @@ title: ataque_mutante_intro
 title: fase2_matriz_sinaptica
 ---
 	<<darken>>
+	Narração: Com o segundo Mutante caindo, um som pesado e úmido ecoa pelo casco metálico do Highwaker. Dedos longos e pálidos se agarram na borda lateral do navio.
+	Narração: A Matriz Sináptica escala o casco lentamente. Sua forma é maior que a dos outros — mais densa, os tentáculos mais espessos, pulsando com bioluminescência. Dois Mutantes a seguem de perto.
 	<<sprite joodie1 icon>>
 	Joodie: Segurem a formação!
 	<<sprite simon1 icon>>

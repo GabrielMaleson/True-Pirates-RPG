@@ -17,8 +17,8 @@ MonoBehaviour:
   textColor: {r: 1, g: 1, b: 1, a: 1}
   textSize: 24
   useBackground: 1
-  backgroundPadding: -1000
-  backgroundColor: {r: 1, g: 1, b: 1, a: 1}
+  backgroundPadding: 0
+  backgroundColor: {r: 0.3962264, g: 0.33454967, b: 0.33454967, a: 1}
   userAnimation: {fileID: 0}
   userAnimationDelay: 0
   targetOverlayPrefab: {fileID: 0}

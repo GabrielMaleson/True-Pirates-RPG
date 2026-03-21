@@ -9,6 +9,8 @@ public class ChestScript : MonoBehaviour
     public SpriteRenderer spriteRenderer;
     public Sprite openchest;
     private bool ChestOpen = false;
+    public bool isgay = false;
+    public bool isnot = false;
     private bool playerInRange = false;
 
     // Reference to player's movement script to prevent jumping
@@ -65,16 +67,22 @@ public class ChestScript : MonoBehaviour
         if (inventario != null)
         {
             inventario.AdicionarItem(item, quantidade);
-            spriteRenderer.sprite = openchest;
+            if (spriteRenderer  != null)
+            {
+                spriteRenderer.sprite = openchest;
+            }
             ChestOpen = true;
             SistemaInventario inventory = SistemaInventario.Instance;
-            inventory.AddProgress("piece1");
+            if (isgay)
+            { 
+                inventory.AddProgress("piece2");
+            }
+            if (!isnot)
+            {
+                inventory.AddProgress("piece1");
+            }
             Debug.Log("chest aberto");
             HidePopup();
-
-            // Re-enable jumping
-            if (playerMovement != null)
-                playerMovement.SetCanJump(true);
         }
     }
 

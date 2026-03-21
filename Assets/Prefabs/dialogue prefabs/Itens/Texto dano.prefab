@@ -151,5 +151,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemNotif
   velocidadeMovimento: 35
-  velocidadeFade: 2
-  tempoDeVida: 2
+  velocidadeFade: 1
+  tempoDeVida: 3
