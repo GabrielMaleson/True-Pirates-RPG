@@ -159,6 +159,7 @@ title: sidequest3_rat
 title: sidequest3_ratcomplete
 ---
 	<<darken>>
+	<<removesprite icon>>
 	Zelador: Eu ouvi o que houve, mas não queria olhar por medo...
 	Zelador: Desculpa não chamar por ajuda. Se quiser tomar o crédito pro comandante, pode ir.
 	<<sprite simon.pissed icon>>
@@ -173,6 +174,7 @@ title: sidequest3_ratcomplete
 	Simon: E olha só... Você não foi tão inútil afinal.
 	<<removesprite icon>>
 	<<progress piece3>>
+	<<progress ratkilled>>
 	Narração: Você obteu mais uma peça do dispositivo. Mas como juntá-las...?
 	<<brighten>>
 ===
@@ -248,6 +250,7 @@ title: rat_fight
 	<<sprite simon.pissed icon>>
 	Simon: Preparem-se!
 	<<brighten>>
+	<<deactivate rat>>
 	<<startratfight>>
 ===		
 

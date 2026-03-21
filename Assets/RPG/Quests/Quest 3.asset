@@ -17,13 +17,10 @@ MonoBehaviour:
     dentro...?"
   objectiveIcon: {fileID: 0}
   requiredProgressTags:
-  - piece1
-  - piece2
-  - piece3
+  - ratkilled
   playDialogueOnComplete: 0
   completionDialogueNode: 
   rewardGold: 0
   rewardItems: []
-  progressRewards:
-  - 
+  progressRewards: []
   nextObjective: {fileID: 0}

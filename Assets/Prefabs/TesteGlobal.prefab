@@ -4506,7 +4506,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7924082044616631942}
-  - component: {fileID: 7268918558665327555}
   - component: {fileID: 8983900881636473733}
   - component: {fileID: 8726729590948204646}
   - component: {fileID: 1769668878260593955}
@@ -4533,23 +4532,6 @@ Transform:
   - {fileID: 335197976330803207}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7268918558665327555
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7226621843539595999}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 835cde26880b8aa45bab4fb49d94bbc3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TesteInventario
-  inventario: {fileID: 8983900881636473733}
-  espada: {fileID: 11400000, guid: b2674fc773674fd4699085e018fafe0a, type: 2}
-  escudo: {fileID: 11400000, guid: dcc1005cefe96a9478a682dcc28fb1c0, type: 2}
-  livro: {fileID: 11400000, guid: 6dc36105c350fcb41964ec3958d61159, type: 2}
-  pote: {fileID: 11400000, guid: 9f2d6a8fb4c76884e9ed4fba87936880, type: 2}
 --- !u!114 &8983900881636473733
 MonoBehaviour:
   m_ObjectHideFlags: 0

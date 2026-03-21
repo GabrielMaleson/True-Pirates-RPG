@@ -20,6 +20,5 @@ MonoBehaviour:
   completionDialogueNode: 
   rewardGold: 0
   rewardItems: []
-  progressRewards:
-  - 
+  progressRewards: []
   nextObjective: {fileID: 0}

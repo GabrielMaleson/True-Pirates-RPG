@@ -59,6 +59,14 @@ public class NPCTalker : MonoBehaviour
             MovimentacaoExploracao.StopForDialogue();
             dialogue.StartDialogue(thething);
             Activator.SetActive(true);
+            if (Activator2 != null)
+            {
+                Activator2.SetActive(true);
+            }
+            if (Killer != null)
+            {
+                Killer.SetActive(false);
+            }
             HidePopup();
             Destroy(this);
         }
