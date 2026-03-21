@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find d:/documents/GitHub/True-Pirates-RPG/Assets -name *.cs)"
+    ]
+  }
+}

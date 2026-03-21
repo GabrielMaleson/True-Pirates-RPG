@@ -43,6 +43,9 @@ public class CraftingSimples : MonoBehaviour
             return;
         }
 
+        SistemaInventario Instance = SistemaInventario.Instance;
+        Instance.AddProgress("got em all");
+
         CraftingRecipe recipe = recipes[recipeIndex];
 
         // Check if player has all required items

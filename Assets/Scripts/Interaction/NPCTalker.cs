@@ -34,6 +34,7 @@ public class NPCTalker : MonoBehaviour
         if (!hasstarted && !compassquest && playerInRange && Input.GetKeyDown(KeyCode.Space))
         {
             hasstarted = true;
+            MovimentacaoExploracao.StopForDialogue();
             dialogue.StartDialogue(thething);
             HidePopup();
             if (Activator != null)
@@ -55,8 +56,17 @@ public class NPCTalker : MonoBehaviour
         if (!hasstarted && playerInRange && joodiescript)
         {
             hasstarted = true;
+            MovimentacaoExploracao.StopForDialogue();
             dialogue.StartDialogue(thething);
             Activator.SetActive(true);
+            if (Activator2 != null)
+            {
+                Activator2.SetActive(true);
+            }
+            if (Killer != null)
+            {
+                Killer.SetActive(false);
+            }
             HidePopup();
             Destroy(this);
         }
