@@ -1,4 +1,5 @@
 using UnityEngine;
+using Yarn.Unity;
 
 public class MovimentacaoExploracao : MonoBehaviour
 {
@@ -14,13 +15,41 @@ public class MovimentacaoExploracao : MonoBehaviour
     private Animator anim;
     public bool isGrounded;
     private bool canJump = true;
+    public static bool inDialogue = false;
+    private static MovimentacaoExploracao _instance;
+
+    void Awake()
+    {
+        _instance = this;
+    }
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
+
+        DialogueRunner dialogueRunner = FindFirstObjectByType<DialogueRunner>();
+        if (dialogueRunner != null)
+            dialogueRunner.onDialogueComplete.AddListener(OnDialogueEnd);
     }
+
+    public static void StopForDialogue()
+    {
+        if (_instance == null) return;
+        inDialogue = true;
+        _instance.movimento.x = 0;
+        _instance.rb.linearVelocity = new Vector2(0, _instance.rb.linearVelocity.y);
+        _instance.anim.SetBool("Andando", false);
+        _instance.enabled = false;
+    }
+
+    private void OnDialogueEnd()
+    {
+        inDialogue = false;
+        this.enabled = true;
+    }
+
     public void SetCanJump(bool can)
     {
         canJump = can;
@@ -41,7 +70,7 @@ public class MovimentacaoExploracao : MonoBehaviour
             // anim.SetTrigger("Pulando");
        // }
 
-        // 4. Controle da animação
+        // 4. Controle da animaï¿½ï¿½o
         if (movimento.x != 0)
         {
             anim.SetFloat("Horizontal", movimento.x);
