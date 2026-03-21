@@ -102,11 +102,12 @@ public class DynamicResolutionHandler : MonoBehaviour
 
     private void ApplyTo(CanvasScaler scaler)
     {
-        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = designResolution;
+        // Only touch canvases already using Scale With Screen Size —
+        // don't override canvases intentionally set to Constant Pixel Size or World Space.
+        if (scaler.uiScaleMode != CanvasScaler.ScaleMode.ScaleWithScreenSize)
+            return;
 
-        float aspectRatio = (float)Screen.width / Screen.height;
-        float designAspect = designResolution.x / designResolution.y;
-        scaler.matchWidthOrHeight = aspectRatio >= designAspect ? 1f : 0f;
+        scaler.referenceResolution = designResolution;
+        scaler.matchWidthOrHeight = 0.5f; // balanced between width and height
     }
 }
