@@ -233,7 +233,12 @@ public class DialogueManager : MonoBehaviour
 
         Image newImage = Instantiate(imagePrefabToUse, positionTransform);
         newImage.sprite = foundSprite;
-        newImage.transform.localPosition = Vector3.zero;
+        newImage.preserveAspect = true;
+        RectTransform rt = newImage.GetComponent<RectTransform>();
+        rt.anchorMin = Vector2.zero;
+        rt.anchorMax = Vector2.one;
+        rt.offsetMin = Vector2.zero;
+        rt.offsetMax = Vector2.zero;
         newImage.gameObject.SetActive(true);
 
         activeImages[positionName] = newImage;
