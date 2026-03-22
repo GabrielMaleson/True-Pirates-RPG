@@ -17,7 +17,7 @@ MonoBehaviour:
     com as tr\xEAs pe\xE7as, mas onde podem estar...?"
   objectiveIcon: {fileID: 0}
   requiredProgressTags:
-  - got em all
+  - compass
   playDialogueOnComplete: 0
   completionDialogueNode: 
   rewardGold: 0

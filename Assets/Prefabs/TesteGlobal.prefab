@@ -4587,6 +4587,61 @@ MonoBehaviour:
     results:
     - item: {fileID: 11400000, guid: efba88d2613c12749be49b6703a165af, type: 2}
       quantidade: 1
+  - recipeName: "Dispositivo de Navega\xE7\xE3o"
+    requiredItems:
+    - item: {fileID: 11400000, guid: d6c02d5a193db474bb40dbc3041facdd, type: 2}
+      quantidade: 1
+    - item: {fileID: 11400000, guid: fe229a478bd977c439c057922e813cf9, type: 2}
+      quantidade: 1
+    - item: {fileID: 11400000, guid: 0bc5b023053cfac40a492cca47a01c4a, type: 2}
+      quantidade: 1
+    results:
+    - item: {fileID: 11400000, guid: efba88d2613c12749be49b6703a165af, type: 2}
+      quantidade: 1
+  - recipeName: "Dispositivo de Navega\xE7\xE3o"
+    requiredItems:
+    - item: {fileID: 11400000, guid: 0bc5b023053cfac40a492cca47a01c4a, type: 2}
+      quantidade: 1
+    - item: {fileID: 11400000, guid: fe229a478bd977c439c057922e813cf9, type: 2}
+      quantidade: 1
+    - item: {fileID: 11400000, guid: d6c02d5a193db474bb40dbc3041facdd, type: 2}
+      quantidade: 1
+    results:
+    - item: {fileID: 11400000, guid: efba88d2613c12749be49b6703a165af, type: 2}
+      quantidade: 1
+  - recipeName: "Dispositivo de Navega\xE7\xE3o"
+    requiredItems:
+    - item: {fileID: 11400000, guid: 0bc5b023053cfac40a492cca47a01c4a, type: 2}
+      quantidade: 1
+    - item: {fileID: 11400000, guid: d6c02d5a193db474bb40dbc3041facdd, type: 2}
+      quantidade: 1
+    - item: {fileID: 11400000, guid: fe229a478bd977c439c057922e813cf9, type: 2}
+      quantidade: 1
+    results:
+    - item: {fileID: 11400000, guid: efba88d2613c12749be49b6703a165af, type: 2}
+      quantidade: 1
+  - recipeName: "Dispositivo de Navega\xE7\xE3o"
+    requiredItems:
+    - item: {fileID: 11400000, guid: fe229a478bd977c439c057922e813cf9, type: 2}
+      quantidade: 1
+    - item: {fileID: 11400000, guid: 0bc5b023053cfac40a492cca47a01c4a, type: 2}
+      quantidade: 1
+    - item: {fileID: 11400000, guid: d6c02d5a193db474bb40dbc3041facdd, type: 2}
+      quantidade: 1
+    results:
+    - item: {fileID: 11400000, guid: efba88d2613c12749be49b6703a165af, type: 2}
+      quantidade: 1
+  - recipeName: "Dispositivo de Navega\xE7\xE3o"
+    requiredItems:
+    - item: {fileID: 11400000, guid: fe229a478bd977c439c057922e813cf9, type: 2}
+      quantidade: 1
+    - item: {fileID: 11400000, guid: d6c02d5a193db474bb40dbc3041facdd, type: 2}
+      quantidade: 1
+    - item: {fileID: 11400000, guid: 0bc5b023053cfac40a492cca47a01c4a, type: 2}
+      quantidade: 1
+    results:
+    - item: {fileID: 11400000, guid: efba88d2613c12749be49b6703a165af, type: 2}
+      quantidade: 1
 --- !u!114 &1769668878260593955
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -44,7 +44,6 @@ public class CraftingSimples : MonoBehaviour
         }
 
         SistemaInventario Instance = SistemaInventario.Instance;
-        Instance.AddProgress("got em all");
 
         CraftingRecipe recipe = recipes[recipeIndex];
 
@@ -76,6 +75,7 @@ public class CraftingSimples : MonoBehaviour
                 Debug.Log($"Criado: {result.quantidade}x {result.item.nomeDoItem}");
             }
 
+            Instance.AddProgress("compass");
             Debug.Log($"Sucesso! Receita '{recipe.recipeName}' craftada com sucesso!");
         }
         else
