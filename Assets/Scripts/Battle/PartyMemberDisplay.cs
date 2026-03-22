@@ -27,7 +27,7 @@ public class CharacterUI : MonoBehaviour
         characterVisualObject = visualObject;
         uiManager = manager;
 
-        nameText.text = state.CharacterName;
+        if (nameText != null) nameText.text = state.CharacterName;
 
         // Set portrait from CharacterData template
         if (portraitImage != null)
@@ -87,7 +87,7 @@ public class CharacterUI : MonoBehaviour
         if (memberState != null)
         {
             // Update HP text and bar
-            hpText.text = $"{memberState.currentHP}/{memberState.MaxHP}";
+            if (hpText != null) hpText.text = $"{memberState.currentHP}/{memberState.MaxHP}";
             if (healthBar != null)
             {
                 float hpPercent = (float)memberState.currentHP / memberState.MaxHP;
