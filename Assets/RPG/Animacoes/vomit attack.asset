@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7aaed775e293fcf46924317e9bb24f99, type: 3}
+  m_Name: vomit attack
+  m_EditorClassIdentifier: Assembly-CSharp::BattleAnimationData
+  attackTextFormat: '{user} uses {attack}!'
+  textDisplayDuration: 1.5
+  textColor: {r: 1, g: 1, b: 1, a: 1}
+  textSize: 24
+  useBackground: 1
+  backgroundPadding: 0
+  backgroundColor: {r: 0.3962264, g: 0.33454967, b: 0.33454967, a: 1}
+  userAnimation: {fileID: 0}
+  userAnimationDelay: 0
+  targetOverlayPrefab: {fileID: 815913156236434848, guid: c0eb6cba9df6aa247b4ad0aa2c330269, type: 3}
+  overlayDuration: 0.5
+  overlayOffset: {x: 0, y: 0, z: 0}
+  hitVFX: {fileID: 815913156236434848, guid: c0eb6cba9df6aa247b4ad0aa2c330269, type: 3}
+  hitSound: {fileID: 8300000, guid: 36dda74ded0140943add2ad47221e0bf, type: 3}
+  hitDelay: 0.5
+  hitEffectDuration: 0.5
+  shakeTarget: 1
+  shakeIntensity: 0.2
+  shakeDuration: 0.2
+  preDelay: 0.2
+  postDelay: 0.3

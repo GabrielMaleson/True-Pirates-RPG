@@ -28,4 +28,4 @@ MonoBehaviour:
     statModifiers: []
     hitCount: 1
     damageMultiplier: 1
-  battleAnimation: {fileID: 11400000, guid: cc180d481f3f9a24eae690927d2b3767, type: 2}
+  battleAnimation: {fileID: 11400000, guid: aea99ce58397fec4daf87e35c1e3917e, type: 2}

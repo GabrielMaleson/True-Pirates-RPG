@@ -21,17 +21,23 @@ public class CombatUIManager : MonoBehaviour
     public GameObject enemyUIPrefab;
     public GameObject actionButtonPrefab;
 
-    [Header("Action Menu Panels - Scene Based")]
-    public GameObject actionMenuPanel;        // Main menu with Attacks/Items/Defend/Wait
-    public Transform attackButtonGrid;        // Grid in scene where attack buttons spawn
-    public Transform itemButtonGrid;          // Grid in scene where item buttons spawn
-
-    [Header("Action Menu Buttons")]
+    [Header("Action Menu")]
+    public GameObject actionMenuPanel;
     public Button attacksMenuButton;
     public Button itemsMenuButton;
     public Button defendMenuButton;
     public Button waitMenuButton;
     public Button undoButton;
+
+    [Header("Attack UI")]
+    public GameObject attackPanel;
+    public Transform attackButtonGrid;
+    public Button cancelAttackButton;
+
+    [Header("Item UI")]
+    public GameObject itemPanel;
+    public Transform itemButtonGrid;
+    public Button cancelItemButton;
 
     [Header("Targeting UI")]
     public GameObject targetingBackButton;    // Back button that appears during targeting
@@ -60,6 +66,8 @@ public class CombatUIManager : MonoBehaviour
 
     private void Start()
     {
+        ForceInitialUIState();
+
         if (combatSystem == null)
             combatSystem = FindFirstObjectByType<CombatSystem>();
 
@@ -93,6 +101,11 @@ public class CombatUIManager : MonoBehaviour
 
         if (undoButton != null)
             undoButton.onClick.AddListener(OnUndoSelected);
+
+        if (cancelAttackButton != null)
+            cancelAttackButton.onClick.AddListener(OnCancelGridSelected);
+        if (cancelItemButton != null)
+            cancelItemButton.onClick.AddListener(OnCancelGridSelected);
         if (targetingPanel != null)
             targetingPanel.SetActive(false);
 
@@ -122,6 +135,62 @@ public class CombatUIManager : MonoBehaviour
         if (currentChar != null)
         {
             OnTurnStarted(currentChar);
+        }
+    }
+
+    private void ForceInitialUIState()
+    {
+        // Activate parent chains first so children can be shown/hidden correctly
+        ActivateParentChain(actionMenuPanel != null ? actionMenuPanel.transform : null);
+        ActivateParentChain(waitPanel != null ? waitPanel.transform : null);
+        ActivateParentChain(attackPanel != null ? attackPanel.transform : null);
+        ActivateParentChain(attackButtonGrid);
+        ActivateParentChain(itemPanel != null ? itemPanel.transform : null);
+        ActivateParentChain(itemButtonGrid);
+        ActivateParentChain(targetingBackButton != null ? targetingBackButton.transform : null);
+        ActivateParentChain(targetingPanel != null ? targetingPanel.transform : null);
+
+        // Panels that must start hidden
+        if (actionMenuPanel != null) actionMenuPanel.SetActive(false);
+        if (waitPanel != null) waitPanel.SetActive(false);
+        if (attackPanel != null) attackPanel.SetActive(false);
+        if (itemPanel != null) itemPanel.SetActive(false);
+        if (targetingBackButton != null) targetingBackButton.SetActive(false);
+        if (targetingPanel != null) targetingPanel.SetActive(false);
+
+        // Clear and hide button grids
+        if (attackButtonGrid != null)
+        {
+            foreach (Transform child in attackButtonGrid)
+                Destroy(child.gameObject);
+            attackButtonGrid.gameObject.SetActive(false);
+        }
+        if (itemButtonGrid != null)
+        {
+            foreach (Transform child in itemButtonGrid)
+                Destroy(child.gameObject);
+            itemButtonGrid.gameObject.SetActive(false);
+        }
+
+        // Buttons that must start hidden
+        if (undoButton != null) undoButton.gameObject.SetActive(false);
+        if (cancelAttackButton != null) cancelAttackButton.gameObject.SetActive(false);
+        if (cancelItemButton != null) cancelItemButton.gameObject.SetActive(false);
+
+        // Clear all text fields
+        if (turnText != null) turnText.text = "";
+        if (statusText != null) statusText.text = "";
+        if (battleAnimationText != null) battleAnimationText.text = "";
+    }
+
+    private void ActivateParentChain(Transform t)
+    {
+        if (t == null) return;
+        Transform parent = t.parent;
+        while (parent != null)
+        {
+            parent.gameObject.SetActive(true);
+            parent = parent.parent;
         }
     }
 
@@ -225,7 +294,7 @@ public class CombatUIManager : MonoBehaviour
     private void OnTurnStarted(PartyMemberState character)
     {
         currentCharacter = character;
-        turnText.text = $"{character.CharacterName}'s Turn";
+        if (turnText != null) turnText.text = $"{character.CharacterName}'s Turn";
 
         // Hide all targeting and action panels
         DisableAllTargeting();
@@ -244,23 +313,21 @@ public class CombatUIManager : MonoBehaviour
                 undoButton.gameObject.SetActive(false);
 
             // Update status text based on AP
-            if (character.currentAP == character.MaxAP)
+            if (statusText != null)
             {
-                statusText.text = "Choose an action";
-            }
-            else
-            {
-                statusText.text = $"AP: {character.currentAP}/{character.MaxAP} - Choose another action or Wait";
+                statusText.text = character.currentAP == character.MaxAP
+                    ? "Escolha uma ação"
+                    : $"PA: {character.currentAP}/{character.MaxAP} - Escolha outra ação ou Espere";
             }
 
             UpdateActionMenuButtons();
-            waitPanel.SetActive(false);
+            if (waitPanel != null) waitPanel.SetActive(false);
         }
         else
         {
             // Enemy turn
-            waitPanel.SetActive(true);
-            statusText.text = $"{character.CharacterName} is thinking...";
+            if (waitPanel != null) waitPanel.SetActive(true);
+            if (statusText != null) statusText.text = $"{character.CharacterName} está pensando...";
         }
     }
 
@@ -285,6 +352,11 @@ public class CombatUIManager : MonoBehaviour
             }
             itemButtonGrid.gameObject.SetActive(false);
         }
+
+        if (cancelAttackButton != null) cancelAttackButton.gameObject.SetActive(false);
+        if (cancelItemButton != null) cancelItemButton.gameObject.SetActive(false);
+        if (attackPanel != null) attackPanel.SetActive(false);
+        if (itemPanel != null) itemPanel.SetActive(false);
     }
 
     private void OnAttacksSelected()
@@ -320,12 +392,16 @@ public class CombatUIManager : MonoBehaviour
                 }
             }
 
-            // Add back button
-            CreateBackButton(attackButtonGrid);
+            // Add back button inside grid only if no standalone cancel button is assigned
+            if (cancelAttackButton == null)
+                CreateBackButton(attackButtonGrid);
         }
 
-        if (itemButtonGrid != null)
-            itemButtonGrid.gameObject.SetActive(false);
+        if (attackPanel != null) attackPanel.SetActive(true);
+        if (cancelAttackButton != null) cancelAttackButton.gameObject.SetActive(true);
+        if (itemPanel != null) itemPanel.SetActive(false);
+        if (cancelItemButton != null) cancelItemButton.gameObject.SetActive(false);
+        if (itemButtonGrid != null) itemButtonGrid.gameObject.SetActive(false);
     }
 
     private void OnItemsSelected()
@@ -361,12 +437,16 @@ public class CombatUIManager : MonoBehaviour
                 }
             }
 
-            // Add back button
-            CreateBackButton(itemButtonGrid);
+            // Add back button inside grid only if no standalone cancel button is assigned
+            if (cancelItemButton == null)
+                CreateBackButton(itemButtonGrid);
         }
 
-        if (attackButtonGrid != null)
-            attackButtonGrid.gameObject.SetActive(false);
+        if (itemPanel != null) itemPanel.SetActive(true);
+        if (cancelItemButton != null) cancelItemButton.gameObject.SetActive(true);
+        if (attackPanel != null) attackPanel.SetActive(false);
+        if (cancelAttackButton != null) cancelAttackButton.gameObject.SetActive(false);
+        if (attackButtonGrid != null) attackButtonGrid.gameObject.SetActive(false);
     }
 
     private void OnDefendSelected()
@@ -376,7 +456,7 @@ public class CombatUIManager : MonoBehaviour
         // Check if character has max AP
         if (currentCharacter.currentAP < currentCharacter.MaxAP)
         {
-            statusText.text = "Can only defend at max AP!";
+            statusText.text = "Só é possível defender com PA máximo!";
             StartCoroutine(ClearStatusMessageAfterDelay(1.5f));
             return;
         }
@@ -400,7 +480,7 @@ public class CombatUIManager : MonoBehaviour
         actionMenuPanel.SetActive(false);
 
         // End turn and execute any queued actions
-        statusText.text = "Waiting...";
+        statusText.text = "Esperando...";
         combatSystem.EndTurnAndExecuteActions();
     }
 
@@ -426,16 +506,14 @@ public class CombatUIManager : MonoBehaviour
         if (itemButtonGrid != null)
             itemButtonGrid.gameObject.SetActive(false);
 
-        statusText.text = $"AP: {currentCharacter.currentAP}/{currentCharacter.MaxAP} - Action undone";
+        statusText.text = $"PA: {currentCharacter.currentAP}/{currentCharacter.MaxAP} - Ação desfeita";
     }
 
     private IEnumerator ClearStatusMessageAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
-        if (currentCharacter != null)
-        {
-            statusText.text = $"AP: {currentCharacter.currentAP}/{currentCharacter.MaxAP} - Choose another action or Wait";
-        }
+        if (currentCharacter != null && statusText != null)
+            statusText.text = $"PA: {currentCharacter.currentAP}/{currentCharacter.MaxAP} - Escolha outra ação ou Espere";
     }
 
     private IEnumerator ExecuteDefend()
@@ -479,6 +557,12 @@ public class CombatUIManager : MonoBehaviour
                 actionMenuPanel.SetActive(true);
             });
         }
+    }
+
+    private void OnCancelGridSelected()
+    {
+        ClearAllButtons();
+        actionMenuPanel.SetActive(true);
     }
 
     private void OnAttackSelected(AttackFile attack)
@@ -539,7 +623,7 @@ public class CombatUIManager : MonoBehaviour
         selectedTargets.Clear();
         isTargeting = true;
 
-        statusText.text = $"Select {remainingTargetsToSelect} target(s)";
+        if (statusText != null) statusText.text = $"Selecione {remainingTargetsToSelect} alvo(s)";
 
         // Show targeting back button
         if (targetingBackButton != null)
@@ -585,7 +669,7 @@ public class CombatUIManager : MonoBehaviour
         selectedTargets.Clear();
         isTargeting = false;
 
-        statusText.text = "Selection cancelled";
+        if (statusText != null) statusText.text = "Seleção cancelada";
     }
     private void EnableTargetingOnCharacters(List<PartyMemberState> characters)
     {
@@ -654,7 +738,7 @@ public class CombatUIManager : MonoBehaviour
             selectedTargets.Add(target);
             remainingTargetsToSelect--;
 
-            statusText.text = $"Selected {selectedTargets.Count}. {remainingTargetsToSelect} more needed";
+            if (statusText != null) statusText.text = $"Selecionado {selectedTargets.Count}. Faltam {remainingTargetsToSelect}";
 
             if (remainingTargetsToSelect <= 0)
             {
@@ -698,7 +782,7 @@ public class CombatUIManager : MonoBehaviour
             actionMenuPanel.SetActive(true);
 
             // Update status text
-            statusText.text = $"AP: {currentCharacter.currentAP}/{currentCharacter.MaxAP} - Select another action or Wait";
+            if (statusText != null) statusText.text = $"PA: {currentCharacter.currentAP}/{currentCharacter.MaxAP} - Selecione outra ação ou Espere";
 
             // Update button states (this will show undo button if there are pending actions)
             UpdateActionMenuButtons();
@@ -713,7 +797,7 @@ public class CombatUIManager : MonoBehaviour
         {
             // No AP left, automatically end turn and execute queued actions
             waitPanel.SetActive(true);
-            statusText.text = "No AP remaining...";
+            if (statusText != null) statusText.text = "Sem PA restante...";
 
             // Hide grids
             if (attackButtonGrid != null)
@@ -843,7 +927,7 @@ public class CombatUIManager : MonoBehaviour
         }
 
         // Update action menu buttons if this is the current character and action menu is active
-        if (character == currentCharacter && actionMenuPanel.activeSelf)
+        if (character == currentCharacter && actionMenuPanel != null && actionMenuPanel.activeSelf)
         {
             UpdateActionMenuButtons();
         }
@@ -857,9 +941,9 @@ public class CombatUIManager : MonoBehaviour
         ClearAllButtons();
 
         if (result == CombatState.VICTORY)
-            statusText.text = "Victory!";
+        { if (statusText != null) statusText.text = "Vitória!"; }
         else if (result == CombatState.DEFEAT)
-            statusText.text = "Defeat...";
+        { if (statusText != null) statusText.text = "Derrota..."; }
     }
 
     private void OnDestroy()
@@ -881,5 +965,9 @@ public class CombatUIManager : MonoBehaviour
             waitMenuButton.onClick.RemoveListener(OnWaitSelected);
         if (undoButton != null)
             undoButton.onClick.RemoveListener(OnUndoSelected);
+        if (cancelAttackButton != null)
+            cancelAttackButton.onClick.RemoveListener(OnCancelGridSelected);
+        if (cancelItemButton != null)
+            cancelItemButton.onClick.RemoveListener(OnCancelGridSelected);
     }
 }
