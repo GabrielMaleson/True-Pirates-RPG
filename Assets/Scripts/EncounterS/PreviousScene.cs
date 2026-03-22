@@ -7,9 +7,7 @@ public class PreviousScene : MonoBehaviour
     private Scene originalScene;
     private string originalSceneName;
 
-    // Store each object AND its active state at the time of unload
     private List<GameObject> sceneObjects = new List<GameObject>();
-    private List<bool> sceneObjectWasActive = new List<bool>();
 
     public void UnloadScene()
     {
@@ -28,6 +26,8 @@ public class PreviousScene : MonoBehaviour
                 continue;
             }
 
+            // Ignore-tagged objects are not stored and not touched —
+            // they keep whatever state they're in (e.g. a deactivated NPC stays deactivated)
             if (obj.CompareTag("Ignore"))
             {
                 Debug.Log($"Ignoring object: {obj.name}");
@@ -37,9 +37,7 @@ public class PreviousScene : MonoBehaviour
             if (obj == this.gameObject || obj == encounterData?.gameObject)
                 continue;
 
-            // Record whether it was active BEFORE we deactivate it
             sceneObjects.Add(obj);
-            sceneObjectWasActive.Add(obj.activeSelf);
             obj.SetActive(false);
         }
 
@@ -48,7 +46,7 @@ public class PreviousScene : MonoBehaviour
 
     public void LoadScene()
     {
-        Debug.Log($"PreviousScene: Restoring {sceneObjects.Count} objects to {originalSceneName}");
+        Debug.Log($"PreviousScene: Restoring {sceneObjects.Count} objects from {originalSceneName}");
 
         EncounterData encounterData = FindFirstObjectByType<EncounterData>();
 
@@ -58,7 +56,6 @@ public class PreviousScene : MonoBehaviour
             encounterData.encounterStarterObject = null;
         }
 
-        // Fix Inventory objects (preserved via DontDestroyOnLoad)
         foreach (var invObj in GameObject.FindGameObjectsWithTag("Inventory"))
         {
             invObj.SetActive(true);
@@ -72,11 +69,15 @@ public class PreviousScene : MonoBehaviour
             if (listener != null) listener.enabled = false;
         }
 
-        // Restore each object to the state it was in when combat started
-        for (int i = 0; i < sceneObjects.Count; i++)
+        // Reactivate stored objects — this triggers OnEnable on things like
+        // ProgressCheck, which is how post-combat dialogue gets started.
+        // Objects marked KeepDeactivated (dismissed via <<deactivate>> Yarn command)
+        // are skipped so they don't come back uninvited.
+        foreach (GameObject obj in sceneObjects)
         {
-            if (sceneObjects[i] != null)
-                sceneObjects[i].SetActive(sceneObjectWasActive[i]);
+            if (obj == null) continue;
+            if (obj.GetComponent<KeepDeactivated>() != null) continue;
+            obj.SetActive(true);
         }
 
         FixAudioListeners();
@@ -88,8 +89,6 @@ public class PreviousScene : MonoBehaviour
         }
 
         sceneObjects.Clear();
-        sceneObjectWasActive.Clear();
-
         Destroy(gameObject);
     }
 

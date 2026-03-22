@@ -92,6 +92,9 @@ public class DynamicCutsceneScript : MonoBehaviour
             Debug.LogError($"Character '{characterName}' not found. Available: {string.Join(", ", characterDictionary.Keys)}");
             return;
         }
+        // Remove the marker so PreviousScene will restore this object normally
+        KeepDeactivated marker = character.GetComponent<KeepDeactivated>();
+        if (marker != null) Destroy(marker);
         character.gameObject.SetActive(true);
     }
 
@@ -115,6 +118,9 @@ public class DynamicCutsceneScript : MonoBehaviour
             Debug.LogError($"Character '{characterName}' not found. Available: {string.Join(", ", characterDictionary.Keys)}");
             return;
         }
+        // Mark this object so PreviousScene won't reactivate it after combat
+        if (character.GetComponent<KeepDeactivated>() == null)
+            character.AddComponent<KeepDeactivated>();
         character.gameObject.SetActive(false);
     }
 
