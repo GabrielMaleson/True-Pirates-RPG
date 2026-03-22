@@ -32,4 +32,4 @@ MonoBehaviour:
       tipoModificador: 0
     hitCount: 1
     damageMultiplier: 1
-  battleAnimation: {fileID: 11400000, guid: 07dc9f95f01ac364dbfb4c2d5456bc49, type: 2}
+  battleAnimation: {fileID: 11400000, guid: 9c71c8160fa72344bbcdbc3a6925f696, type: 2}

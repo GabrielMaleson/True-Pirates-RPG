@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Rat
   m_EditorClassIdentifier: Assembly-CSharp::CharacterData
   characterName: Topeira
-  partyIcon: {fileID: 0}
-  battlePortrait: {fileID: 0}
-  animatorController: {fileID: 0}
+  partyIcon: {fileID: -8183816634814765431, guid: 9dd78b69797e91b4694db86a5f80aa75, type: 3}
+  battlePortrait: {fileID: -8183816634814765431, guid: 9dd78b69797e91b4694db86a5f80aa75, type: 3}
+  animatorController: {fileID: 9100000, guid: 8b4fc9547af872743bbf5ef55dace7b5, type: 2}
   baseHP: 50
   baseAttack: 5
   baseDefense: 5

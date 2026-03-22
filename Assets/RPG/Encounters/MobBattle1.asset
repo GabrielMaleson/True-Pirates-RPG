@@ -18,19 +18,19 @@ MonoBehaviour:
   progressAdd: mutantbosstime
   enemies:
   - characterData: {fileID: 11400000, guid: d27c910e17b8b1f4facb5d0ca3cda757, type: 2}
-    enemyPrefab: {fileID: 0}
+    enemyPrefab: {fileID: 6974297528663458817, guid: 391be075ecde2e44495ced23336f447e, type: 3}
     level: 0
     overrideHP: 0
     additionalAttacks: []
     enemySpecificDrops: []
   - characterData: {fileID: 11400000, guid: d27c910e17b8b1f4facb5d0ca3cda757, type: 2}
-    enemyPrefab: {fileID: 0}
+    enemyPrefab: {fileID: 6974297528663458817, guid: 391be075ecde2e44495ced23336f447e, type: 3}
     level: 0
     overrideHP: 0
     additionalAttacks: []
     enemySpecificDrops: []
   - characterData: {fileID: 11400000, guid: d27c910e17b8b1f4facb5d0ca3cda757, type: 2}
-    enemyPrefab: {fileID: 0}
+    enemyPrefab: {fileID: 6974297528663458817, guid: 391be075ecde2e44495ced23336f447e, type: 3}
     level: 0
     overrideHP: 0
     additionalAttacks: []

@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7aaed775e293fcf46924317e9bb24f99, type: 3}
-  m_Name: vomit attack
+  m_Name: JoodieLight
   m_EditorClassIdentifier: Assembly-CSharp::BattleAnimationData
-  attackTextFormat: O inimigo vomita!
+  attackTextFormat: "Joodie faz um combo com f\xFAria!"
   textDisplayDuration: 1.5
   textColor: {r: 1, g: 1, b: 1, a: 1}
   textSize: 24
@@ -21,11 +21,11 @@ MonoBehaviour:
   backgroundColor: {r: 0.3962264, g: 0.33454967, b: 0.33454967, a: 1}
   userAnimation: {fileID: 0}
   userAnimationDelay: 0
-  targetOverlayPrefab: {fileID: 815913156236434848, guid: c0eb6cba9df6aa247b4ad0aa2c330269, type: 3}
+  targetOverlayPrefab: {fileID: 1325006725835682071, guid: 990e748fec8ad4f42a1ea8795d13afa3, type: 3}
   overlayDuration: 0.5
   overlayOffset: {x: 0, y: 0, z: 0}
-  hitVFX: {fileID: 815913156236434848, guid: c0eb6cba9df6aa247b4ad0aa2c330269, type: 3}
-  hitSound: {fileID: 8300000, guid: 36dda74ded0140943add2ad47221e0bf, type: 3}
+  hitVFX: {fileID: 1325006725835682071, guid: 990e748fec8ad4f42a1ea8795d13afa3, type: 3}
+  hitSound: {fileID: 8300000, guid: 26743bf29f765c54c876e90e54f9039e, type: 3}
   hitDelay: 0.5
   hitEffectDuration: 0.5
   shakeTarget: 1

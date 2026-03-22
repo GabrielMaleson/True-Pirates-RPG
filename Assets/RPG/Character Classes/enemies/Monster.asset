@@ -15,7 +15,7 @@ MonoBehaviour:
   characterName: Mob
   partyIcon: {fileID: 0}
   battlePortrait: {fileID: 0}
-  animatorController: {fileID: 0}
+  animatorController: {fileID: 9100000, guid: 45841d217043fce418df56544d2b5829, type: 2}
   baseHP: 20
   baseAttack: 5
   baseDefense: 10

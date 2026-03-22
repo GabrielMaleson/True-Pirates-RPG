@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7aaed775e293fcf46924317e9bb24f99, type: 3}
   m_Name: defense anim
   m_EditorClassIdentifier: Assembly-CSharp::BattleAnimationData
-  attackTextFormat: '{user} uses {attack}!'
+  attackTextFormat: "Simon GRITA com toda sua for\xE7a!"
   textDisplayDuration: 1.5
   textColor: {r: 1, g: 1, b: 1, a: 1}
   textSize: 24

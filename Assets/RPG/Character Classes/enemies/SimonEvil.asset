@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: SimonEvil
   m_EditorClassIdentifier: Assembly-CSharp::CharacterData
   characterName: Simon
-  partyIcon: {fileID: 0}
-  battlePortrait: {fileID: -2990498346120989320, guid: d81fc21ba7157c54fbd19796fff42e12, type: 3}
+  partyIcon: {fileID: -5321422154615905300, guid: ea1acea5891787446acb3231029cebf3, type: 3}
+  battlePortrait: {fileID: 9171549602287438861, guid: 2c9dfe96d76e84a4f87e915bec5664f3, type: 3}
   animatorController: {fileID: 9100000, guid: b01edff1477675b4f86abfed2b3a2160, type: 2}
   baseHP: 15
   baseAttack: 5

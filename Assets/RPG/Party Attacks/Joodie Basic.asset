@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Joodie Basic
   m_EditorClassIdentifier: Assembly-CSharp::AttackFile
   attackName: Light Combo
-  description: "Joodie utiliza sua luva met\xE1lica parar dar um combo de socos"
+  description: "Joodie utiliza sua luva met\xE1lica parar dar um combo de socos!"
   icon: {fileID: 21300000, guid: 4e8de3d9d4a4db04b85253e560c256c5, type: 3}
   partyMemberOnly: 1
   actionPointCost: 2
@@ -28,4 +28,4 @@ MonoBehaviour:
     statModifiers: []
     hitCount: 3
     damageMultiplier: 1
-  battleAnimation: {fileID: 11400000, guid: cc180d481f3f9a24eae690927d2b3767, type: 2}
+  battleAnimation: {fileID: 11400000, guid: d431e4ff759d9e2439861abeb007d37c, type: 2}
