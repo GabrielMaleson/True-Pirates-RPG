@@ -15,7 +15,7 @@ MonoBehaviour:
   characterName: Joodie
   partyIcon: {fileID: 8984599087888588438, guid: a9ded9fb22e7b4b4bbbaab054fc2d5a4, type: 3}
   battlePortrait: {fileID: 8984599087888588438, guid: a9ded9fb22e7b4b4bbbaab054fc2d5a4, type: 3}
-  animatorController: {fileID: 9100000, guid: ab8f274eb10c78545a1734ee8d2ba5fa, type: 2}
+  animatorController: {fileID: 9100000, guid: d94f533c1d2bea24a952777737e14f07, type: 2}
   baseHP: 30
   baseAttack: 3
   baseDefense: 10
@@ -117,8 +117,10 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   unlockableAttacks:
-  - attack: {fileID: 11400000, guid: 0578df8de0ac7ff4a83971ff592ddf02, type: 2}
+  - attack: {fileID: 11400000, guid: 202d0ed9598f64748ac0030befa54efb, type: 2}
     unlockLevel: 1
-  - attack: {fileID: 11400000, guid: 6396cf591bac14b4eb74ccabad1bd2ea, type: 2}
+  - attack: {fileID: 11400000, guid: bb2c8071481a78f4b91fc94c16beafe5, type: 2}
+    unlockLevel: 1
+  - attack: {fileID: 11400000, guid: 0ffbc95ec49955f4cacfcd70c74eee98, type: 2}
     unlockLevel: 2
   baseExpValue: 50

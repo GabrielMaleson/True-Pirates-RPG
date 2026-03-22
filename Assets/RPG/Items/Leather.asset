@@ -10,12 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8fe966cd8ab75104f854a716378aa16f, type: 3}
-  m_Name: EscudoVida
+  m_Name: Leather
   m_EditorClassIdentifier: Assembly-CSharp::DadosItem
-  nomeDoItem: Escudo da Vida
+  nomeDoItem: Armadura de Couro
   id: item_escudo_vida
-  icone: {fileID: 21300000, guid: 25e3e648fb0b6734f92f60eec6a275b2, type: 3}
-  descricao: "Escudo com a ess\xEAncia de peixe. Recupera 50% de vida do total de
-    dano tomado. "
+  icone: {fileID: -1538838846985801459, guid: 0fdab72ea694a974ea505f53cb644062, type: 3}
+  descricao: Protege bem mais do que parece.
   valorEmOuro: 2
   ehEmpilhavel: 0
+  ehEquipavel: 0
+  slotEquipamento: 1
+  modificadoresStats:
+  - statType: 2
+    valorModificador: 5
+    tipoModificador: 0
+  nivelRequerido: 0
+  ehConsumivel: 0
+  tipoConsumivel: 0
+  usavelEmBatalha: 1
+  usavelNoMapa: 1
+  efeitos: []

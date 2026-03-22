@@ -121,7 +121,7 @@ MonoBehaviour:
     unlockLevel: 1
   - attack: {fileID: 11400000, guid: 04868392efa22b04b87df9c56f375525, type: 2}
     unlockLevel: 2
-  - attack: {fileID: 11400000, guid: 4b9e38574020138478177e0b74b40818, type: 2}
+  - attack: {fileID: 11400000, guid: 5652136fa475a5a48bcca8d182e25b40, type: 2}
     unlockLevel: 3
   - attack: {fileID: 11400000, guid: 6396cf591bac14b4eb74ccabad1bd2ea, type: 2}
     unlockLevel: 3

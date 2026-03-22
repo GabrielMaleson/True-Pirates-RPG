@@ -15,7 +15,7 @@ MonoBehaviour:
   nomeDoItem: "Po\xE7\xE3o de Vida"
   id: item_pocao_vida
   icone: {fileID: -9063044017300439947, guid: ee6cf6856539af847bd7e6c01d8bf746, type: 3}
-  descricao: "Po\xE7\xE3o m\xE1gica que restaura 50 pontos de vida do jogador."
+  descricao: "Po\xE7\xE3o restaurativa que restaura 50 pontos de vida do jogador."
   valorEmOuro: 5
   ehEmpilhavel: 1
   ehEquipavel: 0

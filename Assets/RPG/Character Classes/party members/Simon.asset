@@ -117,8 +117,10 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   unlockableAttacks:
-  - attack: {fileID: 11400000, guid: 0578df8de0ac7ff4a83971ff592ddf02, type: 2}
+  - attack: {fileID: 11400000, guid: acf0af2f26abfe944be5fedc89b0f380, type: 2}
     unlockLevel: 1
-  - attack: {fileID: 11400000, guid: 6396cf591bac14b4eb74ccabad1bd2ea, type: 2}
+  - attack: {fileID: 11400000, guid: c6d13a484147a6f44841e5ae3a35a34e, type: 2}
     unlockLevel: 2
+  - attack: {fileID: 11400000, guid: ce8560d22fb76fd43ab93d3624b55f0a, type: 2}
+    unlockLevel: 3
   baseExpValue: 50

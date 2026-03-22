@@ -119,4 +119,6 @@ MonoBehaviour:
   unlockableAttacks:
   - attack: {fileID: 11400000, guid: d369b83fa4db8f04bac4c9db9dfa92b2, type: 2}
     unlockLevel: 0
+  - attack: {fileID: 11400000, guid: ba80b2774046c0d4d8821de4adee8c6c, type: 2}
+    unlockLevel: 0
   baseExpValue: 50

@@ -10,25 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e3149aa9faf252a47814cb908b2312b2, type: 3}
-  m_Name: HealBenito
+  m_Name: BenitoHeavy
   m_EditorClassIdentifier: Assembly-CSharp::AttackFile
-  attackName: Buff de Cura Tripla
-  description: "Balan\xE7a a bandeira rebelde. Cura sua party por 20% de hp total. "
+  attackName: HEAVY Slap
+  description: "O PEIXE \xC9 MAIS FORTE QUE A ESPADA! 50% mais dano contra mutantes."
   icon: {fileID: 21300000, guid: 4e8de3d9d4a4db04b85253e560c256c5, type: 3}
   partyMemberOnly: 1
-  actionPointCost: 4
+  actionPointCost: 6
   effects:
-  - effectType: 5
-    targetType: 0
-    numberOfTargets: 3
-    value: 5
+  - effectType: 0
+    targetType: 1
+    numberOfTargets: 1
+    value: 8
     accuracy: 100
     triggersOn: 0
     statusEffect: {fileID: 0}
-    statModifiers:
-    - statType: 1
-      valorModificador: 5
-      tipoModificador: 0
+    statModifiers: []
     hitCount: 1
     damageMultiplier: 1
   battleAnimation: {fileID: 11400000, guid: cc180d481f3f9a24eae690927d2b3767, type: 2}
