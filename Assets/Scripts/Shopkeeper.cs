@@ -41,9 +41,9 @@ public class Shopkeeper : MonoBehaviour
     public Button closeButton;
 
     [Header("Messages")]
-    public string insufficientGoldMessage = "Not enough gold!";
-    public string outOfStockMessage = "Out of stock!";
-    public string purchasedMessage = "Purchased {0}!";
+    public string insufficientGoldMessage = "Ouro insuficiente!";
+    public string outOfStockMessage = "Sem estoque!";
+    public string purchasedMessage = "{0} comprado!";
 
     private SistemaInventario playerInventory;
     private ShopItem selectedItem;
@@ -191,8 +191,16 @@ public class Shopkeeper : MonoBehaviour
             itemDetailsPriceText.text = "";
         if (itemDetailsIcon != null)
             itemDetailsIcon.gameObject.SetActive(false);
-        if (buyButton != null)
-            buyButton.interactable = false;
+        SetBuyButtonState(false);
+    }
+
+    private void SetBuyButtonState(bool active)
+    {
+        if (buyButton == null) return;
+        buyButton.interactable = active;
+        CanvasGroup cg = buyButton.GetComponent<CanvasGroup>();
+        if (cg == null) cg = buyButton.gameObject.AddComponent<CanvasGroup>();
+        cg.alpha = active ? 1f : 0.35f;
     }
 
     private void UpdateItemDetails(ShopItem shopItem)
@@ -207,8 +215,7 @@ public class Shopkeeper : MonoBehaviour
 
         if (itemDetailsPriceText != null)
         {
-            string stockInfo = shopItem.isInfinite ? "Infinite" : $"Stock: {shopItem.quantity}";
-            itemDetailsPriceText.text = $"Price: {shopItem.price} gold\n{stockInfo}";
+            itemDetailsPriceText.text = $"{shopItem.price} ouro";
         }
 
         if (itemDetailsIcon != null && shopItem.item.icone != null)
@@ -218,13 +225,10 @@ public class Shopkeeper : MonoBehaviour
         }
 
         // Check if buy button should be interactable
-        if (buyButton != null)
-        {
-            bool canBuy = playerInventory != null &&
-                          playerInventory.moedas >= shopItem.price &&
-                          (shopItem.isInfinite || shopItem.quantity > 0);
-            buyButton.interactable = canBuy;
-        }
+        bool canBuy = playerInventory != null &&
+                      playerInventory.moedas >= shopItem.price &&
+                      (shopItem.isInfinite || shopItem.quantity > 0);
+        SetBuyButtonState(canBuy);
     }
 
     private void TryBuySelectedItem()
@@ -265,8 +269,7 @@ public class Shopkeeper : MonoBehaviour
                     TextMeshProUGUI btnText = itemButtons[selectedItem].GetComponentInChildren<TextMeshProUGUI>();
                     if (btnText != null)
                     {
-                        // Just update the text to show it's sold out, but keep the structure simple
-                        btnText.text = $"{selectedItem.item.nomeDoItem}\n(Sold Out)";
+                        btnText.text = $"{selectedItem.item.nomeDoItem}\n(Esgotado)";
                     }
                 }
             }
@@ -283,7 +286,7 @@ public class Shopkeeper : MonoBehaviour
     {
         if (playerGoldText != null && playerInventory != null)
         {
-            playerGoldText.text = $"Gold: {playerInventory.moedas}";
+            playerGoldText.text = $"{playerInventory.moedas} ouro";
         }
     }
 
@@ -327,12 +330,10 @@ public class Shopkeeper : MonoBehaviour
             // Find the Text component on the button
             TextMeshProUGUI buttonText = buttonObj.GetComponentInChildren<TextMeshProUGUI>();
 
-            // Set button text
+            // Set button text — show only the item name
             if (buttonText != null)
             {
-                string priceText = $"{shopItem.price}G";
-                string stockText = shopItem.isInfinite ? "∞" : $"{shopItem.quantity}";
-                buttonText.text = $"{shopItem.item.nomeDoItem}\n{priceText} | Stock: {stockText}";
+                buttonText.text = shopItem.item.nomeDoItem;
             }
 
             // Set button interactable based on stock

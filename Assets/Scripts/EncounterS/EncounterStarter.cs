@@ -44,8 +44,6 @@ public class EncounterStarter : MonoBehaviour
             DontDestroyOnLoad(dataObj);
             encounterData = dataObj.AddComponent<EncounterData>();
         }
-        // In EncounterStarter.cs, after creating encounterData:
-        encounterData.battleTriggerProgress = "some_progress_tag"; // The progress that triggered this battle
         encounterData.encounterStarterObject = encounterStarterObject;
         encounterData.playerInventory = playerInventory;
         encounterData.encounterFile = encounterFile;

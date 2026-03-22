@@ -3,25 +3,37 @@ using TMPro;
 
 public class ChestScript : MonoBehaviour
 {
-    public DadosItem item; //ScriptableObject
+    public DadosItem item;
     public int quantidade = 1;
+
+    [Tooltip("Unique ID for this chest. Used to remember if it was opened after a scene reload.")]
+    public string chestID;
 
     public SpriteRenderer spriteRenderer;
     public Sprite openchest;
     private bool ChestOpen = false;
-    public bool isgay = false;
-    public bool isnot = false;
     private bool playerInRange = false;
 
-    // Reference to player's movement script to prevent jumping
     private MovimentacaoExploracao playerMovement;
+
+    private void Start()
+    {
+        // If this chest was already opened in a previous visit, restore that state
+        if (!string.IsNullOrEmpty(chestID) && SistemaInventario.Instance != null)
+        {
+            if (SistemaInventario.Instance.GetGameProgress().Contains(chestID))
+            {
+                ChestOpen = true;
+                if (spriteRenderer != null && openchest != null)
+                    spriteRenderer.sprite = openchest;
+            }
+        }
+    }
 
     private void Update()
     {
-        // Check for input in Update while player is in range and chest is not open
         if (playerInRange && !ChestOpen && Input.GetKeyDown(KeyCode.Space))
         {
-            // Disable player jumping temporarily
             if (playerMovement != null)
                 playerMovement.SetCanJump(false);
 
@@ -35,15 +47,11 @@ public class ChestScript : MonoBehaviour
         {
             playerInRange = true;
 
-            // Get reference to player's movement script
             if (playerMovement == null)
                 playerMovement = collision.GetComponent<MovimentacaoExploracao>();
 
             if (!ChestOpen)
-            {
                 ShowPopup();
-                Debug.Log("aperte space bar pra abrir o ba�. no jogo final vai aparecer um icone mais relevante");
-            }
         }
     }
 
@@ -52,38 +60,34 @@ public class ChestScript : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             playerInRange = false;
-
-            // Clear reference
             playerMovement = null;
-
             HidePopup();
         }
     }
 
     private void TryOpenChest()
     {
-        SistemaInventario inventario = FindFirstObjectByType<SistemaInventario>();
+        SistemaInventario inventory = SistemaInventario.Instance;
 
-        if (inventario != null)
+        if (inventory == null)
         {
-            inventario.AdicionarItem(item, quantidade);
-            if (spriteRenderer  != null)
-            {
-                spriteRenderer.sprite = openchest;
-            }
-            ChestOpen = true;
-            SistemaInventario inventory = SistemaInventario.Instance;
-            if (isgay)
-            { 
-                inventory.AddProgress("piece2");
-            }
-            if (!isnot)
-            {
-                inventory.AddProgress("piece1");
-            }
-            Debug.Log("chest aberto");
-            HidePopup();
+            Debug.LogError("SistemaInventario não encontrado!");
+            return;
         }
+
+        inventory.AdicionarItem(item, quantidade);
+
+        if (spriteRenderer != null && openchest != null)
+            spriteRenderer.sprite = openchest;
+
+        ChestOpen = true;
+
+        // Persist the opened state using a unique ID
+        if (!string.IsNullOrEmpty(chestID))
+            inventory.AddProgress(chestID);
+
+        HidePopup();
+        Debug.Log($"Baú {chestID} aberto.");
     }
 
     private void ShowPopup()

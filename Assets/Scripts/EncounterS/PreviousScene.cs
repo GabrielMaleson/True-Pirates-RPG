@@ -5,25 +5,22 @@ using UnityEngine.SceneManagement;
 public class PreviousScene : MonoBehaviour
 {
     private Scene originalScene;
-    private List<GameObject> sceneObjects = new List<GameObject>();
     private string originalSceneName;
+
+    // Store each object AND its active state at the time of unload
+    private List<GameObject> sceneObjects = new List<GameObject>();
+    private List<bool> sceneObjectWasActive = new List<bool>();
 
     public void UnloadScene()
     {
-        // Get the current active scene (the map scene)
         originalScene = SceneManager.GetActiveScene();
         originalSceneName = originalScene.name;
 
-        // Get all root objects in the scene
         GameObject[] rootObjects = originalScene.GetRootGameObjects();
-
-        // Find the EncounterData object to exclude it
         EncounterData encounterData = FindFirstObjectByType<EncounterData>();
 
-        // Store references to all scene objects
         foreach (GameObject obj in rootObjects)
         {
-            // Skip objects with "Inventory" tag - they should persist
             if (obj.CompareTag("Inventory"))
             {
                 Debug.Log($"Preserving Inventory object: {obj.name}");
@@ -31,21 +28,19 @@ public class PreviousScene : MonoBehaviour
                 continue;
             }
 
-            // Skip objects with "Ignore" tag - they won't be stored or reactivated
             if (obj.CompareTag("Ignore"))
             {
-                Debug.Log($"Ignoring object (won't be reactivated): {obj.name}");
-                // We don't store these objects, so they'll stay as they are
+                Debug.Log($"Ignoring object: {obj.name}");
                 continue;
             }
 
-            // Skip the EncounterData object and this manager
-            if (obj != this.gameObject &&
-                obj != encounterData?.gameObject)
-            {
-                sceneObjects.Add(obj);
-                obj.SetActive(false);
-            }
+            if (obj == this.gameObject || obj == encounterData?.gameObject)
+                continue;
+
+            // Record whether it was active BEFORE we deactivate it
+            sceneObjects.Add(obj);
+            sceneObjectWasActive.Add(obj.activeSelf);
+            obj.SetActive(false);
         }
 
         Debug.Log($"PreviousScene: Stored {sceneObjects.Count} objects from {originalSceneName}");
@@ -53,109 +48,65 @@ public class PreviousScene : MonoBehaviour
 
     public void LoadScene()
     {
-        Debug.Log($"PreviousScene: Loading {originalSceneName} with {sceneObjects.Count} objects");
+        Debug.Log($"PreviousScene: Restoring {sceneObjects.Count} objects to {originalSceneName}");
 
-        // Find EncounterData
         EncounterData encounterData = FindFirstObjectByType<EncounterData>();
 
-        // Destroy the encounter starter object if it exists
         if (encounterData != null && encounterData.encounterStarterObject != null)
         {
-            GameObject starterObject = encounterData.encounterStarterObject;
-            Destroy(starterObject);
-            Debug.Log($"PreviousScene: Destroyed encounter starter: {starterObject.name}");
+            Destroy(encounterData.encounterStarterObject);
             encounterData.encounterStarterObject = null;
         }
 
-        // Find all Inventory objects that were preserved
-        GameObject[] inventoryObjects = GameObject.FindGameObjectsWithTag("Inventory");
-        foreach (var invObj in inventoryObjects)
+        // Fix Inventory objects (preserved via DontDestroyOnLoad)
+        foreach (var invObj in GameObject.FindGameObjectsWithTag("Inventory"))
         {
-            Debug.Log($"Found preserved Inventory object: {invObj.name}");
             invObj.SetActive(true);
-
-            // Disable audio listener on preserved objects if they have one
             AudioListener listener = invObj.GetComponent<AudioListener>();
-            if (listener != null)
-            {
-                listener.enabled = false;
-                Debug.Log($"Disabled AudioListener on preserved object: {invObj.name}");
-            }
+            if (listener != null) listener.enabled = false;
         }
 
-        // Find all Ignore objects (they were never deactivated, so nothing to do)
-        GameObject[] ignoreObjects = GameObject.FindGameObjectsWithTag("Ignore");
-        foreach (var ignoreObj in ignoreObjects)
+        foreach (var ignoreObj in GameObject.FindGameObjectsWithTag("Ignore"))
         {
-            Debug.Log($"Found Ignore object (keeping as is): {ignoreObj.name}");
-            // Disable audio listener on ignore objects if they have one
             AudioListener listener = ignoreObj.GetComponent<AudioListener>();
-            if (listener != null)
-            {
-                listener.enabled = false;
-                Debug.Log($"Disabled AudioListener on ignore object: {ignoreObj.name}");
-            }
+            if (listener != null) listener.enabled = false;
         }
 
-        // Reactivate all stored objects
-        foreach (GameObject obj in sceneObjects)
+        // Restore each object to the state it was in when combat started
+        for (int i = 0; i < sceneObjects.Count; i++)
         {
-            if (obj != null)
-            {
-                obj.SetActive(true);
-            }
+            if (sceneObjects[i] != null)
+                sceneObjects[i].SetActive(sceneObjectWasActive[i]);
         }
 
-        // Ensure there's exactly one active AudioListener
         FixAudioListeners();
 
-        // Reactivate player at the encounter location
         if (encounterData != null)
         {
-            // Get the position where combat started
             Vector3 playerPosition = Vector3.zero;
-            if (encounterData.encounterStarterObject != null)
-            {
-                playerPosition = encounterData.encounterStarterObject.transform.position;
-            }
-
             encounterData.ReactivateOriginalPlayer(playerPosition);
         }
 
-        // Clear the list
         sceneObjects.Clear();
+        sceneObjectWasActive.Clear();
 
-        Debug.Log($"PreviousScene: Reactivated all objects for {originalSceneName}");
-
-        // Destroy this manager after scene is loaded
         Destroy(gameObject);
     }
 
     private void FixAudioListeners()
     {
-        // Find all AudioListeners in the scene
         AudioListener[] listeners = FindObjectsByType<AudioListener>(FindObjectsSortMode.None);
 
         if (listeners.Length > 1)
         {
-            Debug.LogWarning($"Found {listeners.Length} AudioListeners. Disabling all but one.");
-
-            // Keep the first one enabled, disable the rest
             for (int i = 1; i < listeners.Length; i++)
-            {
                 listeners[i].enabled = false;
-            }
         }
         else if (listeners.Length == 0)
         {
-            Debug.LogWarning("No AudioListener found in scene. Adding one to main camera.");
-
-            // Try to find main camera and add listener
             Camera mainCam = Camera.main;
             if (mainCam != null)
-            {
                 mainCam.gameObject.AddComponent<AudioListener>();
-            }
         }
     }
 }
