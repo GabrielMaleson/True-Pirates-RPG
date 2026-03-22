@@ -680,4 +680,15 @@ public class CombatSystem : MonoBehaviour
 
     public PartyMemberState GetCurrentCharacter() => currentCharacter;
     public bool IsPlayerTurn() => currentState == CombatState.PLAYER_TURN;
+
+    // ─── Debug ────────────────────────────────────────────────────────────────────
+
+    public void ForceWin()
+    {
+        if (currentState == CombatState.VICTORY || currentState == CombatState.DEFEAT) return;
+        currentState = CombatState.VICTORY;
+        AwardExperience();
+        onCombatEnded?.Invoke(CombatState.VICTORY);
+        StartCoroutine(ReturnToMapAfterDelay(2f));
+    }
 }

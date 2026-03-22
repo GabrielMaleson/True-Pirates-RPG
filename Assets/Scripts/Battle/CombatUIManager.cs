@@ -51,6 +51,9 @@ public class CombatUIManager : MonoBehaviour
     [Header("Panels")]
     public GameObject waitPanel;
 
+    [Header("Debug")]
+    public Button winButton;
+
     private Dictionary<PartyMemberState, CharacterUI> partyUIDictionary = new Dictionary<PartyMemberState, CharacterUI>();
     private Dictionary<PartyMemberState, EnemyUI> enemyUIDictionary = new Dictionary<PartyMemberState, EnemyUI>();
     private Dictionary<PartyMemberState, GameObject> partyVisualDictionary = new Dictionary<PartyMemberState, GameObject>();
@@ -107,6 +110,8 @@ public class CombatUIManager : MonoBehaviour
             cancelAttackButton.onClick.AddListener(OnCancelGridSelected);
         if (cancelItemButton != null)
             cancelItemButton.onClick.AddListener(OnCancelGridSelected);
+        if (winButton != null)
+            winButton.onClick.AddListener(() => combatSystem?.ForceWin());
         if (targetingPanel != null)
             targetingPanel.SetActive(false);
 
