@@ -62,6 +62,7 @@ public class CombatUIManager : MonoBehaviour
     private int remainingTargetsToSelect = 0;
     private List<PartyMemberState> selectedTargets = new List<PartyMemberState>();
     private bool isInitialized = false;
+    private bool wasAttackPanelOpen = false;
     private bool isTargeting = false;
 
     private void Start()
@@ -623,6 +624,15 @@ public class CombatUIManager : MonoBehaviour
         selectedTargets.Clear();
         isTargeting = true;
 
+        // Track which panel was open so we can restore it on cancel
+        wasAttackPanelOpen = !isItem;
+
+        // Hide whichever selection panel was open
+        if (attackPanel != null) attackPanel.SetActive(false);
+        if (itemPanel != null) itemPanel.SetActive(false);
+        if (cancelAttackButton != null) cancelAttackButton.gameObject.SetActive(false);
+        if (cancelItemButton != null) cancelItemButton.gameObject.SetActive(false);
+
         if (statusText != null) statusText.text = $"Selecione {remainingTargetsToSelect} alvo(s)";
 
         // Show targeting back button
@@ -660,8 +670,11 @@ public class CombatUIManager : MonoBehaviour
         if (targetingPanel != null)
             targetingPanel.SetActive(false);
 
-        // Return to action menu
-        actionMenuPanel.SetActive(true);
+        // Repopulate and restore whichever panel was open before targeting
+        if (wasAttackPanelOpen)
+            OnAttacksSelected();
+        else
+            OnItemsSelected();
 
         // Clear selection
         selectedAttack = null;
@@ -867,15 +880,37 @@ public class CombatUIManager : MonoBehaviour
         }
     }
 
+    private static readonly Color UsableColor   = new Color(1f, 1f, 1f, 1f);       // #FFFFFF
+    private static readonly Color UnusableColor = new Color(0.8f, 0.8f, 0.8f, 1f); // #CCCCCC
+
+    private void SetButtonVisualState(Button btn, bool usable)
+    {
+        if (btn == null) return;
+        btn.interactable = usable;
+        Color c = usable ? UsableColor : UnusableColor;
+
+        // Color children named "Outline" and "Text (TMP)" only
+        foreach (Transform child in btn.transform)
+        {
+            if (child.name == "Outline")
+            {
+                Image img = child.GetComponent<Image>();
+                if (img != null) img.color = c;
+            }
+            else if (child.name == "Text (TMP)")
+            {
+                TMP_Text tmp = child.GetComponent<TMP_Text>();
+                if (tmp != null) tmp.color = c;
+            }
+        }
+    }
+
     private void UpdateActionMenuButtons()
     {
         if (currentCharacter == null) return;
 
         // Defend button only available at max AP
-        if (defendMenuButton != null)
-        {
-            defendMenuButton.interactable = (currentCharacter.currentAP == currentCharacter.MaxAP);
-        }
+        SetButtonVisualState(defendMenuButton, currentCharacter.currentAP == currentCharacter.MaxAP);
 
         // Attacks button available if any attack costs <= current AP
         if (attacksMenuButton != null)
@@ -889,11 +924,12 @@ public class CombatUIManager : MonoBehaviour
                     break;
                 }
             }
-            attacksMenuButton.interactable = hasAffordableAttack;
+            SetButtonVisualState(attacksMenuButton, hasAffordableAttack);
         }
 
-        // Items button always available
-        // Wait button always available
+        // Items and Wait are always usable
+        SetButtonVisualState(itemsMenuButton, true);
+        SetButtonVisualState(waitMenuButton, true);
 
         // Undo button only appears when there are pending actions
         if (undoButton != null)
