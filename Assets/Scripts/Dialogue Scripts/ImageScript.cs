@@ -103,6 +103,17 @@ public class DialogueManager : MonoBehaviour
         {
             skipButton.onClick.AddListener(SkipDialogue);
         }
+
+        if (dialogueRunner != null)
+            dialogueRunner.onDialogueComplete.AddListener(HideDialogueUI);
+    }
+
+    private void HideDialogueUI()
+    {
+        CanvasGroup linePresenterGroup = FindFirstObjectByType<LinePresenter>()?.GetComponent<CanvasGroup>();
+        if (linePresenterGroup != null)
+            linePresenterGroup.alpha = 0;
+        EnablePlayerControl();
     }
 
     private void OnValidate()
