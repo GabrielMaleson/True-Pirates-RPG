@@ -21,12 +21,12 @@ MonoBehaviour:
   effects:
   - effectType: 0
     targetType: 1
-    numberOfTargets: 3
+    numberOfTargets: 1
     value: 6
     accuracy: 100
     triggersOn: 0
     statusEffect: {fileID: 0}
     statModifiers: []
-    hitCount: 1
+    hitCount: 3
     damageMultiplier: 1
   battleAnimation: {fileID: 11400000, guid: e8b2d5f8a8e112c44a952a9b7ff79831, type: 2}
