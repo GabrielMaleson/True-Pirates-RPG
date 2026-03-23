@@ -404,6 +404,20 @@ public class DialogueManager : MonoBehaviour
             return;
         }
 
+        // Reset LinePresenter visibility — HideDialogueUI sets alpha=0 on dialogue end,
+        // so the next dialogue must restore it before lines can be seen or clicked.
+        LinePresenter linePresenter = FindFirstObjectByType<LinePresenter>();
+        if (linePresenter != null)
+        {
+            CanvasGroup cg = linePresenter.GetComponent<CanvasGroup>();
+            if (cg != null)
+            {
+                cg.alpha = 1f;
+                cg.interactable = true;
+                cg.blocksRaycasts = true;
+            }
+        }
+
         DisablePlayerControl();
 
         try

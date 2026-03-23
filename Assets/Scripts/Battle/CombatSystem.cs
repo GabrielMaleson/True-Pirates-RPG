@@ -133,6 +133,7 @@ public class CombatSystem : MonoBehaviour
                 {
                     Debug.Log($"[CombatSystem] Spawning party visual for {memberData.CharacterName} at {partySpawnPoints[i].position}");
                     GameObject memberObj = Instantiate(partyMemberVisualPrefab, partySpawnPoints[i].position, Quaternion.identity);
+                    SceneManager.MoveGameObjectToScene(memberObj, gameObject.scene);
                     memberObj.name = $"Party_{memberData.CharacterName}";
 
                     CharacterComponent comp = memberObj.GetComponent<CharacterComponent>();
@@ -167,6 +168,7 @@ public class CombatSystem : MonoBehaviour
                 {
                     Debug.Log($"[CombatSystem] Spawning enemy visual for {enemyData.CharacterName} at {enemySpawnPoints[i].position}");
                     GameObject enemyObj = Instantiate(prefabToUse, enemySpawnPoints[i].position, Quaternion.identity);
+                    SceneManager.MoveGameObjectToScene(enemyObj, gameObject.scene);
                     enemyObj.name = $"Enemy_{enemyData.CharacterName}";
 
                     CharacterComponent comp = enemyObj.GetComponent<CharacterComponent>();

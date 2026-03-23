@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Collections.Generic;
+using Yarn.Unity;
 
 public class NPCTalker : MonoBehaviour
 {
@@ -12,6 +14,25 @@ public class NPCTalker : MonoBehaviour
     public GameObject Activator2;
     public GameObject Killer;
     public bool compassquest = false;
+
+    [Header("Itens para dar via Yarn")]
+    public List<DadosItem> giveableItems = new List<DadosItem>();
+
+    // Static list populated just before dialogue starts so the command works after Destroy(this)
+    private static List<DadosItem> activeItems = new List<DadosItem>();
+
+    [YarnCommand("additem")]
+    public static void AddItem(string itemId, int quantidade = 1)
+    {
+        DadosItem found = activeItems.Find(i => i != null && (i.id == itemId || i.nomeDoItem == itemId));
+        if (found == null)
+        {
+            Debug.LogWarning($"additem: item '{itemId}' não encontrado na lista do NPC.");
+            return;
+        }
+        if (SistemaInventario.Instance != null)
+            SistemaInventario.Instance.AdicionarItem(found, quantidade);
+    }
     void Start()
     {
         dialogue = FindFirstObjectByType<DialogueManager>();
@@ -34,6 +55,8 @@ public class NPCTalker : MonoBehaviour
         if (!hasstarted && !compassquest && playerInRange && Input.GetKeyDown(KeyCode.Space))
         {
             hasstarted = true;
+            activeItems.Clear();
+            activeItems.AddRange(giveableItems);
             MovimentacaoExploracao.StopForDialogue();
             dialogue.StartDialogue(thething);
             HidePopup();
@@ -56,6 +79,8 @@ public class NPCTalker : MonoBehaviour
         if (!hasstarted && playerInRange && joodiescript)
         {
             hasstarted = true;
+            activeItems.Clear();
+            activeItems.AddRange(giveableItems);
             MovimentacaoExploracao.StopForDialogue();
             dialogue.StartDialogue(thething);
             Activator.SetActive(true);
