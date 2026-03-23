@@ -137,7 +137,6 @@ title: sidequest2_done
 	Narração: O marinheiro entrega um fragmento metálico. É parte do dispositivo de navegação.
 	<<removesprite icon>>
 	<<progress piece2>>
-	Narração: Objetivo atualizado.
 	<<brighten>>
 ===
 
