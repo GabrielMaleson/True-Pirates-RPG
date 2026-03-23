@@ -678,162 +678,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 79010120}
   m_CullTransparentMesh: 1
---- !u!1 &97202856
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 97202857}
-  - component: {fileID: 97202860}
-  - component: {fileID: 97202859}
-  - component: {fileID: 97202858}
-  m_Layer: 0
-  m_Name: SidequestGiver (2)
-  m_TagString: Ignore
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &97202857
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 97202856}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 56.745, y: -4.18, z: 0}
-  m_LocalScale: {x: 0.53927946, y: 0.53927946, z: 0.53927946}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1554634215}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &97202858
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 97202856}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 99564eff12ddee84d8310bf344c9d3a3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ChestScript
-  item: {fileID: 11400000, guid: 0bc5b023053cfac40a492cca47a01c4a, type: 2}
-  quantidade: 1
-  chestID: 
-  spriteRenderer: {fileID: 0}
-  openchest: {fileID: 0}
---- !u!61 &97202859
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 97202856}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_CompositeOperation: 0
-  m_CompositeOrder: 0
-  m_Offset: {x: -0.20547527, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 2.0566666, y: 6.5033336}
-    newSize: {x: 1, y: 1}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Size: {x: 3.3580108, y: 6.5033336}
-  m_EdgeRadius: 0
---- !u!212 &97202860
-SpriteRenderer:
-  serializedVersion: 2
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 97202856}
-  m_Enabled: 1
-  m_CastShadows: 0
-  m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 0
-  m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 0
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: -1695244245
-  m_SortingLayer: 3
-  m_SortingOrder: 0
-  m_MaskInteraction: 0
-  m_Sprite: {fileID: -9043858473083764333, guid: 2ca46c0a1dee65940927bc91d0952b91, type: 3}
-  m_Color: {r: 0, g: 1, b: 0.28147006, a: 1}
-  m_FlipX: 0
-  m_FlipY: 0
-  m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
-  m_AdaptiveModeThreshold: 0.5
-  m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
-  m_SpriteSortPoint: 0
 --- !u!1 &108694371
 GameObject:
   m_ObjectHideFlags: 0
@@ -1207,6 +1051,7 @@ MonoBehaviour:
   Activator2: {fileID: 0}
   Killer: {fileID: 0}
   compassquest: 0
+  giveableItems: []
 --- !u!61 &150022144
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -44920,6 +44765,7 @@ MonoBehaviour:
   Activator2: {fileID: 1238468658}
   Killer: {fileID: 272847102}
   compassquest: 0
+  giveableItems: []
 --- !u!61 &272847105
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -57015,6 +56861,7 @@ MonoBehaviour:
   Activator2: {fileID: 0}
   Killer: {fileID: 754411964}
   compassquest: 0
+  giveableItems: []
 --- !u!61 &754411967
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -57116,6 +56963,7 @@ MonoBehaviour:
   Activator2: {fileID: 53525098}
   Killer: {fileID: 0}
   compassquest: 0
+  giveableItems: []
 --- !u!61 &766683552
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -64444,6 +64292,7 @@ MonoBehaviour:
   Activator2: {fileID: 0}
   Killer: {fileID: 0}
   compassquest: 1
+  giveableItems: []
 --- !u!61 &1238468661
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -68790,6 +68639,7 @@ MonoBehaviour:
   Activator2: {fileID: 0}
   Killer: {fileID: 1547378131}
   compassquest: 0
+  giveableItems: []
 --- !u!61 &1547378135
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -68927,7 +68777,6 @@ Transform:
   - {fileID: 272847107}
   - {fileID: 1547378132}
   - {fileID: 1933411261}
-  - {fileID: 97202857}
   - {fileID: 1238468659}
   - {fileID: 150022142}
   - {fileID: 754411965}
@@ -69395,7 +69244,6 @@ GameObject:
   - component: {fileID: 1606221631}
   - component: {fileID: 1606221630}
   - component: {fileID: 1606221629}
-  - component: {fileID: 1606221632}
   m_Layer: 0
   m_Name: Janitor (1)
   m_TagString: Untagged
@@ -69439,6 +69287,8 @@ MonoBehaviour:
   Activator2: {fileID: 0}
   Killer: {fileID: 0}
   compassquest: 0
+  giveableItems:
+  - {fileID: 11400000, guid: fe229a478bd977c439c057922e813cf9, type: 2}
 --- !u!61 &1606221630
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -69544,23 +69394,6 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!114 &1606221632
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1606221627}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 99564eff12ddee84d8310bf344c9d3a3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ChestScript
-  item: {fileID: 11400000, guid: fe229a478bd977c439c057922e813cf9, type: 2}
-  quantidade: 1
-  chestID: 
-  spriteRenderer: {fileID: 0}
-  openchest: {fileID: 0}
 --- !u!1 &1622799205
 GameObject:
   m_ObjectHideFlags: 0
@@ -69939,6 +69772,7 @@ MonoBehaviour:
   Activator2: {fileID: 1606221627}
   Killer: {fileID: 766683549}
   compassquest: 0
+  giveableItems: []
 --- !u!61 &1696715095
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -72536,10 +72370,12 @@ MonoBehaviour:
   thething: sidequest2_complete
   joodiescript: 0
   DestroyThe: 1
-  Activator: {fileID: 97202856}
+  Activator: {fileID: 0}
   Activator2: {fileID: 0}
   Killer: {fileID: 1933411260}
   compassquest: 0
+  giveableItems:
+  - {fileID: 11400000, guid: 0bc5b023053cfac40a492cca47a01c4a, type: 2}
 --- !u!61 &1933411263
 BoxCollider2D:
   m_ObjectHideFlags: 0
