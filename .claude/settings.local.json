@@ -1,7 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "Bash(find d:/documents/GitHub/True-Pirates-RPG/Assets -name *.cs)"
+      "Bash(grep -r \"sceneload\\\\|LoadScene\" 'c:\\\\Users\\\\3853827\\\\Documents\\\\GitHub\\\\True-Pirates-RPG\\\\Assets\\\\Scripts\\\\Dialogue Scripts' --include=*.yarn)"
     ]
   }
 }

@@ -253,7 +253,8 @@ public class SpecialCutsceneScript : MonoBehaviour
             yield break;
         }
 
-        encounterData.encounterStarterObject = gameObject;
+        // Do NOT set encounterStarterObject here — this script must survive after combat
+        // so its Yarn command handlers and child references remain intact.
         encounterData.playerInventory = inventory;
         encounterData.encounterFile = encounterToStart;
         encounterData.playerPartyMembers = inventory.GetPartyMembersForCombat();

@@ -284,7 +284,8 @@ public class DynamicCutsceneScript : MonoBehaviour
         }
 
         // Set up encounter data
-        encounterData.encounterStarterObject = gameObject;
+        // Do NOT set encounterStarterObject here — this script must survive after combat
+        // so its instance, character dictionary, and child NPCs remain accessible.
         encounterData.playerInventory = inventory;
         encounterData.encounterFile = encounterToStart;
         encounterData.playerPartyMembers = inventory.GetPartyMembersForCombat();

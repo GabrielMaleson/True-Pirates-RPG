@@ -401,6 +401,7 @@ public class DialogueManager : MonoBehaviour
         if (dialogueRunner.IsDialogueRunning)
         {
             Debug.LogWarning($"Tentativa de iniciar '{dialogue}' mas o DialogueRunner já está em execução. Ignorando.");
+            EnablePlayerControl(); // Prevent softlock if player movement was already stopped
             return;
         }
 
