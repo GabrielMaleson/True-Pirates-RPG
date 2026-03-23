@@ -65,7 +65,6 @@ public class NPCTalker : MonoBehaviour
                 Activator.SetActive(true);
 
             }
-            Destroy(this);
             if (Activator2 != null)
             {
                 Activator2.SetActive(true);
@@ -73,6 +72,7 @@ public class NPCTalker : MonoBehaviour
             if (Killer != null)
             {
                 Killer.SetActive(false);
+                Destroy(this);
             }
         }
 
@@ -83,7 +83,11 @@ public class NPCTalker : MonoBehaviour
             activeItems.AddRange(giveableItems);
             MovimentacaoExploracao.StopForDialogue();
             dialogue.StartDialogue(thething);
-            Activator.SetActive(true);
+            if (Activator != null)
+            {
+                Activator.SetActive(true);
+
+            }
             if (Activator2 != null)
             {
                 Activator2.SetActive(true);
@@ -91,9 +95,8 @@ public class NPCTalker : MonoBehaviour
             if (Killer != null)
             {
                 Killer.SetActive(false);
+                Destroy(this);
             }
-            HidePopup();
-            Destroy(this);
         }
     }
 

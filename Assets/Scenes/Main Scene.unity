@@ -68635,11 +68635,12 @@ MonoBehaviour:
   thething: sidequest2_vela
   joodiescript: 0
   DestroyThe: 1
-  Activator: {fileID: 1933411260}
+  Activator: {fileID: 0}
   Activator2: {fileID: 0}
-  Killer: {fileID: 1547378131}
+  Killer: {fileID: 0}
   compassquest: 0
-  giveableItems: []
+  giveableItems:
+  - {fileID: 11400000, guid: 0bc5b023053cfac40a492cca47a01c4a, type: 2}
 --- !u!61 &1547378135
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -72369,10 +72370,10 @@ MonoBehaviour:
   hasstarted: 0
   thething: sidequest2_complete
   joodiescript: 0
-  DestroyThe: 1
+  DestroyThe: 0
   Activator: {fileID: 0}
   Activator2: {fileID: 0}
-  Killer: {fileID: 1933411260}
+  Killer: {fileID: 0}
   compassquest: 0
   giveableItems:
   - {fileID: 11400000, guid: 0bc5b023053cfac40a492cca47a01c4a, type: 2}

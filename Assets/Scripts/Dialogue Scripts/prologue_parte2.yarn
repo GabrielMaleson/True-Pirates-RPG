@@ -119,11 +119,23 @@ title: sidequest2_vela
 	Timon: Pivete, uma palavra de conselho...
 	Timon: (O Simon não dura em lutas, mas ele é extremamente forte.)
 	Timon: (Se você quer sobreviver aqui, não se preocupe com ele.)
+	Timon: ... Quer saber? Gostei da sua cara.
+	Timon: Normalmente eu iria tentar gastar seu tempo por me irritar, mas...
+	Timon: Eu realmente tenho um monte de tralha aqui. 
+	Timon: Achei esse troço metálico preso nas cordas da vela. Deve ser de alguém aqui do navio.
+	Narração: O marinheiro entrega um fragmento metálico. É parte do dispositivo de navegação.
+	<<removesprite icon>>
+	<<progress piece2>>
+	<<additem "piece2item">>
+	<<brighten>>
 	<<brighten>>
 ===
 
 title: sidequest2_done
 ---
+<<declare $first_guy = true as bool>>
+
+<<if $first_guy>>
 	<<darken>>
 	Timon: O que mais você quer, menino? Já falei tudo que tenho que falar pra você.
 	Timon: Ah, não, espera... você acha que eu tenho algo a te dar, né?
@@ -137,8 +149,10 @@ title: sidequest2_done
 	Narração: O marinheiro entrega um fragmento metálico. É parte do dispositivo de navegação.
 	<<removesprite icon>>
 	<<progress piece2>>
+	<<set $first_guy to false>>
 	<<additem "piece2item">>
 	<<brighten>>
+	<<endif>>
 ===
 
 title: sidequest3_rat
