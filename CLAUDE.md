@@ -1,5 +1,10 @@
 # True Pirates RPG — Project Guide for Claude
 
+## Instructions for Claude
+- **Whenever you make a code change**, append an entry to `CHANGES.md` with today's date, the file(s) changed, what was changed, and why. Keep entries concise but complete enough to understand the change without reading the diff.
+- Use the format already established in `CHANGES.md`: date header → fix/feature title → files → explanation → bugs fixed / reason.
+- **All user-facing strings must be in Brazilian Portuguese.** This includes: `Debug.Log` / `Debug.LogWarning` / `Debug.LogError` messages, UI text, button labels, menu options, status text, notification strings, and any other string a developer or player might read. Code identifiers (variable names, method names, class names) stay in English.
+
 ## Project Summary
 A 2D RPG built in Unity (2D, C#). Side-scrolling exploration with turn-based combat loaded additively. Portuguese-language story about Benito, Simon, and Joodie aboard a pirate airship (Highwaker). Built with Yarn Spinner for dialogue.
 
