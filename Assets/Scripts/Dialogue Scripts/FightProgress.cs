@@ -81,11 +81,18 @@ public class FightProgress : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        if (!collision.gameObject.CompareTag("Player")) return;
+        if (doingthing) return; // ignore re-entry from Rigidbody2D.WakeUp() re-trigger
+
+        doingthing = true;
+        if (dialogueManager != null)
+            dialogueManager.StartDialogue("cantprogressyet");
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
         if (collision.gameObject.CompareTag("Player"))
-        {
-            if (dialogueManager != null)
-                dialogueManager.StartDialogue("cantprogressyet");
-        }
+            doingthing = false;
     }
 
     private void NextMoment()

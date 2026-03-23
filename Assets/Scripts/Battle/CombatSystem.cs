@@ -122,8 +122,16 @@ public class CombatSystem : MonoBehaviour
                 PartyMemberState memberData = encounterData.playerPartyMembers[i];
                 if (memberData == null) continue;
 
+                if (i >= partySpawnPoints.Count)
+                    Debug.LogWarning($"[CombatSystem] No spawn point for party member {i} ({memberData.CharacterName}). partySpawnPoints.Count={partySpawnPoints.Count}");
+                else if (partySpawnPoints[i] == null)
+                    Debug.LogWarning($"[CombatSystem] partySpawnPoints[{i}] is null for {memberData.CharacterName}");
+                else if (partyMemberVisualPrefab == null)
+                    Debug.LogWarning($"[CombatSystem] partyMemberVisualPrefab is null — cannot spawn visual for {memberData.CharacterName}");
+
                 if (i < partySpawnPoints.Count && partySpawnPoints[i] != null && partyMemberVisualPrefab != null)
                 {
+                    Debug.Log($"[CombatSystem] Spawning party visual for {memberData.CharacterName} at {partySpawnPoints[i].position}");
                     GameObject memberObj = Instantiate(partyMemberVisualPrefab, partySpawnPoints[i].position, Quaternion.identity);
                     memberObj.name = $"Party_{memberData.CharacterName}";
 
@@ -148,8 +156,16 @@ public class CombatSystem : MonoBehaviour
                 GameObject prefabToUse = (i < encounterData.enemyPrefabs.Count ? encounterData.enemyPrefabs[i] : null)
                                          ?? enemyVisualPrefab;
 
+                if (prefabToUse == null)
+                    Debug.LogWarning($"[CombatSystem] No visual prefab for enemy {i} ({enemyData.CharacterName}). enemyPrefabs.Count={encounterData.enemyPrefabs.Count}, fallback enemyVisualPrefab={(enemyVisualPrefab == null ? "null" : "set")}");
+                else if (i >= enemySpawnPoints.Count)
+                    Debug.LogWarning($"[CombatSystem] No spawn point for enemy {i} ({enemyData.CharacterName}). enemySpawnPoints.Count={enemySpawnPoints.Count}");
+                else if (enemySpawnPoints[i] == null)
+                    Debug.LogWarning($"[CombatSystem] enemySpawnPoints[{i}] is null for {enemyData.CharacterName}");
+
                 if (prefabToUse != null && i < enemySpawnPoints.Count && enemySpawnPoints[i] != null)
                 {
+                    Debug.Log($"[CombatSystem] Spawning enemy visual for {enemyData.CharacterName} at {enemySpawnPoints[i].position}");
                     GameObject enemyObj = Instantiate(prefabToUse, enemySpawnPoints[i].position, Quaternion.identity);
                     enemyObj.name = $"Enemy_{enemyData.CharacterName}";
 
