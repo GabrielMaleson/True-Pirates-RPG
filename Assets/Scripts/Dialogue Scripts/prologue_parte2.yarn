@@ -137,6 +137,7 @@ title: sidequest2_done
 	Narração: O marinheiro entrega um fragmento metálico. É parte do dispositivo de navegação.
 	<<removesprite icon>>
 	<<progress piece2>>
+	<<additem "piece2item">>
 	<<brighten>>
 ===
 
@@ -171,6 +172,7 @@ title: sidequest3_ratcomplete
 	<<removesprite icon>>
 	<<progress piece3>>
 	<<progress ratkilled>>
+	<<additem "piece3item">>
 	Narração: Você obteu mais uma peça do dispositivo. Mas como juntá-las...?
 	<<brighten>>
 ===
