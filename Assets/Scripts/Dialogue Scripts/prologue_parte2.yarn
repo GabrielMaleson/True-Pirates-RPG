@@ -40,7 +40,7 @@ title: comandante_joodie_cena
 	Joodie: Nós fomos amigos por muitos anos, ajudei ele em alguns projetos, era um homem bom. Infelizmente veio a falecer...
 	<<sprite commandant icon>>
 	Comandante Desconhecido: Um órfão arruaceiro, deveria ter adivinhado...
-	Comandante Desconhecido: Porém como eu disse, a não sei que um desses dois morra, eu não quero ser incomodado por essa situação novamente.
+	Comandante Desconhecido: Porém como eu disse, a não ser que um desses dois morra, eu não quero ser incomodado por essa situação novamente.
 	Comandante Desconhecido: Você reporta diretamente a mim caso precise de alguma coisa, entendido?
 	<<sprite joodie.neutral icon>>
 	Joodie: Sim senhor, entendido.
@@ -117,11 +117,8 @@ title: sidequest2_vela
 	<<removesprite icon>>
 	Timon: É, realmente, não importa muito.
 	Timon: Pivete, uma palavra de conselho...
-	-> Ouvir
-		Timon: (O Simon não dura em lutas, mas ele é extremamente forte.)
-		Timon: (Se você quer sobreviver aqui, não se preocupe com ele.)
-	-> Ignorar
-		Timon: Má decisão, pivete.
+	Timon: (O Simon não dura em lutas, mas ele é extremamente forte.)
+	Timon: (Se você quer sobreviver aqui, não se preocupe com ele.)
 	<<brighten>>
 ===
 
