@@ -30,6 +30,7 @@ public class DialogueManager : MonoBehaviour
     public GraphicRaycaster graphicRaycaster;
     public TextMeshProUGUI objectiveText;
     public GameObject objectivePanel;
+    public GameObject objectiveButton;
 
     [Header("Image Display")]
     public List<Sprite> sprites = new List<Sprite>();
@@ -392,17 +393,29 @@ public class DialogueManager : MonoBehaviour
             dialogueRunner = GetComponent<DialogueRunner>();
             if (dialogueRunner == null)
             {
-                Debug.LogError("DialogueRunner is null! Cannot start dialogue.");
+                Debug.LogError("DialogueRunner é null! Não foi possível iniciar o diálogo.");
                 return;
             }
         }
 
-        // Disable player control when starting dialogue
+        if (dialogueRunner.IsDialogueRunning)
+        {
+            Debug.LogWarning($"Tentativa de iniciar '{dialogue}' mas o DialogueRunner já está em execução. Ignorando.");
+            return;
+        }
+
         DisablePlayerControl();
 
-        // Start the dialogue
-        _ = dialogueRunner.StartDialogue(dialogue);
-        Debug.Log($"Started dialogue: {dialogue}");
+        try
+        {
+            _ = dialogueRunner.StartDialogue(dialogue);
+            Debug.Log($"Diálogo iniciado: {dialogue}");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Falha ao iniciar diálogo '{dialogue}': {e.Message}");
+            EnablePlayerControl();
+        }
     }
 
     [YarnCommand("brighten")]

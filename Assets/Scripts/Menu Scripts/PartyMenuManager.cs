@@ -40,6 +40,9 @@ public class PartyMenuManager : MonoBehaviour
     private Dictionary<EquipmentSlot, EquipmentSlotUI> equipmentSlots =
         new Dictionary<EquipmentSlot, EquipmentSlotUI>();
 
+    [Header("Objectives")]
+    public GameObject objectivesButton;
+
     [Header("Inventory Display")]
     public Transform inventoryGrid;
     public GameObject itemSlotPrefab;
@@ -71,6 +74,7 @@ public class PartyMenuManager : MonoBehaviour
         {
             inventory.onInventarioMudou += RefreshInventoryDisplay;
         }
+
 
         HideAllPanels();
         MenuOpener.SetActive(true);
@@ -126,6 +130,25 @@ public class PartyMenuManager : MonoBehaviour
         if (attacksPanel != null) attacksPanel.SetActive(false);
         if (itemsPanel != null) itemsPanel.SetActive(false);
         if (equipmentPanel != null) equipmentPanel.SetActive(false);
+    }
+
+    private CanvasGroup GetObjectiveCanvasGroup()
+    {
+        if (ObjectiveManager.Instance == null) return null;
+        return ObjectiveManager.Instance.GetComponent<CanvasGroup>();
+    }
+
+    public void ToggleObjectives()
+    {
+        CanvasGroup cg = GetObjectiveCanvasGroup();
+        if (cg == null) return;
+        cg.alpha = cg.alpha > 0.5f ? 0f : 1f;
+    }
+
+    private void CloseObjectivesPanel()
+    {
+        CanvasGroup cg = GetObjectiveCanvasGroup();
+        if (cg != null) cg.alpha = 0f;
     }
 
     private void CreatePartyMemberDisplays()
@@ -346,6 +369,7 @@ public class PartyMenuManager : MonoBehaviour
     {
         if (isInBattle || !canOpenMenu) return; // Don't open during battle or cutscenes
 
+        CloseObjectivesPanel();
         HideAllPanels();
         partyMenuPanel.SetActive(true);
 
@@ -363,7 +387,8 @@ public class PartyMenuManager : MonoBehaviour
     public void CloseMenu()
     {
         HideAllPanels();
-        MenuOpener.SetActive(true);
+        if (MenuOpener != null) MenuOpener.SetActive(true);
+        if (objectivesButton != null) objectivesButton.SetActive(true);
     }
 
     // Close Game with Save
