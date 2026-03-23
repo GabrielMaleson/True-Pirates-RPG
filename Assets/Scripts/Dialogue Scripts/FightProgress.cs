@@ -102,7 +102,7 @@ public class FightProgress : MonoBehaviour
             foe1.SetActive(true);
         if (Killer != null)
         {
-            Destroy(this);
+            Destroy(this.gameObject);
         }
     }
 
@@ -112,7 +112,7 @@ public class FightProgress : MonoBehaviour
             Destroy(scamps);
         if (foe2 != null)
             foe2.SetActive(true);
-        Destroy(this);
+        Destroy(this.gameObject);
     }
 
 }

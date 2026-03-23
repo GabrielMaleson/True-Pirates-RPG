@@ -64173,7 +64173,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   dialogue: {fileID: 0}
   hasstarted: 0
-  thething: comandante_true
+  thething: commandant_true
   joodiescript: 0
   DestroyThe: 1
   Activator: {fileID: 754411964}
