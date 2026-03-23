@@ -197,7 +197,7 @@ title: dispositivo_entregue
 	<<sprite joodie1 icon>>
 	Joodie: Deixa eu ver... Sim. Sim, isso encaixa. O dispositivo está intacto.
 	Joodie: Muito bem. Vou reinstalar agora. Com isso funcionando, a gente ganha boa vantagem na navegação.
-	<<sprite simon1 icon>>
+	<<sprite simon.neutral icon>>
 	Simon: Quanto tempo até estar operacional?
 	<<sprite joodie1 icon>>
 	Joodie: Uma hora. Talvez menos.
@@ -277,11 +277,11 @@ title: pos_batalha_nepal
 	<<sprite guy2 icon>>
 	Benito: ...Uma pulseira. Tem inscrições.
 	Narração: "Laboratório de Mecânica Orgânica — Nepal."
-	<<sprite simon1 icon>>
+	<<sprite simon.neutral icon>>
 	Simon: Nepal... Não é onde o laboratório daquela cientista maluca fica?
 	<<sprite joodie1 icon>>
 	Joodie: Daya Neupane... Mecânica Orgânica da Imperatriz... Ela ta enviando essas aberrações dela atravessar o mundo pra interceptar as nossas navegações... Afundar os nossos barcos cheios de recursos e tripulações antes mesmo que a gente pise na Europa...
-	<<sprite simon1 icon>>
+	<<sprite simon.neutral icon>>
 	Simon: Cortando o nosso suplemento na fonte...
 	<<sprite joodie1 icon>>
 	Joodie: Vamos reportar isso pro Comandante, seguimos em rota a Portugal em altimetria alta. Lá falamos com o conselho da resistência.

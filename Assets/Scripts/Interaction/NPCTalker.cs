@@ -47,7 +47,7 @@ public class NPCTalker : MonoBehaviour
             ShowPopup();
         }
 
-        if (playerInRange && SistemaInventario.Instance.HasProgress("compass"))
+        if (SistemaInventario.Instance.HasProgress("compass"))
         {
             compassquest = false;
         }
