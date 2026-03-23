@@ -194,12 +194,12 @@ title: sidequest3_ratcomplete
 title: dispositivo_entregue
 ---
 	<<darken>>
-	<<sprite joodie1 icon>>
+	<<sprite joodie.neutral icon>>
 	Joodie: Deixa eu ver... Sim. Sim, isso encaixa. O dispositivo está intacto.
 	Joodie: Muito bem. Vou reinstalar agora. Com isso funcionando, a gente ganha boa vantagem na navegação.
 	<<sprite simon.neutral icon>>
 	Simon: Quanto tempo até estar operacional?
-	<<sprite joodie1 icon>>
+	<<sprite joodie.neutral icon>>
 	Joodie: Uma hora. Talvez menos.
 	Joodie: Até lá, fiquem por perto. Não quero surpresas.
 	<<removesprite icon>>
@@ -271,19 +271,20 @@ title: pos_batalha_nepal
 	<<darken>>
 	Narração: Os propulsores do Highwaker rugem ao ganhar altitude. Os Mutantes estão derrotados. Joodie e Simon olham um para o outro, impressionados com a habilidade e a destreza de Benito durante o combate.
 	Narração: Antes que qualquer palavra de agradecimento possa ser dita, Benito se esgueira entre os dois e se abaixa perto do corpo da Matriz Sináptica.
-	<<sprite joodie1 icon>>
+	<<sprite joodie.neutral icon>>
 	Joodie: Nito, cuidado! Os braços dela ainda podem te ferrar...
-	Narração: Benito, criado à beira do mar, sabe lidar com águas-vivas. Usa seu estilingue com precisão para afastar os ferrões do braço humanoide da Matriz, expondo o que havia visto à distância — uma pulseira branca metálica.
-	<<sprite guy2 icon>>
+	Narração: Benito usa seu estilingue com precisão para afastar os ferrões do braço humanoide da Matriz, expondo o que havia visto à distância...
+	Narração: Uma pulseira branca metálica.
+	<<sprite benito.confused icon>>
 	Benito: ...Uma pulseira. Tem inscrições.
 	Narração: "Laboratório de Mecânica Orgânica — Nepal."
 	<<sprite simon.neutral icon>>
 	Simon: Nepal... Não é onde o laboratório daquela cientista maluca fica?
-	<<sprite joodie1 icon>>
+	<<sprite joodie.neutral icon>>
 	Joodie: Daya Neupane... Mecânica Orgânica da Imperatriz... Ela ta enviando essas aberrações dela atravessar o mundo pra interceptar as nossas navegações... Afundar os nossos barcos cheios de recursos e tripulações antes mesmo que a gente pise na Europa...
 	<<sprite simon.neutral icon>>
 	Simon: Cortando o nosso suplemento na fonte...
-	<<sprite joodie1 icon>>
+	<<sprite joodie.neutral icon>>
 	Joodie: Vamos reportar isso pro Comandante, seguimos em rota a Portugal em altimetria alta. Lá falamos com o conselho da resistência.
 	<<removesprite icon>>
 	<<brighten>>

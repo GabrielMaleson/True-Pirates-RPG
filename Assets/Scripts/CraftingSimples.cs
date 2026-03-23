@@ -35,6 +35,13 @@ public class CraftingSimples : MonoBehaviour
         public int quantidade;
     }
 
+    private void Start()
+    {
+        // Auto-find inventory if not assigned
+        if (inventario == null)
+            inventario = SistemaInventario.Instance;
+    }
+
     public void CraftItem(int recipeIndex)
     {
         if (recipeIndex < 0 || recipeIndex >= recipes.Count)
@@ -43,7 +50,19 @@ public class CraftingSimples : MonoBehaviour
             return;
         }
 
-        SistemaInventario Instance = SistemaInventario.Instance;
+        // Get the singleton instance
+        SistemaInventario inventory = SistemaInventario.Instance;
+
+        // Check if inventory exists
+        if (inventory == null)
+        {
+            Debug.LogError("SistemaInventario instance not found!");
+            return;
+        }
+
+        // Use local reference for required items
+        if (inventario == null)
+            inventario = inventory;
 
         CraftingRecipe recipe = recipes[recipeIndex];
 
@@ -75,7 +94,9 @@ public class CraftingSimples : MonoBehaviour
                 Debug.Log($"Criado: {result.quantidade}x {result.item.nomeDoItem}");
             }
 
-            Instance.AddProgress("compass");
+            // Add the progress - MAKE SURE THIS IS CALLED
+            inventory.AddProgress("compass");
+            Debug.Log($"Progress 'compass' added successfully!");
             Debug.Log($"Sucesso! Receita '{recipe.recipeName}' craftada com sucesso!");
         }
         else
@@ -88,6 +109,13 @@ public class CraftingSimples : MonoBehaviour
     public bool PodeCraftar(int recipeIndex)
     {
         if (recipeIndex < 0 || recipeIndex >= recipes.Count)
+            return false;
+
+        // Ensure we have inventory reference
+        if (inventario == null)
+            inventario = SistemaInventario.Instance;
+
+        if (inventario == null)
             return false;
 
         CraftingRecipe recipe = recipes[recipeIndex];
