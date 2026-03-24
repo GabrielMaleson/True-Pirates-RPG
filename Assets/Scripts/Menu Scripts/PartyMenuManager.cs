@@ -42,6 +42,7 @@ public class PartyMenuManager : MonoBehaviour
 
     [Header("Objectives")]
     public GameObject objectivesButton;
+    public GameObject configButton; // Add a button to open config
 
     [Header("Inventory Display")]
     public Transform inventoryGrid;
@@ -55,6 +56,7 @@ public class PartyMenuManager : MonoBehaviour
 
     [Header("References")]
     public SistemaInventario inventory;
+    public ConfigSceneManager configSceneManager; // Reference to ConfigSceneManager
 
     [Header("Menu State")]
     public bool canOpenMenu = true; // Can be set to false during cutscenes
@@ -76,6 +78,9 @@ public class PartyMenuManager : MonoBehaviour
             inventory.onPartyUpdated += CreatePartyMemberDisplays;
         }
 
+        // Find ConfigSceneManager if not assigned
+        if (configSceneManager == null)
+            configSceneManager = FindFirstObjectByType<ConfigSceneManager>();
 
         HideAllPanels();
         MenuOpener.SetActive(true);
@@ -155,6 +160,43 @@ public class PartyMenuManager : MonoBehaviour
     {
         CanvasGroup cg = GetObjectiveCanvasGroup();
         if (cg != null) cg.alpha = 0f;
+    }
+
+    /// <summary>
+    /// Loads the configuration scene additively
+    /// </summary>
+    public void LoadConfig()
+    {
+        if (configSceneManager == null)
+        {
+            Debug.LogError("ConfigSceneManager not found!");
+            return;
+        }
+
+        // Close the party menu first
+        CloseMenu();
+
+        // Load the config scene
+        configSceneManager.LoadConfigScene();
+        Debug.Log("Loading config scene");
+    }
+
+    /// <summary>
+    /// Deletes/unloads the configuration scene
+    /// </summary>
+    public void DeleteConfig()
+    {
+        if (configSceneManager == null)
+        {
+            Debug.LogError("ConfigSceneManager not found!");
+            return;
+        }
+
+        configSceneManager.DeleteConfigScene();
+        Debug.Log("Config scene deleted");
+
+        // Reopen the party menu after config closes (optional)
+        // OpenMenu();
     }
 
     private void CreatePartyMemberDisplays()
@@ -433,14 +475,20 @@ public class PartyMenuManager : MonoBehaviour
     public void SaveGame()
     {
         SaveLoadManager saveLoadManager = SaveLoadManager.Instance;
-        saveLoadManager.SaveGame();
+        if (saveLoadManager != null)
+        {
+            saveLoadManager.SaveGame();
+        }
+        else
+        {
+            Debug.LogWarning("SaveLoadManager not found!");
+        }
     }
 
     private IEnumerator QuitAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
-
-        Application.Quit();
+        SceneManager.LoadScene("TitleScreen");
     }
 
     private void OnDestroy()
