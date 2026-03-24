@@ -22,7 +22,7 @@ public class EncounterFile : ScriptableObject
     [Header("Battle Settings")]
     public bool isBossEncounter;
     public AudioClip battleMusic;
-    public string battleBackgroundName;
+    public Sprite battleBackground;
 }
 
 [System.Serializable]

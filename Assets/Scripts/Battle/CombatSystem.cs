@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public enum CombatState
 {
@@ -38,6 +39,9 @@ public class CombatSystem : MonoBehaviour
     [Header("Prefabs")]
     public GameObject partyMemberVisualPrefab;
     public GameObject enemyVisualPrefab;
+
+    [Header("Background")]
+    public Image backgroundImage;
 
     [Header("Combat State")]
     public CombatState currentState = CombatState.STARTING;
@@ -139,9 +143,14 @@ public class CombatSystem : MonoBehaviour
         partyMembers.Clear();
         enemies.Clear();
 
-        // Play the encounter's battle music if one is assigned
-        if (encounterData.encounterFile != null && encounterData.encounterFile.battleMusic != null)
-            MusicManager.Instance?.PlayClip(encounterData.encounterFile.battleMusic);
+        if (encounterData.encounterFile != null)
+        {
+            if (encounterData.encounterFile.battleMusic != null)
+                MusicManager.Instance?.PlayClip(encounterData.encounterFile.battleMusic);
+
+            if (backgroundImage != null && encounterData.encounterFile.battleBackground != null)
+                backgroundImage.sprite = encounterData.encounterFile.battleBackground;
+        }
 
         if (encounterData.playerPartyMembers != null)
         {
