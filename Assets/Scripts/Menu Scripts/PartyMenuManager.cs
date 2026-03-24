@@ -180,6 +180,7 @@ public class PartyMenuManager : MonoBehaviour
                 partyMemberButtons.Add(btn);
 
                 GameObject displayObj = Instantiate(statsDisplayPrefab, statsDisplayContainer);
+                displayObj.transform.localScale = Vector3.one;
                 PartyMemberStatsDisplay display = displayObj.GetComponent<PartyMemberStatsDisplay>();
                 display.Initialize(member);
                 statsDisplays[member] = display;
