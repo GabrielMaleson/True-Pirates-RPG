@@ -384,6 +384,7 @@ public class PartyMenuManager : MonoBehaviour
 
         CloseObjectivesPanel();
         HideAllPanels();
+        if (objectivesButton != null) objectivesButton.SetActive(false);
         partyMenuPanel.SetActive(true);
 
         CanvasGroup canvasGroup = partyMenuPanel.GetComponent<CanvasGroup>();
