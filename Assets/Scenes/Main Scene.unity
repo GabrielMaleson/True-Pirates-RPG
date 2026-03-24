@@ -594,7 +594,7 @@ SpriteRenderer:
   m_SortingOrder: 10
   m_MaskInteraction: 0
   m_Sprite: {fileID: -9043858473083764333, guid: 2ca46c0a1dee65940927bc91d0952b91, type: 3}
-  m_Color: {r: 0.09620863, g: 0.46718797, b: 0.8867924, a: 1}
+  m_Color: {r: 0.22394158, g: 0.8862745, b: 0.09803923, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -44506,8 +44506,8 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 1
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
@@ -56859,7 +56859,7 @@ MonoBehaviour:
   DestroyThe: 1
   Activator: {fileID: 0}
   Activator2: {fileID: 0}
-  Killer: {fileID: 754411964}
+  Killer: {fileID: 1547378131}
   compassquest: 0
   giveableItems: []
 --- !u!61 &754411967
@@ -58312,7 +58312,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.97213906, y: 0}
+  m_Offset: {x: 1.6115296, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -58322,7 +58322,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1.7061638, y: 1}
+  m_Size: {x: 0.42738295, y: 1}
   m_EdgeRadius: 0
 --- !u!70 &933912021
 CapsuleCollider2D:
@@ -58358,8 +58358,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.7607444, y: -0.017650638}
-  m_Size: {x: 2.5214896, y: 1.1486834}
+  m_Offset: {x: 0.6698931, y: -0.017650638}
+  m_Size: {x: 1.6103609, y: 1.1486834}
   m_Direction: 0
 --- !u!212 &933912022
 SpriteRenderer:
@@ -58429,7 +58429,7 @@ Transform:
   m_GameObject: {fileID: 933912018}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 10.42, y: 18.68, z: 0}
+  m_LocalPosition: {x: 5.2, y: 18.68, z: 0}
   m_LocalScale: {x: 3.398894, y: 13.862467, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -72770,7 +72770,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7353143640536152879, guid: 1e7f3dc7f8881124c80d49cc85d2388b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 13.857
+      value: 13.53
       objectReference: {fileID: 0}
     - target: {fileID: 7353143640536152879, guid: 1e7f3dc7f8881124c80d49cc85d2388b, type: 3}
       propertyPath: m_LocalPosition.z
@@ -73247,7 +73247,7 @@ GameObject:
   - component: {fileID: 2102209532}
   m_Layer: 0
   m_Name: Main Camera (1)
-  m_TagString: MainCamera
+  m_TagString: Ignore
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

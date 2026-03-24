@@ -35,6 +35,13 @@ public class CraftingSimples : MonoBehaviour
         public int quantidade;
     }
 
+    private void Start()
+    {
+        // Auto-find inventory if not assigned
+        if (inventario == null)
+            inventario = SistemaInventario.Instance;
+    }
+
     public void CraftItem(int recipeIndex)
     {
         if (recipeIndex < 0 || recipeIndex >= recipes.Count)
@@ -81,6 +88,7 @@ public class CraftingSimples : MonoBehaviour
             }
 
             inv.AddProgress("compass");
+            Debug.Log("Progress 'compass' adicionado com sucesso!");
             Debug.Log($"Sucesso! Receita '{recipe.recipeName}' craftada com sucesso!");
         }
         else
@@ -93,6 +101,13 @@ public class CraftingSimples : MonoBehaviour
     public bool PodeCraftar(int recipeIndex)
     {
         if (recipeIndex < 0 || recipeIndex >= recipes.Count)
+            return false;
+
+        // Ensure we have inventory reference
+        if (inventario == null)
+            inventario = SistemaInventario.Instance;
+
+        if (inventario == null)
             return false;
 
         CraftingRecipe recipe = recipes[recipeIndex];
