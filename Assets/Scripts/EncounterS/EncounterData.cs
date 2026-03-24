@@ -15,6 +15,9 @@ public class EncounterData : MonoBehaviour
     public List<PartyMemberState> enemyPartyMembers = new List<PartyMemberState>();
     public List<GameObject> enemyPrefabs = new List<GameObject>();
 
+    [Header("Battle Music")]
+    public AudioClip battleMusic; // Add this field
+
     [Header("Encounter Tracking")]
     public GameObject encounterStarterObject;
     public bool combatVictory = false;

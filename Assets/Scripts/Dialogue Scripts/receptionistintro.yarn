@@ -114,7 +114,7 @@ title: simonbattleend
 title: cantprogressyet
 ---
 	<<darken>>
-	<<sprite simon1 icon>>
+	<<sprite simon.neutral icon>>
 	Simon: Espera aí. Temos que falar com meu comandante.
 	Simon: Se você quer ficar aqui, o MÍNIMO que deveria fazer é obedecer.
 	<<removesprite icon>>

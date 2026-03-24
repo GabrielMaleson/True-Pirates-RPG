@@ -335,7 +335,6 @@ public class InterfaceCrafting : MonoBehaviour
 
         return false;
     }
-
     public void TentarCraftar()
     {
         if (receitaAtual != null && slotsSelecionados.Count > 0)
@@ -367,51 +366,25 @@ public class InterfaceCrafting : MonoBehaviour
 
             if (temTodos)
             {
-                // Store the required items info BEFORE adding anything
-                // This creates a copy of what needs to be removed
-                List<ItemRequirement> requisitos = new List<ItemRequirement>();
-                foreach (var requirement in receitaAtual.requiredItems)
-                {
-                    requisitos.Add(new ItemRequirement
-                    {
-                        item = requirement.item,
-                        quantidade = requirement.quantidade
-                    });
-                }
+                // Store the recipe index to call CraftItem properly
+                int recipeIndex = craftingSystem.recipes.IndexOf(receitaAtual);
 
-                // Store results info as well
-                List<ItemResult> resultados = new List<ItemResult>();
-                foreach (var result in receitaAtual.results)
-                {
-                    resultados.Add(new ItemResult
-                    {
-                        item = result.item,
-                        quantidade = result.quantidade
-                    });
-                }
+                // Call the main CraftItem method - THIS WILL ADD THE PROGRESS
+                craftingSystem.CraftItem(recipeIndex);
 
-                // Clear selection BEFORE any inventory changes
+                // Clear selection after crafting
                 slotsSelecionados.Clear();
                 receitaAtual = null;
 
-                // FIRST add the crafted items (as per your system requirement)
-                foreach (var result in resultados)
-                {
-                    Debug.Log($"Adicionando: {result.quantidade}x {result.item.nomeDoItem}");
-                    sistemaInventario.AdicionarItem(result.item, result.quantidade);
-                }
-
-                // THEN remove required items
-                // Note: This will trigger another onInventarioMudou event
-                foreach (var requirement in requisitos)
-                {
-                    int quantidadeARemover = requirement.quantidade;
-                    Debug.Log($"Removendo: {quantidadeARemover}x {requirement.item.nomeDoItem}");
-                    sistemaInventario.RemoverItem(requirement.item, quantidadeARemover);
-                }
+                // Refresh the UI to show updated inventory
+                AtualizarInterface();
 
                 Debug.Log($"Sucesso! Receita '{receitaAtual?.recipeName}' craftada!");
             }
+            else
+            {
+                Debug.Log("Falha: Itens insuficientes!");
+            }
+        }
     }
-}
 }

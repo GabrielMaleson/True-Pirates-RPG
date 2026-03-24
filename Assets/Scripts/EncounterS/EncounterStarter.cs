@@ -78,6 +78,10 @@ public class EncounterStarter : MonoBehaviour
         }
 
         encounterData.CalculateRewards();
+
+        // Set battle music from encounter file
+        encounterData.battleMusic = encounterFile.battleMusic;
+
         return encounterData;
     }
 }

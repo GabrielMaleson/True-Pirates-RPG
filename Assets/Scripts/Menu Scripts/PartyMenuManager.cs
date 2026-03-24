@@ -228,7 +228,7 @@ public class PartyMenuManager : MonoBehaviour
                 display.Initialize(member);
                 statsDisplays[member] = display;
 
-                displayObj.SetActive(false);
+                displayObj.SetActive(true);
             }
         }
 
@@ -242,10 +242,7 @@ public class PartyMenuManager : MonoBehaviour
     {
         currentSelectedMember = member;
 
-        foreach (var kvp in statsDisplays)
-        {
-            kvp.Value.gameObject.SetActive(kvp.Key == member);
-        }
+
 
         UpdatePartyMemberHighlights();
 
