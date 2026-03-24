@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0dae1c0bdb169eb479b9e915ac2d682c, type: 3}
   m_Name: Monster
   m_EditorClassIdentifier: Assembly-CSharp::CharacterData
-  characterName: Mob
-  partyIcon: {fileID: 0}
-  battlePortrait: {fileID: 0}
+  characterName: Afogado
+  partyIcon: {fileID: -4549667453659451116, guid: 90c58ed25b3a5d044a0b35cb6b19a063, type: 3}
+  battlePortrait: {fileID: -4549667453659451116, guid: 90c58ed25b3a5d044a0b35cb6b19a063, type: 3}
   animatorController: {fileID: 9100000, guid: 45841d217043fce418df56544d2b5829, type: 2}
   baseHP: 20
   baseAttack: 5
