@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: Quest1
   m_EditorClassIdentifier: Assembly-CSharp::ObjectiveData
   objectiveName: Mar calmo nunca fez bom marinheiro
-  objectiveDescription: Infiltre o barco da Resistencia com rota a Europa.
+  objectiveDescription: Encontre o comandante do Simon.
   objectiveIcon: {fileID: 0}
-  requiredProgressTags: []
+  requiredProgressTags:
+  - candothing
   playDialogueOnComplete: 0
   completionDialogueNode: 
   rewardGold: 0

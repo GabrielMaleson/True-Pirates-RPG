@@ -2,6 +2,50 @@
 
 ---
 
+## 2026-03-24 (session 5)
+
+### Feature: Game Over screen (additive) with Retry and Quit
+**Files:** `Assets/Scripts/Battle/GameOver.cs` *(new)*, `Assets/Scripts/Battle/BattleSaveManager.cs` *(new)*, `Assets/Scripts/EncounterS/EncounterStarter.cs`, `Assets/Scripts/Battle/CombatSystem.cs`
+
+On defeat the game previously went straight to the main menu. Now it loads a "GameOver" scene additively, showing a black overlay with "GAME OVER" text and two buttons.
+
+**BattleSaveManager** (DontDestroyOnLoad, created automatically):
+- `SaveSnapshot(partyMembers)` — called by `EncounterStarter.BuildEncounterData()` before every fight; stores each member's HP and AP.
+- `RestoreSnapshot(partyMembers)` — called by Retry; writes saved HP/AP back onto the live `PartyMemberState` objects (same references used by SistemaInventario).
+- `ClearSnapshot()` — called on victory so the data is not reused for a different fight.
+
+**GameOver script** (attach to parent object in GameOver scene):
+- Retry: restores HP/AP via `BattleSaveManager`, unloads "GameOver", reloads "Combat" additively. The deactivated exploration scene remains untouched.
+- Quit: clears snapshot, stops music, loads Menu in Single mode (clears everything).
+
+**CombatSystem changes:**
+- Added `gameOverSceneName = "GameOver"` inspector field.
+- Defeat path: unloads "Combat", loads "GameOver" additively (instead of loading Menu).
+- Victory path: calls `BattleSaveManager.Instance?.ClearSnapshot()` before restoring exploration.
+
+**Setup required in Unity:**
+1. Create a "GameOver" scene with: full-screen black Image, TMP "GAME OVER" text, Retry button, Quit button, EventSystem.
+2. Attach `GameOver.cs` to a parent GameObject; wire Retry/Quit buttons in inspector.
+3. Add the scene to Build Settings.
+4. Set `gameOverSceneName` on the CombatSystem inspector if the scene is not named "GameOver".
+
+---
+
+## 2026-03-24 (session 4)
+
+### Fix: Simon battle music not playing — music now started at encounter trigger time
+**Files:** `Assets/Scripts/EncounterS/EncounterStarter.cs`, `Assets/Scripts/Dialogue Scripts/DynamicMovementDialogue.cs`, `Assets/Scripts/Dialogue Scripts/SpecialCutscene.cs`, `Assets/Scripts/Battle/CombatSystem.cs`
+
+Music was being started only inside `CombatSystem.InitializeCombatWithData()` (i.e., inside the Combat scene's `Start()`). For the Simon fight, the `<<startencounter>>` Yarn command is a void handler that doesn't block Yarn, so the dialogue completes and the scene loads asynchronously — by then, any timing-related AudioSource/AudioListener issues during the scene transition could silently swallow the `PlayClip` call.
+
+**Added** `EncounterStarter.StartEncounterFromCutscene(EncounterFile, SistemaInventario)` — a shared static method that calls `BuildEncounterData`, plays battle music immediately (`StopMusic` + `PlayClip`), then starts the transition and loads Combat. Both cutscene scripts now delegate to this instead of duplicating the PreviousScene/SceneManager logic.
+
+- `SpecialCutsceneScript.StartEncounterCoroutine()` now calls `StartEncounterFromCutscene` (void command approach kept, as it is the more correct approach)
+- `DynamicCutsceneScript.StartRatEncounter()` now calls `StartEncounterFromCutscene` and no longer blocks Yarn with `WaitUntil`
+- `CombatSystem.InitializeCombatWithData()` no longer calls `StopMusic()` before `PlayClip` — music is already playing from the trigger; `PlayClip`'s existing guard (`same clip + isPlaying → skip`) prevents double-play
+
+---
+
 ## 2026-03-24 (session 3)
 
 ### Fix: Shop buttons unresponsive after returning from combat

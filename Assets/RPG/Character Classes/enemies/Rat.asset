@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0dae1c0bdb169eb479b9e915ac2d682c, type: 3}
   m_Name: Rat
   m_EditorClassIdentifier: Assembly-CSharp::CharacterData
-  characterName: Topeira
+  characterName: Rato Afogado
   partyIcon: {fileID: -8183816634814765431, guid: 9dd78b69797e91b4694db86a5f80aa75, type: 3}
   battlePortrait: {fileID: -8183816634814765431, guid: 9dd78b69797e91b4694db86a5f80aa75, type: 3}
   animatorController: {fileID: 9100000, guid: 8b4fc9547af872743bbf5ef55dace7b5, type: 2}

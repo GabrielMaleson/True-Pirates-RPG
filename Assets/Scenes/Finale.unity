@@ -204,8 +204,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: "FINAL DA DEMO\n\n\n\n\n\n\n\n\n\n\nA Queda Do C\xE9u\n\nCr\xE9ditos\n\nGame
-    & Narrative Design - Luiz Figueiredo\n\nPrograma\xE7\xE3o - Gabriel Maleson\n\nUI
-    Designer/Tech Artist - Marcelle Campeche\n\nSpecial Thanks - Giovanna Poggi"
+    & Narrative Design - Luiz Figueiredo\n\nPrograma\xE7\xE3o & Game Design - Gabriel
+    Maleson\n\nAsset Art - Felipe Brito\n\nUI Designer/Tech Artist - Marcelle Campeche\n\nArt
+    & Concept - Kailani\n\nArtista 2D - Andreza Gatto\n\nSpecial Thanks - Giovanna
+    Poggi"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9294fb847b4638b4084c559b79395c93, type: 2}
   m_sharedMaterial: {fileID: -8446636525389922651, guid: 9294fb847b4638b4084c559b79395c93, type: 2}

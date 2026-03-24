@@ -452,8 +452,8 @@ Transform:
   m_GameObject: {fileID: 72458166}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 6.33, y: -4.75, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 6.33, y: -5.69, z: 0}
+  m_LocalScale: {x: 0.25, y: 0.25, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2030917698}
@@ -515,7 +515,7 @@ CapsuleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Size: {x: 2.0566666, y: 6.5033336}
+  m_Size: {x: 6.17, y: 19.47}
   m_Direction: 0
 --- !u!50 &72458171
 Rigidbody2D:
@@ -1051,6 +1051,7 @@ MonoBehaviour:
   Activator2: {fileID: 0}
   Killer: {fileID: 0}
   compassquest: 0
+  chestquest: 0
   giveableItems: []
 --- !u!61 &150022144
 BoxCollider2D:
@@ -47911,6 +47912,7 @@ MonoBehaviour:
   Activator2: {fileID: 1238468658}
   Killer: {fileID: 272847102}
   compassquest: 0
+  chestquest: 0
   giveableItems: []
 --- !u!61 &272847105
 BoxCollider2D:
@@ -48077,7 +48079,7 @@ Animator:
   m_GameObject: {fileID: 321960786}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 89c17c3575fa8f147b968adf718f551e, type: 2}
+  m_Controller: {fileID: 9100000, guid: 45841d217043fce418df56544d2b5829, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -59916,6 +59918,7 @@ MonoBehaviour:
   Activator2: {fileID: 0}
   Killer: {fileID: 1547378131}
   compassquest: 0
+  chestquest: 0
   giveableItems: []
 --- !u!61 &754411967
 BoxCollider2D:
@@ -60018,6 +60021,7 @@ MonoBehaviour:
   Activator2: {fileID: 53525098}
   Killer: {fileID: 0}
   compassquest: 0
+  chestquest: 0
   giveableItems: []
 --- !u!61 &766683552
 BoxCollider2D:
@@ -61163,7 +61167,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &929339481
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -61484,7 +61488,7 @@ Transform:
   m_GameObject: {fileID: 933912018}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.2, y: 18.68, z: 0}
+  m_LocalPosition: {x: 9.02, y: 18.68, z: 0}
   m_LocalScale: {x: 3.398894, y: 13.862467, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -63562,6 +63566,7 @@ MonoBehaviour:
   Activator2: {fileID: 0}
   Killer: {fileID: 0}
   compassquest: 1
+  chestquest: 0
   giveableItems: []
 --- !u!61 &1238468661
 BoxCollider2D:
@@ -71118,12 +71123,12 @@ MonoBehaviour:
   thething: sidequest2_vela
   joodiescript: 0
   DestroyThe: 1
-  Activator: {fileID: 0}
+  Activator: {fileID: 1933411260}
   Activator2: {fileID: 0}
-  Killer: {fileID: 0}
+  Killer: {fileID: 1547378131}
   compassquest: 0
-  giveableItems:
-  - {fileID: 11400000, guid: 0bc5b023053cfac40a492cca47a01c4a, type: 2}
+  chestquest: 0
+  giveableItems: []
 --- !u!61 &1547378135
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -71771,6 +71776,7 @@ MonoBehaviour:
   Activator2: {fileID: 0}
   Killer: {fileID: 0}
   compassquest: 0
+  chestquest: 0
   giveableItems:
   - {fileID: 11400000, guid: fe229a478bd977c439c057922e813cf9, type: 2}
 --- !u!61 &1606221630
@@ -72256,6 +72262,7 @@ MonoBehaviour:
   Activator2: {fileID: 1606221627}
   Killer: {fileID: 766683549}
   compassquest: 0
+  chestquest: 0
   giveableItems: []
 --- !u!61 &1696715095
 BoxCollider2D:
@@ -74977,6 +74984,7 @@ MonoBehaviour:
   Activator2: {fileID: 0}
   Killer: {fileID: 0}
   compassquest: 0
+  chestquest: 1
   giveableItems:
   - {fileID: 11400000, guid: 0bc5b023053cfac40a492cca47a01c4a, type: 2}
 --- !u!61 &1933411263
