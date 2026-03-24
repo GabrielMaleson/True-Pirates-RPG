@@ -73,6 +73,7 @@ public class PartyMenuManager : MonoBehaviour
         if (inventory != null)
         {
             inventory.onInventarioMudou += RefreshInventoryDisplay;
+            inventory.onPartyUpdated += CreatePartyMemberDisplays;
         }
 
 

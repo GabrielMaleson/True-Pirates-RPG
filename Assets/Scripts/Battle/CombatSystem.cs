@@ -121,8 +121,8 @@ public class CombatSystem : MonoBehaviour
 
     private Vector3 GetDefaultPartySpawnPos(int index, Camera cam)
     {
-        float[] yViewport = { 0.5f, 0.3f, 0.7f };
-        float y = index < yViewport.Length ? yViewport[index] : 0.5f;
+        float[] yViewport = { 0.2f, 0.2f, 0.2f };
+        float y = index < yViewport.Length ? yViewport[index] : 0.2f;
         Vector3 world = cam.ViewportToWorldPoint(new Vector3(0.2f, y, Mathf.Abs(cam.transform.position.z)));
         world.z = 0f;
         return world;
@@ -130,8 +130,8 @@ public class CombatSystem : MonoBehaviour
 
     private Vector3 GetDefaultEnemySpawnPos(int index, Camera cam)
     {
-        float[] yViewport = { 0.5f, 0.3f, 0.7f };
-        float y = index < yViewport.Length ? yViewport[index] : 0.5f;
+        float[] yViewport = { 0.2f, 0.2f, 0.2f };
+        float y = index < yViewport.Length ? yViewport[index] : 0.2f;
         Vector3 world = cam.ViewportToWorldPoint(new Vector3(0.8f, y, Mathf.Abs(cam.transform.position.z)));
         world.z = 0f;
         return world;
@@ -146,9 +146,19 @@ public class CombatSystem : MonoBehaviour
         {
             if (encounterData.encounterFile.battleMusic != null)
                 MusicManager.Instance?.PlayClip(encounterData.encounterFile.battleMusic);
+            else
+                Debug.LogWarning($"[CombatSystem] EncounterFile '{encounterData.encounterFile.encounterName}' não tem battleMusic atribuído.");
 
-            if (backgroundRenderer != null && encounterData.encounterFile.battleBackground != null)
+            if (backgroundRenderer == null)
+                Debug.LogWarning("[CombatSystem] backgroundRenderer não atribuído no inspector do CombatSystem!");
+            else if (encounterData.encounterFile.battleBackground == null)
+                Debug.LogWarning($"[CombatSystem] EncounterFile '{encounterData.encounterFile.encounterName}' não tem battleBackground atribuído.");
+            else
                 backgroundRenderer.sprite = encounterData.encounterFile.battleBackground;
+        }
+        else
+        {
+            Debug.LogWarning("[CombatSystem] encounterData.encounterFile é null — sem música nem background.");
         }
 
         if (encounterData.playerPartyMembers != null)

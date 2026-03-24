@@ -258,66 +258,28 @@ public class DynamicCutsceneScript : MonoBehaviour
 
     private void StartRatFightTrue()
     {
-        // Check if encounter file is assigned
         if (encounterToStart == null)
         {
-            Debug.LogError("No encounter file assigned to DynamicCutsceneScript!");
+            Debug.LogError("Nenhum EncounterFile atribuído ao DynamicCutsceneScript!");
             return;
         }
 
-        // Create or find EncounterData
-        EncounterData encounterData = FindFirstObjectByType<EncounterData>();
-        if (encounterData == null)
-        {
-            GameObject dataObj = new GameObject("EncounterData");
-            DontDestroyOnLoad(dataObj);
-            encounterData = dataObj.AddComponent<EncounterData>();
-            Debug.Log("Created new EncounterData");
-        }
-
-        // Get inventory
         SistemaInventario inventory = SistemaInventario.Instance;
         if (inventory == null)
         {
-            Debug.LogError("SistemaInventario instance not found!");
+            Debug.LogError("SistemaInventario.Instance não encontrado!");
             return;
         }
 
-        // Set up encounter data
-        // Do NOT set encounterStarterObject here — this script must survive after combat
-        // so its instance, character dictionary, and child NPCs remain accessible.
-        encounterData.playerInventory = inventory;
-        encounterData.encounterFile = encounterToStart;
-        encounterData.playerPartyMembers = inventory.GetPartyMembersForCombat();
+        // Do NOT set encounterStarterObject — this script must survive after combat.
+        EncounterStarter.BuildEncounterData(encounterToStart, inventory);
 
-        // Clear and populate enemies
-        encounterData.enemyPartyMembers.Clear();
-        encounterData.enemyPrefabs.Clear();
-
-        foreach (var enemyData in encounterToStart.enemies)
-        {
-            if (enemyData.characterData != null)
-            {
-                PartyMemberState enemyState = new PartyMemberState(enemyData.characterData, enemyData.level);
-                if (enemyData.overrideHP > 0)
-                {
-                    enemyState.currentHP = enemyData.overrideHP;
-                }
-                encounterData.enemyPartyMembers.Add(enemyState);
-                encounterData.enemyPrefabs.Add(enemyData.enemyPrefab);
-            }
-        }
-
-        // Calculate rewards
-        encounterData.CalculateRewards();
-
-        // Create and load scene
         GameObject sceneObj = new GameObject("PreviousScene");
         sceneObj.AddComponent<PreviousScene>();
         sceneObj.GetComponent<PreviousScene>().UnloadScene();
 
         SceneManager.LoadSceneAsync("Combat", LoadSceneMode.Additive);
-        Debug.Log("Combat scene loading started");
+        Debug.Log("Cena de combate sendo carregada.");
     }
 
     private void OnDestroy()

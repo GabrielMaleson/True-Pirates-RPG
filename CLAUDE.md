@@ -18,10 +18,11 @@ A 2D RPG built in Unity (2D, C#). Side-scrolling exploration with turn-based com
 - **DontDestroyOnLoad** — `SistemaInventario` (inventory/party singleton, tagged `"Inventory"`), `EncounterData` (combat data), `DialogueManager` (Yarn UI + commands, tagged `"Inventory"`)
 
 ### Combat Transition Flow
-1. `EncounterStarter.StartEncounter()` or `DynamicCutsceneScript.StartRatFightTrue()` or `SpecialCutsceneScript.StartEncounterCoroutine()` triggers combat
-2. Creates `PreviousScene` → `UnloadScene()` deactivates all non-Inventory/non-Ignore root objects
-3. `EncounterData` (DontDestroyOnLoad) carries party + enemy data into the Combat scene
-4. Combat ends → `CombatSystem.ReturnToMapAfterDelay()` → `PreviousScene.LoadScene()` reactivates stored objects, unloads Combat scene
+1. `EncounterStarter.StartEncounter()`, `DynamicCutsceneScript.StartRatFightTrue()`, or `SpecialCutsceneScript.StartEncounterCoroutine()` triggers combat
+2. All three call `EncounterStarter.BuildEncounterData(encounterFile, inventory)` — a shared static method that creates/populates `EncounterData` and calls `CalculateRewards()`. Only `EncounterStarter` also sets `encounterStarterObject`.
+3. Creates `PreviousScene` → `UnloadScene()` deactivates all non-Inventory/non-Ignore root objects
+4. `EncounterData` (DontDestroyOnLoad) carries party + enemy data into the Combat scene
+5. Combat ends → `CombatSystem.ReturnToMapAfterDelay()` → `PreviousScene.LoadScene()` reactivates stored objects, unloads Combat scene
 
 ### PreviousScene Tag System
 - **`"Inventory"`** — DontDestroyOnLoad, never stored/deactivated (e.g. SistemaInventario, DialogueManager)
@@ -40,7 +41,7 @@ A 2D RPG built in Unity (2D, C#). Side-scrolling exploration with turn-based com
 | File | Class | Role |
 |---|---|---|
 | `EncounterS/PreviousScene.cs` | `PreviousScene` | Stores/restores scene on combat enter/exit |
-| `EncounterS/EncounterStarter.cs` | `EncounterStarter` | Collision trigger → starts a random/fixed encounter |
+| `EncounterS/EncounterStarter.cs` | `EncounterStarter` | Collision trigger → starts a random/fixed encounter. Also owns the shared `static BuildEncounterData(EncounterFile, SistemaInventario)` used by all encounter starters. |
 | `EncounterS/EncounterData.cs` | `EncounterData` | DontDestroyOnLoad data carrier for one combat |
 | `EncounterS/KeepDeactivated.cs` | `KeepDeactivated` | Marker component: this object should NOT be reactivated by PreviousScene |
 | `SistemaInventario.cs` | `SistemaInventario` | Singleton — inventory, party members (`List<PartyMemberState>`), gold, game progress tags |
@@ -58,7 +59,7 @@ A 2D RPG built in Unity (2D, C#). Side-scrolling exploration with turn-based com
 ### Combat
 | File | Class | Role |
 |---|---|---|
-| `Battle/CombatSystem.cs` | `CombatSystem` | Turn-based logic, spawns character visuals from `partyMemberVisualPrefab`. Filters out HP=0 members in `InitializeCombat()`. |
+| `Battle/CombatSystem.cs` | `CombatSystem` | Turn-based logic, spawns character visuals from `partyMemberVisualPrefab`. Filters out HP=0 members in `InitializeCombat()`. Spawn positions calculated at runtime from camera viewport (20% from bottom). Background sprite and battle music set from `EncounterFile`. |
 | `Battle/CombatUIManager.cs` | `CombatUIManager` | UI cards for party/enemies, action menu, targeting |
 | `PartyData.cs` | `PartyMemberState` | Runtime character state (HP, AP, EXP, equipment). Non-serialized `transform` field for combat visual. **Same objects referenced by SistemaInventario AND EncounterData** — HP changes in combat persist. |
 
@@ -107,3 +108,6 @@ Key progress strings used throughout the game:
 3. **`"Ignore"` tag only works on root GameObjects** — children of non-Ignore roots get deactivated with their parent.
 4. **`GetPartyMembersForCombat()` returns the same `PartyMemberState` references** — HP changes in combat modify the live objects in `SistemaInventario.partyMembers`.
 5. **`DialogueManager.StartDialogue()` must call `EnablePlayerControl()` on early return** — otherwise any caller that stopped movement before calling it will softlock the player.
+6. **`BuildEncounterData()` is the single source of truth for encounter setup** — always call it instead of duplicating the setup logic. Only `EncounterStarter` should set `encounterStarterObject` afterward.
+7. **Combat visual prefabs must be moved to the Combat scene after instantiation** — use `SceneManager.MoveGameObjectToScene(obj, gameObject.scene)` immediately after `Instantiate()`, otherwise they land in the active (exploration) scene and render incorrectly.
+8. **All Yarn node names referenced by NPCTalker `thething` fields must exist in a `.yarn` file** — missing nodes cause the DialogueRunner to start but never complete, permanently locking the player.

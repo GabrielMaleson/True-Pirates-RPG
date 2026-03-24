@@ -2,6 +2,87 @@
 
 ---
 
+## 2026-03-24
+
+### Fix: Combat character visuals spawning in wrong scene (additive loading)
+**File:** `Assets/Scripts/Battle/CombatSystem.cs`
+
+`Instantiate()` places objects in the active scene, which stays as the exploration scene during additive loading. Party and enemy walk-sprite prefabs were appearing in the exploration scene hierarchy instead of the Combat scene, causing wrong camera rendering and incorrect positions.
+
+**Added** `SceneManager.MoveGameObjectToScene(obj, gameObject.scene)` after each `Instantiate()` call for both party and enemy visuals.
+
+---
+
+### Feature: Camera-viewport-based spawn positions for combat characters
+**File:** `Assets/Scripts/Battle/CombatSystem.cs`
+
+Manually positioned spawn-point transforms inside a UI Canvas were being read as world coordinates scaled by the Canvas Scaler, placing characters in a tiny cluster near the camera origin.
+
+**Added** `GetDefaultPartySpawnPos()` and `GetDefaultEnemySpawnPos()` using `Camera.ViewportToWorldPoint()` to calculate spawn positions at runtime (party left side, enemies right side, all at 20% from screen bottom). Spawn-point inspector fields are kept but bypassed — code always uses viewport positions.
+
+---
+
+### Feature: Combat background sprite per encounter
+**Files:** `Assets/Scripts/EncounterS/EncounterFile.cs`, `Assets/Scripts/Battle/CombatSystem.cs`
+
+Replaced `battleBackgroundName` (unused string) with `battleBackground` (Sprite) on `EncounterFile`. `CombatSystem` now has a `backgroundRenderer` (SpriteRenderer) field; `InitializeCombatWithData()` assigns the sprite from the encounter file. Added warnings when either field is unassigned.
+
+**Inspector:** Assign `backgroundRenderer` on the CombatSystem object; assign `battleBackground` sprite on each EncounterFile.
+
+---
+
+### Refactor: Shared encounter setup via `EncounterStarter.BuildEncounterData()`
+**Files:** `Assets/Scripts/EncounterS/EncounterStarter.cs`, `Assets/Scripts/Dialogue Scripts/DynamicMovementDialogue.cs`, `Assets/Scripts/Dialogue Scripts/SpecialCutscene.cs`
+
+Both cutscene scripts duplicated the EncounterData setup logic. Extracted into a `public static BuildEncounterData(EncounterFile, SistemaInventario)` method on `EncounterStarter`. All three encounter starters now share identical data-setup logic; only `EncounterStarter.StartEncounter()` sets `encounterStarterObject`.
+
+**Also fixed in SpecialCutsceneScript:** was using `FindFirstObjectByType<SistemaInventario>()` instead of `SistemaInventario.Instance`, and was missing `CalculateRewards()` call.
+
+---
+
+### Fix: Party menu not updating when Simon/Joodie join mid-game
+**File:** `Assets/Scripts/Menu Scripts/PartyMenuManager.cs`
+
+`CreatePartyMemberDisplays()` was only called at `Start()` and `OpenMenu()`. When `<<joodieadd>>` or `<<addsimon>>` fired during a cutscene, the menu never refreshed its button/display list.
+
+**Added** `inventory.onPartyUpdated += CreatePartyMemberDisplays` subscription in `Start()`.
+
+---
+
+### Fix: Missing yarn node `sidequest2_complete` causing softlock
+**File:** `Assets/Scripts/Dialogue Scripts/prologue_parte2.yarn`
+
+An NPCTalker in the Main Scene referenced a dialogue node `sidequest2_complete` that did not exist in any yarn file. The DialogueRunner would start but never fire `onDialogueComplete`, leaving the player permanently locked.
+
+**Added** stub node `sidequest2_complete` with `<<darken>>` / `<<brighten>>` to unblock; content to be filled in.
+
+---
+
+### Fix: CraftingSimples merge conflict — compass progress now correctly added
+**File:** `Assets/Scripts/CraftingSimples.cs`
+
+Merge conflict between `refactor-fixes` and `main` left duplicate/broken setup code in `CraftItem()`. Resolved by keeping the `SistemaInventario.Instance` reference pattern from the refactor branch. `inv.AddProgress("compass")` now always runs after a successful craft.
+
+---
+
+### Fix: FightProgress re-triggering on Rigidbody2D.WakeUp() — Timon soldier softlock
+**File:** `Assets/Scripts/Dialogue Scripts/FightProgress.cs`
+
+When `DisablePlayerControl()` / `EnablePlayerControl()` call `Rigidbody2D.Sleep()` / `WakeUp()`, Unity re-evaluates all overlapping triggers. If the player was inside a `FightProgress` zone when a dialogue ended, `OnTriggerEnter2D` would fire again, attempting to start `cantprogressyet` while movement was already re-enabled — causing a softlock when approaching the Timon soldier left→right.
+
+**Added** `if (doingthing) return` guard in `OnTriggerEnter2D` and `OnTriggerExit2D` to reset the guard when the player actually leaves. Works together with the `IsDialogueRunning` guard in `StartDialogue()`.
+
+---
+
+### Feature: Objectives panel toggle in party menu (alpha-based, never deactivated)
+**File:** `Assets/Scripts/Menu Scripts/PartyMenuManager.cs`
+
+Added `ToggleObjectives()` (flips `ObjectiveManager`'s `CanvasGroup` alpha 0↔1), `CloseObjectivesPanel()` (sets alpha to 0), and `public GameObject objectivesButton` inspector field. `OpenMenu()` closes the objectives panel before opening party menu. `CloseMenu()` re-shows both `MenuOpener` and `objectivesButton`. The objectives panel is never `SetActive(false)` — visibility is alpha-only to preserve its DontDestroyOnLoad state.
+
+**Wire in inspector:** assign the objectives HUD button to `objectivesButton`; wire the objectives button's OnClick to `PartyMenuManager.ToggleObjectives()`.
+
+---
+
 ## 2026-03-23
 
 ### Fix: Cutscene managers destroyed after combat — root cause of multiple bugs

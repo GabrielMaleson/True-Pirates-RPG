@@ -238,43 +238,15 @@ public class SpecialCutsceneScript : MonoBehaviour
 
     private IEnumerator StartEncounterCoroutine()
     {
-        EncounterData encounterData = FindFirstObjectByType<EncounterData>();
-        if (encounterData == null)
-        {
-            GameObject dataObj = new GameObject("EncounterData");
-            DontDestroyOnLoad(dataObj);
-            encounterData = dataObj.AddComponent<EncounterData>();
-        }
-
-        SistemaInventario inventory = FindFirstObjectByType<SistemaInventario>();
+        SistemaInventario inventory = SistemaInventario.Instance;
         if (inventory == null)
         {
-            Debug.LogError("No player inventory found!");
+            Debug.LogError("SistemaInventario.Instance não encontrado!");
             yield break;
         }
 
-        // Do NOT set encounterStarterObject here — this script must survive after combat
-        // so its Yarn command handlers and child references remain intact.
-        encounterData.playerInventory = inventory;
-        encounterData.encounterFile = encounterToStart;
-        encounterData.playerPartyMembers = inventory.GetPartyMembersForCombat();
-
-        encounterData.enemyPartyMembers.Clear();
-        encounterData.enemyPrefabs.Clear();
-
-        foreach (var enemyData in encounterToStart.enemies)
-        {
-            if (enemyData.characterData != null)
-            {
-                PartyMemberState enemyState = new PartyMemberState(enemyData.characterData, enemyData.level);
-                if (enemyData.overrideHP > 0)
-                {
-                    enemyState.currentHP = enemyData.overrideHP;
-                }
-                encounterData.enemyPartyMembers.Add(enemyState);
-                encounterData.enemyPrefabs.Add(enemyData.enemyPrefab);
-            }
-        }
+        // Do NOT set encounterStarterObject — this script must survive after combat.
+        EncounterStarter.BuildEncounterData(encounterToStart, inventory);
 
         GameObject sceneObj = new GameObject("PreviousScene");
         sceneObj.AddComponent<PreviousScene>();
