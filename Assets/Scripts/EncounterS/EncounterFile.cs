@@ -23,6 +23,7 @@ public class EncounterFile : ScriptableObject
     public bool isBossEncounter;
     public AudioClip battleMusic;
     public Sprite battleBackground;
+    public BattleTransitionType transitionType = BattleTransitionType.VerticalReflectedWipe;
 }
 
 [System.Serializable]

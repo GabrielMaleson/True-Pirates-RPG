@@ -38,11 +38,13 @@ public class EncounterStarter : MonoBehaviour
         EncounterData encounterData = BuildEncounterData(encounterFile, playerInventory);
         encounterData.encounterStarterObject = this.gameObject;
 
-        GameObject sceneObj = new GameObject("PreviousScene");
-        sceneObj.AddComponent<PreviousScene>();
-        sceneObj.GetComponent<PreviousScene>().UnloadScene();
-
-        SceneManager.LoadScene("Combat", LoadSceneMode.Additive);
+        BattleTransitionManager.GetOrCreate().StartTransitionThen(encounterFile.transitionType, () =>
+        {
+            GameObject sceneObj = new GameObject("PreviousScene");
+            sceneObj.AddComponent<PreviousScene>();
+            sceneObj.GetComponent<PreviousScene>().UnloadScene();
+            SceneManager.LoadScene("Combat", LoadSceneMode.Additive);
+        });
     }
 
     /// <summary>

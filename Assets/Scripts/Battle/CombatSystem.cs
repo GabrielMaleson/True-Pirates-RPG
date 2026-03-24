@@ -39,6 +39,10 @@ public class CombatSystem : MonoBehaviour
     public GameObject partyMemberVisualPrefab;
     public GameObject enemyVisualPrefab;
 
+    [Header("Camera")]
+    // Arraste a câmera do Combat aqui no inspector — evita busca dinâmica que pode retornar a câmera errada
+    public Camera combatCamera;
+
     [Header("Background")]
     public SpriteRenderer backgroundRenderer;
 
@@ -111,18 +115,23 @@ public class CombatSystem : MonoBehaviour
 
     private Camera GetCombatCamera()
     {
+        // Inspector assignment is the most reliable — use it first
+        if (combatCamera != null) return combatCamera;
+
         foreach (Camera cam in Camera.allCameras)
         {
             if (cam.gameObject.scene == gameObject.scene)
                 return cam;
         }
+
+        Debug.LogWarning("[CombatSystem] Câmera de combate não encontrada. Atribua 'combatCamera' no inspector do CombatSystem para evitar posições de spawn incorretas.");
         return Camera.main;
     }
 
     private Vector3 GetDefaultPartySpawnPos(int index, Camera cam)
     {
-        float[] yViewport = { 0.2f, 0.2f, 0.2f };
-        float y = index < yViewport.Length ? yViewport[index] : 0.2f;
+        float[] yViewport = { 0.3f, 0.3f, 0.3f };
+        float y = index < yViewport.Length ? yViewport[index] : 0.3f;
         Vector3 world = cam.ViewportToWorldPoint(new Vector3(0.2f, y, Mathf.Abs(cam.transform.position.z)));
         world.z = 0f;
         return world;
@@ -130,8 +139,8 @@ public class CombatSystem : MonoBehaviour
 
     private Vector3 GetDefaultEnemySpawnPos(int index, Camera cam)
     {
-        float[] yViewport = { 0.2f, 0.2f, 0.2f };
-        float y = index < yViewport.Length ? yViewport[index] : 0.2f;
+        float[] yViewport = { 0.3f, 0.3f, 0.3f };
+        float y = index < yViewport.Length ? yViewport[index] : 0.3f;
         Vector3 world = cam.ViewportToWorldPoint(new Vector3(0.8f, y, Mathf.Abs(cam.transform.position.z)));
         world.z = 0f;
         return world;
@@ -154,7 +163,10 @@ public class CombatSystem : MonoBehaviour
             else if (encounterData.encounterFile.battleBackground == null)
                 Debug.LogWarning($"[CombatSystem] EncounterFile '{encounterData.encounterFile.encounterName}' não tem battleBackground atribuído.");
             else
+            {
                 backgroundRenderer.sprite = encounterData.encounterFile.battleBackground;
+                backgroundRenderer.GetComponent<FitToCamera>()?.Fit();
+            }
         }
         else
         {
@@ -232,6 +244,13 @@ public class CombatSystem : MonoBehaviour
                 enemies.Add(enemyData);
             }
         }
+
+        // Revela a cena de combate a partir do preto
+        BattleTransitionManager transitionManager = BattleTransitionManager.Instance;
+        if (transitionManager != null && encounterData.encounterFile != null)
+            transitionManager.PlayReverseTransition(encounterData.encounterFile.transitionType);
+        else if (transitionManager != null)
+            transitionManager.PlayReverseTransition(BattleTransitionType.VerticalReflectedWipe);
 
         InitializeCombat();
     }

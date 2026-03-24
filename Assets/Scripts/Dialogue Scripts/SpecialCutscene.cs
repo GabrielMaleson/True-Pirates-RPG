@@ -248,18 +248,14 @@ public class SpecialCutsceneScript : MonoBehaviour
         // Do NOT set encounterStarterObject — this script must survive after combat.
         EncounterStarter.BuildEncounterData(encounterToStart, inventory);
 
-        GameObject sceneObj = new GameObject("PreviousScene");
-        sceneObj.AddComponent<PreviousScene>();
-        sceneObj.GetComponent<PreviousScene>().UnloadScene();
-
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("Combat", LoadSceneMode.Additive);
-
-        while (!asyncLoad.isDone)
+        BattleTransitionManager.GetOrCreate().StartTransitionThen(encounterToStart.transitionType, () =>
         {
-            yield return null;
-        }
-
-        Debug.Log("Combat scene loaded successfully");
+            GameObject sceneObj = new GameObject("PreviousScene");
+            sceneObj.AddComponent<PreviousScene>();
+            sceneObj.GetComponent<PreviousScene>().UnloadScene();
+            SceneManager.LoadSceneAsync("Combat", LoadSceneMode.Additive);
+            Debug.Log("Cena de combate sendo carregada.");
+        });
     }
 
     private IEnumerator MoveToPointAfterDelay(GameObject character, Vector3 target, float delay)

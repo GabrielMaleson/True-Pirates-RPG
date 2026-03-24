@@ -246,40 +246,43 @@ public class DynamicCutsceneScript : MonoBehaviour
     }
 
     [YarnCommand("startratfight")]
-    public static void StartRatEncounter()
+    public static IEnumerator StartRatEncounter()
     {
         if (instance == null)
         {
-            Debug.LogError("No DynamicCutsceneScript instance found!");
-            return;
+            Debug.LogError("Nenhuma instância de DynamicCutsceneScript encontrada!");
+            yield break;
         }
-        instance.StartRatFightTrue();
-    }
 
-    private void StartRatFightTrue()
-    {
-        if (encounterToStart == null)
+        if (instance.encounterToStart == null)
         {
             Debug.LogError("Nenhum EncounterFile atribuído ao DynamicCutsceneScript!");
-            return;
+            yield break;
         }
 
         SistemaInventario inventory = SistemaInventario.Instance;
         if (inventory == null)
         {
             Debug.LogError("SistemaInventario.Instance não encontrado!");
-            return;
+            yield break;
         }
 
         // Do NOT set encounterStarterObject — this script must survive after combat.
-        EncounterStarter.BuildEncounterData(encounterToStart, inventory);
+        EncounterStarter.BuildEncounterData(instance.encounterToStart, inventory);
 
-        GameObject sceneObj = new GameObject("PreviousScene");
-        sceneObj.AddComponent<PreviousScene>();
-        sceneObj.GetComponent<PreviousScene>().UnloadScene();
+        bool transitionDone = false;
+        BattleTransitionManager.GetOrCreate().StartTransitionThen(instance.encounterToStart.transitionType, () =>
+        {
+            GameObject sceneObj = new GameObject("PreviousScene");
+            sceneObj.AddComponent<PreviousScene>();
+            sceneObj.GetComponent<PreviousScene>().UnloadScene();
+            SceneManager.LoadSceneAsync("Combat", LoadSceneMode.Additive);
+            Debug.Log("Cena de combate sendo carregada.");
+            transitionDone = true;
+        });
 
-        SceneManager.LoadSceneAsync("Combat", LoadSceneMode.Additive);
-        Debug.Log("Cena de combate sendo carregada.");
+        // Manter Yarn bloqueado até a transição completar e a cena começar a carregar
+        yield return new WaitUntil(() => transitionDone);
     }
 
     private void OnDestroy()
