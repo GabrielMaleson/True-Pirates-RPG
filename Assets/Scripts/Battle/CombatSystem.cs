@@ -106,6 +106,34 @@ public class CombatSystem : MonoBehaviour
             Debug.LogError("No EncounterData found! Cannot start combat.");
     }
 
+    private Camera GetCombatCamera()
+    {
+        foreach (Camera cam in Camera.allCameras)
+        {
+            if (cam.gameObject.scene == gameObject.scene)
+                return cam;
+        }
+        return Camera.main;
+    }
+
+    private Vector3 GetDefaultPartySpawnPos(int index, Camera cam)
+    {
+        float[] yViewport = { 0.5f, 0.3f, 0.7f };
+        float y = index < yViewport.Length ? yViewport[index] : 0.5f;
+        Vector3 world = cam.ViewportToWorldPoint(new Vector3(0.2f, y, Mathf.Abs(cam.transform.position.z)));
+        world.z = 0f;
+        return world;
+    }
+
+    private Vector3 GetDefaultEnemySpawnPos(int index, Camera cam)
+    {
+        float[] yViewport = { 0.5f, 0.3f, 0.7f };
+        float y = index < yViewport.Length ? yViewport[index] : 0.5f;
+        Vector3 world = cam.ViewportToWorldPoint(new Vector3(0.8f, y, Mathf.Abs(cam.transform.position.z)));
+        world.z = 0f;
+        return world;
+    }
+
     public void InitializeCombatWithData(EncounterData encounterData)
     {
         partyMembers.Clear();
@@ -129,10 +157,11 @@ public class CombatSystem : MonoBehaviour
                 else if (partyMemberVisualPrefab == null)
                     Debug.LogWarning($"[CombatSystem] partyMemberVisualPrefab is null — cannot spawn visual for {memberData.CharacterName}");
 
-                if (i < partySpawnPoints.Count && partySpawnPoints[i] != null && partyMemberVisualPrefab != null)
+                if (partyMemberVisualPrefab != null)
                 {
-                    Debug.Log($"[CombatSystem] Spawning party visual for {memberData.CharacterName} at {partySpawnPoints[i].position}");
-                    GameObject memberObj = Instantiate(partyMemberVisualPrefab, partySpawnPoints[i].position, Quaternion.identity);
+                    Vector3 spawnPos = GetDefaultPartySpawnPos(i, GetCombatCamera());
+                    Debug.Log($"[CombatSystem] Spawning party visual for {memberData.CharacterName} at {spawnPos}");
+                    GameObject memberObj = Instantiate(partyMemberVisualPrefab, spawnPos, Quaternion.identity);
                     SceneManager.MoveGameObjectToScene(memberObj, gameObject.scene);
                     memberObj.name = $"Party_{memberData.CharacterName}";
 
@@ -164,10 +193,11 @@ public class CombatSystem : MonoBehaviour
                 else if (enemySpawnPoints[i] == null)
                     Debug.LogWarning($"[CombatSystem] enemySpawnPoints[{i}] is null for {enemyData.CharacterName}");
 
-                if (prefabToUse != null && i < enemySpawnPoints.Count && enemySpawnPoints[i] != null)
+                if (prefabToUse != null)
                 {
-                    Debug.Log($"[CombatSystem] Spawning enemy visual for {enemyData.CharacterName} at {enemySpawnPoints[i].position}");
-                    GameObject enemyObj = Instantiate(prefabToUse, enemySpawnPoints[i].position, Quaternion.identity);
+                    Vector3 spawnPos = GetDefaultEnemySpawnPos(i, GetCombatCamera());
+                    Debug.Log($"[CombatSystem] Spawning enemy visual for {enemyData.CharacterName} at {spawnPos}");
+                    GameObject enemyObj = Instantiate(prefabToUse, spawnPos, Quaternion.identity);
                     SceneManager.MoveGameObjectToScene(enemyObj, gameObject.scene);
                     enemyObj.name = $"Enemy_{enemyData.CharacterName}";
 
