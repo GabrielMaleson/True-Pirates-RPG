@@ -2,6 +2,55 @@
 
 ---
 
+## 2026-03-24 (session 3)
+
+### Fix: Shop buttons unresponsive after returning from combat
+**File:** `Assets/Scripts/EncounterS/PreviousScene.cs`
+
+Unity disables duplicate EventSystems automatically. When the Combat scene (with its own EventSystem) loaded additively, the exploration scene's EventSystem was disabled as a duplicate. After the Combat scene unloaded its EventSystem was destroyed, but the exploration one remained disabled — so all UI button clicks stopped working.
+
+**Added** `FixEventSystems()` called from `LoadScene()` alongside the existing `FixAudioListeners()`. It finds all EventSystems after restoration; if none are enabled, it enables the first one found (or creates a new one if none exist).
+
+---
+
+### Fix: All party/enemy characters spawning on the same spot
+**File:** `Assets/Scripts/Battle/CombatSystem.cs`
+
+`GetDefaultPartySpawnPos` and `GetDefaultEnemySpawnPos` had identical X and Y viewport coordinates for every index, stacking all characters on the same world position.
+
+**Changed** to stagger characters vertically (Y = 0.40 / 0.30 / 0.20) with a slight X zigzag, giving a classic JRPG stack formation on each side.
+
+---
+
+### Feature: Game over on defeat — loads main menu instead of returning to exploration
+**File:** `Assets/Scripts/Battle/CombatSystem.cs`
+
+On defeat, the previous code returned the player to the exploration scene (same as victory), with no consequence.
+
+**Added** `public string mainMenuSceneName = "Menu"` field. `ReturnToMapAfterDelay` now checks `currentState`: DEFEAT → `SceneManager.LoadScene(mainMenuSceneName)` (single mode, clears everything); VICTORY → original exploration restore flow. **Set `mainMenuSceneName` in the inspector to match your actual main menu scene name.**
+
+---
+
+### Fix: Simon's battle music not playing
+**File:** `Assets/Scripts/Battle/CombatSystem.cs`
+
+`MusicManager.PlayClip` has an early-out guard (`if clip == current clip && isPlaying → skip`) that silently skipped playing if the exploration music happened to be the same clip. Also, if exploration music was still playing when combat started, there was no guarantee it would be replaced.
+
+**Added** `MusicManager.Instance?.StopMusic()` call before `PlayClip` in `InitializeCombatWithData`. This always clears the current clip so `PlayClip` always fires.
+
+**Inspector:** Also assign `battleMusic` AudioClip on Simon's EncounterFile — the code is correct but the field must be set.
+
+---
+
+### Fix: Combat background not fitting screen on rat fight
+**Files:** `Assets/Scripts/Battle/FitToCamera.cs`, `Assets/Scripts/Battle/CombatSystem.cs`
+
+`FitToCamera.Awake()` assigned `Camera.main`, which is null when the exploration camera has been deactivated by `PreviousScene.UnloadScene()`. `Fit()` then silently did nothing, leaving the background unscaled.
+
+**Changed** `Fit()` to accept an optional `Camera cam` parameter (`Fit(Camera cam = null)`); uses `cam ?? targetCamera`. `CombatSystem` now calls `Fit(GetCombatCamera())`, passing the resolved combat camera explicitly. **Also assign `targetCamera` on FitToCamera in the inspector to the combat camera as a permanent backup.**
+
+---
+
 ## 2026-03-24 (session 2)
 
 ### Fix: Combat camera lookup returning exploration camera → wrong spawn positions + black screen

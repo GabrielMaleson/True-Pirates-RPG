@@ -19,12 +19,13 @@ public class FitToCamera : MonoBehaviour
         Fit();
     }
 
-    public void Fit()
+    public void Fit(Camera cam = null)
     {
-        if (targetCamera == null || sr == null || sr.sprite == null) return;
+        Camera c = cam ?? targetCamera;
+        if (c == null || sr == null || sr.sprite == null) return;
 
-        float camHeight = targetCamera.orthographicSize * 2f;
-        float camWidth = camHeight * targetCamera.aspect;
+        float camHeight = c.orthographicSize * 2f;
+        float camWidth = camHeight * c.aspect;
 
         Vector2 spriteSize = sr.sprite.bounds.size;
 
@@ -35,8 +36,8 @@ public class FitToCamera : MonoBehaviour
         );
 
         transform.position = new Vector3(
-            targetCamera.transform.position.x,
-            targetCamera.transform.position.y,
+            c.transform.position.x,
+            c.transform.position.y,
             transform.position.z
         );
     }

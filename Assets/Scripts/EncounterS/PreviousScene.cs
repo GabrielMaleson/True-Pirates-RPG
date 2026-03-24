@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
 public class PreviousScene : MonoBehaviour
@@ -81,6 +82,7 @@ public class PreviousScene : MonoBehaviour
         }
 
         FixAudioListeners();
+        FixEventSystems();
 
         if (encounterData != null)
         {
@@ -106,6 +108,40 @@ public class PreviousScene : MonoBehaviour
             Camera mainCam = Camera.main;
             if (mainCam != null)
                 mainCam.gameObject.AddComponent<AudioListener>();
+        }
+    }
+
+    /// <summary>
+    /// Garante que exatamente um EventSystem esteja ativo depois de restaurar a cena.
+    /// O EventSystem da cena de combate pode desabilitar o da cena de exploração enquanto ambos
+    /// coexistem; depois que o Combat descarrega, o da exploração precisa ser reativado.
+    /// </summary>
+    private void FixEventSystems()
+    {
+        EventSystem[] systems = FindObjectsByType<EventSystem>(FindObjectsSortMode.None);
+
+        bool anyEnabled = false;
+        foreach (var es in systems)
+        {
+            if (es.isActiveAndEnabled) { anyEnabled = true; break; }
+        }
+
+        if (!anyEnabled)
+        {
+            if (systems.Length > 0)
+            {
+                // Reativa o primeiro encontrado
+                systems[0].gameObject.SetActive(true);
+                Debug.Log($"[PreviousScene] EventSystem reativado: {systems[0].gameObject.name}");
+            }
+            else
+            {
+                // Nenhum EventSystem na cena — cria um
+                GameObject esGO = new GameObject("EventSystem");
+                esGO.AddComponent<EventSystem>();
+                esGO.AddComponent<StandaloneInputModule>();
+                Debug.LogWarning("[PreviousScene] Nenhum EventSystem encontrado — criado um novo. Considere manter um EventSystem permanente na cena.");
+            }
         }
     }
 }

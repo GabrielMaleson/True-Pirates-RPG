@@ -46,6 +46,9 @@ public class CombatSystem : MonoBehaviour
     [Header("Background")]
     public SpriteRenderer backgroundRenderer;
 
+    [Header("Game Over")]
+    public string mainMenuSceneName = "Menu";
+
     [Header("Combat State")]
     public CombatState currentState = CombatState.STARTING;
 
@@ -130,18 +133,24 @@ public class CombatSystem : MonoBehaviour
 
     private Vector3 GetDefaultPartySpawnPos(int index, Camera cam)
     {
-        float[] yViewport = { 0.3f, 0.3f, 0.3f };
-        float y = index < yViewport.Length ? yViewport[index] : 0.3f;
-        Vector3 world = cam.ViewportToWorldPoint(new Vector3(0.2f, y, Mathf.Abs(cam.transform.position.z)));
+        // Stagger party vertically on the left side
+        float[] xViewport = { 0.17f, 0.20f, 0.17f };
+        float[] yViewport = { 0.40f, 0.30f, 0.20f };
+        float x = index < xViewport.Length ? xViewport[index] : 0.17f;
+        float y = index < yViewport.Length ? yViewport[index] : 0.30f;
+        Vector3 world = cam.ViewportToWorldPoint(new Vector3(x, y, Mathf.Abs(cam.transform.position.z)));
         world.z = 0f;
         return world;
     }
 
     private Vector3 GetDefaultEnemySpawnPos(int index, Camera cam)
     {
-        float[] yViewport = { 0.3f, 0.3f, 0.3f };
-        float y = index < yViewport.Length ? yViewport[index] : 0.3f;
-        Vector3 world = cam.ViewportToWorldPoint(new Vector3(0.8f, y, Mathf.Abs(cam.transform.position.z)));
+        // Stagger enemies vertically on the right side
+        float[] xViewport = { 0.83f, 0.80f, 0.83f };
+        float[] yViewport = { 0.40f, 0.30f, 0.20f };
+        float x = index < xViewport.Length ? xViewport[index] : 0.83f;
+        float y = index < yViewport.Length ? yViewport[index] : 0.30f;
+        Vector3 world = cam.ViewportToWorldPoint(new Vector3(x, y, Mathf.Abs(cam.transform.position.z)));
         world.z = 0f;
         return world;
     }
@@ -153,6 +162,7 @@ public class CombatSystem : MonoBehaviour
 
         if (encounterData.encounterFile != null)
         {
+            MusicManager.Instance?.StopMusic();
             if (encounterData.encounterFile.battleMusic != null)
                 MusicManager.Instance?.PlayClip(encounterData.encounterFile.battleMusic);
             else
@@ -165,7 +175,7 @@ public class CombatSystem : MonoBehaviour
             else
             {
                 backgroundRenderer.sprite = encounterData.encounterFile.battleBackground;
-                backgroundRenderer.GetComponent<FitToCamera>()?.Fit();
+                backgroundRenderer.GetComponent<FitToCamera>()?.Fit(GetCombatCamera());
             }
         }
         else
@@ -728,21 +738,29 @@ public class CombatSystem : MonoBehaviour
 
     private IEnumerator ReturnToMapAfterDelay(float delay)
     {
+        yield return new WaitForSeconds(delay);
+
+        MusicManager.Instance?.StopMusic();
+
+        if (currentState == CombatState.DEFEAT)
+        {
+            // Game over — limpar estado e carregar menu principal
+            EncounterData encounterData = FindFirstObjectByType<EncounterData>();
+            if (encounterData != null) encounterData.combatVictory = false;
+            SceneManager.LoadScene(mainMenuSceneName);
+            yield break;
+        }
+
+        // Vitória — restaurar cena de exploração
         if (menubutton != null) menubutton.SetActive(true);
         if (objbutton2 != null) objbutton2.SetActive(true);
 
-        yield return new WaitForSeconds(delay);
-
-        EncounterData encounterData = FindFirstObjectByType<EncounterData>();
+        EncounterData winData = FindFirstObjectByType<EncounterData>();
         PreviousScene previousScene = FindFirstObjectByType<PreviousScene>();
 
         if (previousScene != null)
         {
-            if (currentState == CombatState.VICTORY && encounterData != null)
-                encounterData.combatVictory = true;
-
-            MusicManager.Instance?.StopMusic();
-
+            if (winData != null) winData.combatVictory = true;
             previousScene.LoadScene();
             SceneManager.UnloadSceneAsync("Combat");
         }
