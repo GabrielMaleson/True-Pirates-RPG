@@ -117,17 +117,13 @@ public class Shopkeeper : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             playerInRange = false;
-
-            // Clear reference
-            playerMovement = null;
-
             HidePopup();
 
-            // Close shop if it's open when player leaves
+            // Close shop before clearing playerMovement so SetCanJump(true) fires
             if (isShopOpen)
-            {
                 CloseShop();
-            }
+
+            playerMovement = null;
         }
     }
 

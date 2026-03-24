@@ -142,7 +142,12 @@ public class PartyMenuManager : MonoBehaviour
     {
         CanvasGroup cg = GetObjectiveCanvasGroup();
         if (cg == null) return;
-        cg.alpha = cg.alpha > 0.5f ? 0f : 1f;
+        bool willShow = cg.alpha <= 0.5f;
+        cg.alpha = willShow ? 1f : 0f;
+        cg.interactable = willShow;
+        cg.blocksRaycasts = willShow;
+        if (willShow && ObjectiveManager.Instance != null)
+            ObjectiveManager.Instance.RefreshQuestList();
     }
 
     private void CloseObjectivesPanel()
@@ -221,7 +226,7 @@ public class PartyMenuManager : MonoBehaviour
 
     public void ShowAttacks()
     {
-        HideAllPanels();
+        HideSubPanels();
         attacksPanel.SetActive(true);
 
         if (currentSelectedMember != null)
@@ -232,20 +237,28 @@ public class PartyMenuManager : MonoBehaviour
 
     public void ShowItems()
     {
-        HideAllPanels();
+        HideSubPanels();
         itemsPanel.SetActive(true);
         RefreshInventoryDisplay();
     }
 
     public void ShowEquipment()
     {
-        HideAllPanels();
+        HideSubPanels();
         equipmentPanel.SetActive(true);
 
         if (currentSelectedMember != null)
         {
             UpdateEquipmentDisplay();
         }
+    }
+
+    // Hides only the content sub-panels, NOT partyMenuPanel or character buttons
+    private void HideSubPanels()
+    {
+        if (attacksPanel != null) attacksPanel.SetActive(false);
+        if (itemsPanel != null) itemsPanel.SetActive(false);
+        if (equipmentPanel != null) equipmentPanel.SetActive(false);
     }
 
     private void UpdateAttacksDisplay()

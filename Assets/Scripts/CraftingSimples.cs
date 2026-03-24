@@ -39,11 +39,16 @@ public class CraftingSimples : MonoBehaviour
     {
         if (recipeIndex < 0 || recipeIndex >= recipes.Count)
         {
-            Debug.LogError("Õndice de receita inv·lido!");
+            Debug.LogError("√çndice de receita inv√°lido!");
             return;
         }
 
-        SistemaInventario Instance = SistemaInventario.Instance;
+        SistemaInventario inv = SistemaInventario.Instance;
+        if (inv == null)
+        {
+            Debug.LogError("SistemaInventario.Instance n√£o encontrado!");
+            return;
+        }
 
         CraftingRecipe recipe = recipes[recipeIndex];
 
@@ -51,7 +56,7 @@ public class CraftingSimples : MonoBehaviour
         bool hasAllItems = true;
         foreach (ItemRequirement requirement in recipe.requiredItems)
         {
-            if (!inventario.TemItem(requirement.item, requirement.quantidade))
+            if (!inv.TemItem(requirement.item, requirement.quantidade))
             {
                 hasAllItems = false;
                 Debug.Log($"Falta: {requirement.quantidade}x {requirement.item.nomeDoItem}");
@@ -65,22 +70,22 @@ public class CraftingSimples : MonoBehaviour
             // Remove required items
             foreach (ItemRequirement requirement in recipe.requiredItems)
             {
-                inventario.RemoverItem(requirement.item, requirement.quantidade);
+                inv.RemoverItem(requirement.item, requirement.quantidade);
             }
 
             // Add crafted items
             foreach (ItemResult result in recipe.results)
             {
-                inventario.AdicionarItem(result.item, result.quantidade);
+                inv.AdicionarItem(result.item, result.quantidade);
                 Debug.Log($"Criado: {result.quantidade}x {result.item.nomeDoItem}");
             }
 
-            Instance.AddProgress("compass");
+            inv.AddProgress("compass");
             Debug.Log($"Sucesso! Receita '{recipe.recipeName}' craftada com sucesso!");
         }
         else
         {
-            Debug.Log("Falha: VocÍ n„o tem os itens necess·rios!");
+            Debug.Log("Falha: Voc√™ n√£o tem os itens necess√°rios!");
         }
     }
 

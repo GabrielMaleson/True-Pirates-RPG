@@ -84,10 +84,8 @@ public class ObjectiveManager : MonoBehaviour
         dialogueRunner = FindFirstObjectByType<DialogueRunner>();
         inventory = SistemaInventario.Instance;
 
-        // Set up UI
-        if (questListPanel != null)
-            questListPanel.SetActive(false);
-
+        // questListPanel stays active — visibility controlled by parent CanvasGroup alpha
+        // questDetailsPanel starts hidden until a quest is selected
         if (questDetailsPanel != null)
             questDetailsPanel.SetActive(false);
 
@@ -130,7 +128,7 @@ public class ObjectiveManager : MonoBehaviour
         currentSelectedObjective = null;
     }
 
-    private void RefreshQuestList()
+    public void RefreshQuestList()
     {
         // Clear existing buttons
         foreach (Transform child in questListContainer)

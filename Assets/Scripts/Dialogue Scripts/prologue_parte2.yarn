@@ -289,3 +289,10 @@ title: pos_batalha_nepal
 	<<brighten>>
 	<<sceneload Finale>>
 ===
+
+title: sidequest2_complete
+---
+	<<darken>>
+	// TODO: adicionar diálogo aqui
+	<<brighten>>
+===
