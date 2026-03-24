@@ -38,7 +38,9 @@ public class TeleporterScript : MonoBehaviour
     public GameObject interactionPopup; // Optional popup to show when player is nearby
 
     private bool playerInRange = false;
+    private bool teleportPending = false; // Track if teleport is pending activation
     private GameObject player;
+    private GameObject cachedPlayer; // Store player reference for teleport even if they leave trigger
     private List<GameObject> allies = new List<GameObject>();
     private Sprite originalSprite;
     private float cooldownTimer = 0f;
@@ -70,6 +72,9 @@ public class TeleporterScript : MonoBehaviour
         // Check for input if teleport is triggered by key press
         if (!teleportOnTrigger && playerInRange && !isOnCooldown && Input.GetKeyDown(interactKey))
         {
+            // Cache the player reference before they might leave
+            cachedPlayer = player;
+            teleportPending = true;
             PerformTeleport();
         }
     }
@@ -87,6 +92,9 @@ public class TeleporterScript : MonoBehaviour
             // Auto-teleport if enabled and not on cooldown
             if (teleportOnTrigger && !isOnCooldown)
             {
+                // Cache the player reference
+                cachedPlayer = player;
+                teleportPending = true;
                 PerformTeleport();
             }
         }
@@ -97,7 +105,12 @@ public class TeleporterScript : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             playerInRange = false;
-            player = null;
+
+            // Don't clear player reference if teleport is pending
+            if (!teleportPending)
+            {
+                player = null;
+            }
 
             // Hide popup
             HidePopup();
@@ -136,8 +149,8 @@ public class TeleporterScript : MonoBehaviour
             }
         }
 
-        // Restore original sprite
-        if (spriteRenderer != null && originalSprite != null)
+        // Only restore sprite if no teleport is pending
+        if (!teleportPending && spriteRenderer != null && originalSprite != null)
         {
             spriteRenderer.sprite = originalSprite;
         }
@@ -166,12 +179,16 @@ public class TeleporterScript : MonoBehaviour
         if (destination == null)
         {
             Debug.LogError("Teleporter destination not set!");
+            teleportPending = false; // Clear pending flag on error
+            cachedPlayer = null;
             return;
         }
 
         if (isOnCooldown)
         {
             Debug.Log("Teleporter is on cooldown!");
+            teleportPending = false; // Clear pending flag on cooldown
+            cachedPlayer = null;
             return;
         }
 
@@ -184,6 +201,8 @@ public class TeleporterScript : MonoBehaviour
         {
             // No transition, teleport immediately
             ExecuteTeleport();
+            teleportPending = false; // Clear pending flag after teleport
+            cachedPlayer = null;
         }
     }
 
@@ -193,14 +212,29 @@ public class TeleporterScript : MonoBehaviour
         StartCooldown();
 
         // Play the screen transition
-        ScreenTransition.Instance.PlayTransition();
-        
+        if (ScreenTransition.Instance != null)
+        {
+            ScreenTransition.Instance.PlayTransition();
+        }
+
         // Additional delay before teleporting
         yield return new WaitForSeconds(transitionDelay);
-        Camera.SetActive(true);
-        OldCamera.SetActive(false);
+
+        // Switch cameras
+        if (Camera != null && OldCamera != null)
+        {
+            Camera.SetActive(true);
+            OldCamera.SetActive(false);
+        }
+        else
+        {
+            Debug.LogWarning("Camera or OldCamera not assigned!");
+        }
+
         // Now teleport
         ExecuteTeleport();
+        teleportPending = false; // Clear pending flag after teleport
+        cachedPlayer = null;
     }
 
     private void StartCooldown()
@@ -212,6 +246,9 @@ public class TeleporterScript : MonoBehaviour
 
     private void ExecuteTeleport()
     {
+        // Use cached player if available, otherwise use current player
+        GameObject targetPlayer = cachedPlayer != null ? cachedPlayer : player;
+
         // Play effect at origin
         if (teleportEffect != null)
         {
@@ -226,9 +263,14 @@ public class TeleporterScript : MonoBehaviour
         }
 
         // Teleport player
-        if (teleportPlayer && player != null)
+        if (teleportPlayer && targetPlayer != null)
         {
-            player.transform.position = destination.position;
+            targetPlayer.transform.position = destination.position;
+            Debug.Log($"Player teleported to {destination.position}");
+        }
+        else if (teleportPlayer && targetPlayer == null)
+        {
+            Debug.LogWarning("No player reference available for teleport!");
         }
 
         // Teleport allies
@@ -259,11 +301,20 @@ public class TeleporterScript : MonoBehaviour
         }
 
         Debug.Log($"Teleported to {destination.name}");
+
+        // Clear references after teleport
+        player = null;
+        playerInRange = false;
     }
 
     // Public method to manually trigger teleport (for buttons or other scripts)
     public void Teleport()
     {
+        if (player != null)
+        {
+            cachedPlayer = player;
+        }
+        teleportPending = true;
         PerformTeleport();
     }
 
