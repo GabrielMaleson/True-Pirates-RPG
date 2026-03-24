@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: soldieranim
+  m_Name: soldieridle
   serializedVersion: 7
   m_Legacy: 0
   m_Compressed: 0
@@ -21,13 +21,9 @@ AnimationClip:
   - serializedVersion: 2
     curve:
     - time: 0
-      value: {fileID: -4272726771758858731, guid: cb06f7bb8000ceb418a118c5ef89ad08, type: 3}
+      value: {fileID: 5838303722365860506, guid: 27a4fc174702ddf46936a8d47dde91ab, type: 3}
     - time: 0.083333336
-      value: {fileID: -4856180439023948902, guid: 06f7abd8a60d9334b851a55524c02082, type: 3}
-    - time: 0.16666667
-      value: {fileID: 2096403558222669493, guid: 756a23b4db57d034b89cf5e248c63a2b, type: 3}
-    - time: 0.25
-      value: {fileID: 452794879358117628, guid: 0028775f5b871774b8f8eb19ebb67721, type: 3}
+      value: {fileID: 5838303722365860506, guid: 35f4e21d0d22ed74a9361ecee38a24a7, type: 3}
     attribute: m_Sprite
     path: 
     classID: 212
@@ -50,16 +46,14 @@ AnimationClip:
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     pptrCurveMapping:
-    - {fileID: -4272726771758858731, guid: cb06f7bb8000ceb418a118c5ef89ad08, type: 3}
-    - {fileID: -4856180439023948902, guid: 06f7abd8a60d9334b851a55524c02082, type: 3}
-    - {fileID: 2096403558222669493, guid: 756a23b4db57d034b89cf5e248c63a2b, type: 3}
-    - {fileID: 452794879358117628, guid: 0028775f5b871774b8f8eb19ebb67721, type: 3}
+    - {fileID: 5838303722365860506, guid: 27a4fc174702ddf46936a8d47dde91ab, type: 3}
+    - {fileID: 5838303722365860506, guid: 35f4e21d0d22ed74a9361ecee38a24a7, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 0.33333334
+    m_StopTime: 0.16666667
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
