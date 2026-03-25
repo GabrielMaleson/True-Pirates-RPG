@@ -34,6 +34,9 @@ public class MusicManager : MonoBehaviour
     [Header("Audio Source")]
     public AudioSource audioSource;
 
+    // Nome da última trilha de ambiente tocada via PlayMusicCommand — restaurado após combate
+    private string lastAmbienceTrackName;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -49,8 +52,9 @@ public class MusicManager : MonoBehaviour
         if (audioSource == null)
             audioSource = gameObject.AddComponent<AudioSource>();
 
-        audioSource.loop = true;
-        audioSource.playOnAwake = false;
+        audioSource.loop         = true;
+        audioSource.playOnAwake  = false;
+        audioSource.spatialBlend = 0f; // 2D — volume não depende de distância
 
         if (!string.IsNullOrEmpty(startupMusicName))
             PlayMusicCommand(startupMusicName);
@@ -102,7 +106,21 @@ public class MusicManager : MonoBehaviour
             return;
         }
 
+        Instance.lastAmbienceTrackName = musicName;
         Instance.PlayClip(found.clip);
+    }
+
+    /// <summary>
+    /// Retoma a última trilha de ambiente tocada via PlayMusicCommand.
+    /// Chamado automaticamente ao retornar do combate.
+    /// </summary>
+    public void ResumeAmbience()
+    {
+        if (!string.IsNullOrEmpty(lastAmbienceTrackName))
+        {
+            Debug.Log($"[MusicManager] Retomando ambiente: '{lastAmbienceTrackName}'");
+            PlayMusicCommand(lastAmbienceTrackName);
+        }
     }
 
     /// <summary>

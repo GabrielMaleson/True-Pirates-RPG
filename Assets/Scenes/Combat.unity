@@ -2172,8 +2172,8 @@ RectTransform:
   - {fileID: 13607259}
   - {fileID: 574022552}
   - {fileID: 523742615}
-  - {fileID: 1829737667}
   - {fileID: 2015639665}
+  - {fileID: 1829737667}
   - {fileID: 1314767330}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5593,7 +5593,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1829737667}
   m_Layer: 5
-  m_Name: EnemySpawn2
+  m_Name: EnemySpawn3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6145,7 +6145,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2015639665}
   m_Layer: 5
-  m_Name: EnemySpawn 3
+  m_Name: EnemySpawn2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

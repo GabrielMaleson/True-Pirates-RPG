@@ -135,11 +135,11 @@ public class CombatSystem : MonoBehaviour
 
     private Vector3 GetDefaultPartySpawnPos(int index, Camera cam)
     {
-        // Stagger party vertically on the left side
-        float[] xViewport = { 0.17f, 0.20f, 0.17f };
-        float[] yViewport = { 0.40f, 0.30f, 0.20f };
-        float x = index < xViewport.Length ? xViewport[index] : 0.17f;
-        float y = index < yViewport.Length ? yViewport[index] : 0.30f;
+        // Diagonal: index 0 = top-right (back), index 2 = bottom-left (front)
+        float[] xViewport = { 0.22f, 0.18f, 0.14f };
+        float[] yViewport = { 0.46f, 0.32f, 0.18f };
+        float x = index < xViewport.Length ? xViewport[index] : 0.18f;
+        float y = index < yViewport.Length ? yViewport[index] : 0.32f;
         Vector3 world = cam.ViewportToWorldPoint(new Vector3(x, y, Mathf.Abs(cam.transform.position.z)));
         world.z = 0f;
         return world;
@@ -147,14 +147,24 @@ public class CombatSystem : MonoBehaviour
 
     private Vector3 GetDefaultEnemySpawnPos(int index, Camera cam)
     {
-        // Stagger enemies vertically on the right side
-        float[] xViewport = { 0.83f, 0.80f, 0.83f };
-        float[] yViewport = { 0.40f, 0.30f, 0.20f };
-        float x = index < xViewport.Length ? xViewport[index] : 0.83f;
-        float y = index < yViewport.Length ? yViewport[index] : 0.30f;
+        // Diagonal: index 0 = top-left (back), index 2 = bottom-right (front)
+        float[] xViewport = { 0.78f, 0.82f, 0.86f };
+        float[] yViewport = { 0.46f, 0.32f, 0.18f };
+        float x = index < xViewport.Length ? xViewport[index] : 0.82f;
+        float y = index < yViewport.Length ? yViewport[index] : 0.32f;
         Vector3 world = cam.ViewportToWorldPoint(new Vector3(x, y, Mathf.Abs(cam.transform.position.z)));
         world.z = 0f;
         return world;
+    }
+
+    /// <summary>
+    /// Sets sortingOrder on every SpriteRenderer in the hierarchy.
+    /// Higher depthIndex = renders in front of lower depthIndex.
+    /// </summary>
+    private static void ApplyDepthOrder(GameObject obj, int depthIndex)
+    {
+        foreach (SpriteRenderer sr in obj.GetComponentsInChildren<SpriteRenderer>(true))
+            sr.sortingOrder = depthIndex;
     }
 
     public void InitializeCombatWithData(EncounterData encounterData)
@@ -210,6 +220,9 @@ public class CombatSystem : MonoBehaviour
                     SceneManager.MoveGameObjectToScene(memberObj, gameObject.scene);
                     memberObj.name = $"Party_{memberData.CharacterName}";
 
+                    // index 0 = back (low order), higher index = more in front
+                    ApplyDepthOrder(memberObj, i);
+
                     CharacterComponent comp = memberObj.GetComponent<CharacterComponent>();
                     if (comp == null) comp = memberObj.AddComponent<CharacterComponent>();
                     comp.partyMemberState = memberData;
@@ -245,6 +258,9 @@ public class CombatSystem : MonoBehaviour
                     GameObject enemyObj = Instantiate(prefabToUse, spawnPos, Quaternion.identity);
                     SceneManager.MoveGameObjectToScene(enemyObj, gameObject.scene);
                     enemyObj.name = $"Enemy_{enemyData.CharacterName}";
+
+                    // index 0 = back (low order), higher index = more in front
+                    ApplyDepthOrder(enemyObj, i);
 
                     CharacterComponent comp = enemyObj.GetComponent<CharacterComponent>();
                     if (comp == null) comp = enemyObj.AddComponent<CharacterComponent>();
@@ -770,6 +786,7 @@ public class CombatSystem : MonoBehaviour
             if (winData != null) winData.combatVictory = true;
             previousScene.LoadScene();
             SceneManager.UnloadSceneAsync("Combat");
+            MusicManager.Instance?.ResumeAmbience();
         }
     }
 

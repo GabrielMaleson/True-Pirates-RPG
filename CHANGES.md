@@ -2,6 +2,20 @@
 
 ---
 
+## 2026-03-25 (session 30)
+
+### Fix: Formação diagonal no combate + sorting order dos personagens
+**Files:** `Assets/Scripts/Battle/CombatSystem.cs`
+
+Personagens de combate sempre usavam posições viewport ignorando os `partySpawnPoints`/`enemySpawnPoints` do inspector. Corrigido: usa os transforms do inspector quando atribuídos, fallback para diagonal viewport (índice 0 = topo/fundo, índice 2 = frente/câmera). `ApplyDepthOrder()` define `sortingOrder = índice` em todos os `SpriteRenderer` do prefab — índice 0 atrás, índice maior na frente. Mesma lógica para inimigos (espelhada).
+
+### Fix: Música de ambiente não tocando após combate
+**Files:** `Assets/Scripts/MusicManager.cs`, `Assets/Scripts/Battle/CombatSystem.cs`
+
+`ReturnToMapAfterDelay` chamava `StopMusic()` ao sair do combate mas nada retomava a música. Adicionado `lastAmbienceTrackName` (atualizado a cada `PlayMusicCommand`) e `ResumeAmbience()` ao `MusicManager`. `ReturnToMapAfterDelay` agora chama `ResumeAmbience()` após restaurar a cena. Adicionado `spatialBlend = 0f` ao AudioSource do MusicManager.
+
+---
+
 ## 2026-03-25 (session 29)
 
 ### Fix: Camera apagada ao retornar do combate
