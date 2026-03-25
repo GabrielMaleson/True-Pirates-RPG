@@ -450,7 +450,13 @@ public class PartyMenuManager : MonoBehaviour
 
     public void CloseGame()
     {
+        SaveLoadManager.Instance?.SaveGame();
         StartCoroutine(QuitAfterDelay(0.2f));
+    }
+
+    public void SaveGame()
+    {
+        SaveLoadManager.Instance?.SaveGame();
     }
 
     private IEnumerator QuitAfterDelay(float delay)

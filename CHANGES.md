@@ -20,10 +20,11 @@ A câmera da exploração (tag "Ignore") era reativada antes dos objetos em scen
 A animação `Andando` era controlada por `horizontalDistance > stoppingDistance`, causando flickering quando a distância oscilava na fronteira. Corrigido para usar `velocity.magnitude > 0.15f` como condição de movimento. Deceleração trocada de `Vector3.Lerp` para `Vector3.MoveTowards` com fator maior (8×speed) para parada mais limpa.
 **Inspector:** Para Joodie parecer mais afastada, aumente `Stopping Distance` no componente `FollowPlayer` dela para ~3.5 (Simon fica em ~2.0).
 
-### Remoção: Sistema de Save/Load
-**Files:** `Assets/Scripts/Dialogue Scripts/SaveLoadManager.cs` (removido), `Assets/Scripts/SaveHandler.cs`, `Assets/Scripts/Menu Scripts/PartyMenuManager.cs`
+### Refactor: Save/Load migrado de BinaryFormatter para JSON
+**Files:** `Assets/Scripts/Dialogue Scripts/SaveLoadManager.cs`, `Assets/Scripts/SaveHandler.cs`, `Assets/Scripts/Menu Scripts/PartyMenuManager.cs`
 
-Save/load marcado como opcional e removido. `SaveHandler` mantém apenas `NewGame()` (carrega cena "Beginning") e `ExitGame()`. `PartyMenuManager.CloseGame()` simplificado para apenas fechar o jogo sem salvar.
+`BinaryFormatter` estava desabilitado por padrão no Unity moderno, causando erros ao salvar/carregar. Substituído por `JsonUtility` — salva um arquivo `savegame.json` legível em `Application.persistentDataPath`. Serializa: cena atual, ouro, progresso (tags), inventário (por ID de item) e membros do grupo (nome, nível, HP, AP, EXP, armas/armaduras por ID).
+**Requisito:** `DadosItem` e `CharacterData` precisam estar dentro de uma pasta `Resources` para que `Resources.LoadAll` os encontre ao carregar.
 
 ---
 
