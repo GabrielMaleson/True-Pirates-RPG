@@ -38,12 +38,13 @@ public class EncounterStarter : MonoBehaviour
         EncounterData encounterData = BuildEncounterData(encounterFile, playerInventory);
         encounterData.encounterStarterObject = this.gameObject;
 
-        MusicManager.Instance?.StopMusic();
-        if (encounterFile.battleMusic != null)
-            MusicManager.Instance?.PlayClip(encounterFile.battleMusic);
-
         BattleTransitionManager.GetOrCreate().StartTransitionThen(encounterFile.transitionType, () =>
         {
+            // Tela completamente preta — inicia música de batalha aqui para evitar que toque durante a transição de entrada
+            MusicManager.Instance?.StopMusic();
+            if (encounterFile.battleMusic != null)
+                MusicManager.Instance?.PlayClip(encounterFile.battleMusic);
+
             GameObject sceneObj = new GameObject("PreviousScene");
             sceneObj.AddComponent<PreviousScene>();
             sceneObj.GetComponent<PreviousScene>().UnloadScene();
@@ -60,14 +61,15 @@ public class EncounterStarter : MonoBehaviour
     {
         BuildEncounterData(encounterFile, inventory);
 
-        MusicManager.Instance?.StopMusic();
-        if (encounterFile.battleMusic != null)
-            MusicManager.Instance?.PlayClip(encounterFile.battleMusic);
-        else
-            Debug.LogWarning($"[EncounterStarter] EncounterFile '{encounterFile.encounterName}' não tem battleMusic atribuído.");
-
         BattleTransitionManager.GetOrCreate().StartTransitionThen(encounterFile.transitionType, () =>
         {
+            // Tela completamente preta — inicia música de batalha aqui para evitar que toque durante a transição de entrada
+            MusicManager.Instance?.StopMusic();
+            if (encounterFile.battleMusic != null)
+                MusicManager.Instance?.PlayClip(encounterFile.battleMusic);
+            else
+                Debug.LogWarning($"[EncounterStarter] EncounterFile '{encounterFile.encounterName}' não tem battleMusic atribuído.");
+
             GameObject sceneObj = new GameObject("PreviousScene");
             sceneObj.AddComponent<PreviousScene>();
             sceneObj.GetComponent<PreviousScene>().UnloadScene();

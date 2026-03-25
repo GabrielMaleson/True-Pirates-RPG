@@ -54,7 +54,9 @@ public class SFXManager : MonoBehaviour
     /// <summary>Reproduz um clip de efeito sonoro (one-shot).</summary>
     public void Play(AudioClip clip)
     {
-        if (clip == null || sfxSource == null) return;
+        if (clip == null) { Debug.Log("[SFXManager] Play ignorado — clip é null."); return; }
+        if (sfxSource == null) { Debug.LogWarning("[SFXManager] sfxSource é null."); return; }
+        Debug.Log($"[SFXManager] Tocando SFX: '{clip.name}'");
         sfxSource.PlayOneShot(clip);
     }
 
@@ -62,7 +64,8 @@ public class SFXManager : MonoBehaviour
     public void PlayLoop(AudioClip clip)
     {
         if (clip == null || loopSource == null) return;
-        if (loopSource.clip == clip && loopSource.isPlaying) return;
+        if (loopSource.clip == clip && loopSource.isPlaying) { Debug.Log($"[SFXManager] Loop '{clip.name}' já está tocando."); return; }
+        Debug.Log($"[SFXManager] Iniciando loop: '{clip.name}'");
         loopSource.clip = clip;
         loopSource.Play();
     }
@@ -70,6 +73,10 @@ public class SFXManager : MonoBehaviour
     /// <summary>Para o som em loop atual.</summary>
     public void StopLoop()
     {
-        if (loopSource != null) loopSource.Stop();
+        if (loopSource != null)
+        {
+            Debug.Log($"[SFXManager] StopLoop — clip anterior: '{(loopSource.clip != null ? loopSource.clip.name : "nenhum")}'");
+            loopSource.Stop();
+        }
     }
 }

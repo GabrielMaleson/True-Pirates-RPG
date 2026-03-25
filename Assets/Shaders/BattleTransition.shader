@@ -53,7 +53,10 @@ Shader "Custom/BattleTransition"
             fixed4 frag(v2f i) : SV_Target
             {
                 float grad  = tex2D(_GradientTex, i.uv).r;
-                float alpha = step(grad, _Cutoff); // 1 where grad <= cutoff (black), 0 otherwise
+                // smoothstep cria uma borda suave em vez de um corte binário (step),
+                // eliminando o efeito de "salto de frame" na transição
+                float feather = 0.03;
+                float alpha = 1.0 - smoothstep(_Cutoff - feather, _Cutoff + feather, grad);
                 return fixed4(0, 0, 0, alpha);
             }
             ENDCG

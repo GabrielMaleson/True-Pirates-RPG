@@ -66983,7 +66983,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1256341992}
   - component: {fileID: 1256341991}
-  - component: {fileID: 1256341990}
   - component: {fileID: 1256341989}
   m_Layer: 0
   m_Name: Camera
@@ -67036,14 +67035,6 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
---- !u!81 &1256341990
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1256341988}
-  m_Enabled: 1
 --- !u!20 &1256341991
 Camera:
   m_ObjectHideFlags: 0
@@ -72208,6 +72199,14 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 2.531028, y: 2.8595483}
   m_EdgeRadius: 0
+--- !u!81 &1630534230
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 976115666}
+  m_Enabled: 1
 --- !u!1 &1641945158
 GameObject:
   m_ObjectHideFlags: 0
@@ -76027,7 +76026,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2102209535}
   - component: {fileID: 2102209534}
-  - component: {fileID: 2102209533}
   - component: {fileID: 2102209532}
   m_Layer: 0
   m_Name: Main Camera (1)
@@ -76080,14 +76078,6 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
---- !u!81 &2102209533
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2102209531}
-  m_Enabled: 1
 --- !u!20 &2102209534
 Camera:
   m_ObjectHideFlags: 0
@@ -76586,12 +76576,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 3007942572547124088, guid: 1e7f3dc7f8881124c80d49cc85d2388b, type: 3}
+    - {fileID: 1514820780894807236, guid: 1e7f3dc7f8881124c80d49cc85d2388b, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 8931263230098566763, guid: 1e7f3dc7f8881124c80d49cc85d2388b, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1630534229}
+    - targetCorrespondingSourceObject: {fileID: 8931263230098566763, guid: 1e7f3dc7f8881124c80d49cc85d2388b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1630534230}
   m_SourcePrefab: {fileID: 100100000, guid: 1e7f3dc7f8881124c80d49cc85d2388b, type: 3}
 --- !u!1001 &4306362573018584605
 PrefabInstance:

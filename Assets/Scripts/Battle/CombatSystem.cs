@@ -128,7 +128,8 @@ public class CombatSystem : MonoBehaviour
                 return cam;
         }
 
-        Debug.LogWarning("[CombatSystem] Câmera de combate não encontrada. Atribua 'combatCamera' no inspector do CombatSystem para evitar posições de spawn incorretas.");
+        Debug.Log("[CombatSystem] 'combatCamera' não atribuída no inspector — usando Camera.main como fallback. Atribua a câmera do Combat para evitar este log.");
+        Debug.LogWarning("[CombatSystem] Câmera de combate não encontrada pelo inspector nem pela busca na cena. Verifique se a câmera do Combat está ativa.");
         return Camera.main;
     }
 
@@ -161,10 +162,12 @@ public class CombatSystem : MonoBehaviour
         partyMembers.Clear();
         enemies.Clear();
 
+        // Resolve a câmera uma única vez para evitar múltiplos avisos e buscas repetidas
+        Camera cam = GetCombatCamera();
+
         if (encounterData.encounterFile != null)
         {
-            // Música iniciada pelo trigger do encontro (EncounterStarter.StartEncounterFromCutscene / StartEncounter).
-            // PlayClip é chamado aqui como fallback — se a música já está tocando, o guard interno ignora a chamada.
+            // Música já iniciada pelo callback da transição (EncounterStarter); PlayClip ignora se o clip correto já estiver tocando
             if (encounterData.encounterFile.battleMusic != null)
                 MusicManager.Instance?.PlayClip(encounterData.encounterFile.battleMusic);
             else
@@ -177,7 +180,7 @@ public class CombatSystem : MonoBehaviour
             else
             {
                 backgroundRenderer.sprite = encounterData.encounterFile.battleBackground;
-                backgroundRenderer.GetComponent<FitToCamera>()?.Fit(GetCombatCamera());
+                backgroundRenderer.GetComponent<FitToCamera>()?.Fit(cam);
             }
         }
         else
@@ -201,7 +204,7 @@ public class CombatSystem : MonoBehaviour
 
                 if (partyMemberVisualPrefab != null)
                 {
-                    Vector3 spawnPos = GetDefaultPartySpawnPos(i, GetCombatCamera());
+                    Vector3 spawnPos = GetDefaultPartySpawnPos(i, cam);
                     Debug.Log($"[CombatSystem] Spawning party visual for {memberData.CharacterName} at {spawnPos}");
                     GameObject memberObj = Instantiate(partyMemberVisualPrefab, spawnPos, Quaternion.identity);
                     SceneManager.MoveGameObjectToScene(memberObj, gameObject.scene);
@@ -237,7 +240,7 @@ public class CombatSystem : MonoBehaviour
 
                 if (prefabToUse != null)
                 {
-                    Vector3 spawnPos = GetDefaultEnemySpawnPos(i, GetCombatCamera());
+                    Vector3 spawnPos = GetDefaultEnemySpawnPos(i, cam);
                     Debug.Log($"[CombatSystem] Spawning enemy visual for {enemyData.CharacterName} at {spawnPos}");
                     GameObject enemyObj = Instantiate(prefabToUse, spawnPos, Quaternion.identity);
                     SceneManager.MoveGameObjectToScene(enemyObj, gameObject.scene);

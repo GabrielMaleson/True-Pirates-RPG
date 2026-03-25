@@ -55,9 +55,10 @@ public class MusicManager : MonoBehaviour
     /// </summary>
     public void PlayClip(AudioClip clip)
     {
-        if (clip == null) return;
-        if (audioSource.clip == clip && audioSource.isPlaying) return;
+        if (clip == null) { Debug.Log("[MusicManager] PlayClip ignorado — clip é null."); return; }
+        if (audioSource.clip == clip && audioSource.isPlaying) { Debug.Log($"[MusicManager] PlayClip ignorado — '{clip.name}' já está tocando."); return; }
 
+        Debug.Log($"[MusicManager] Tocando: '{clip.name}'");
         audioSource.clip = clip;
         audioSource.Play();
     }
@@ -67,6 +68,7 @@ public class MusicManager : MonoBehaviour
     /// </summary>
     public void StopMusic()
     {
+        Debug.Log($"[MusicManager] StopMusic — clip anterior: '{(audioSource.clip != null ? audioSource.clip.name : "nenhum")}'");
         audioSource.Stop();
         audioSource.clip = null;
     }

@@ -2,6 +2,43 @@
 
 ---
 
+## 2026-03-24 (session 9)
+
+### Fix: Music not playing + camera double-log + debug logs for all audio
+**Files:** `Assets/Scripts/EncounterS/EncounterStarter.cs`, `Assets/Scripts/Battle/CombatSystem.cs`, `Assets/Scripts/MusicManager.cs`, `Assets/Scripts/SFXManager.cs`
+
+**Music not playing** — Session 8 had moved music to `InitializeCombatWithData()` only, but that method's `StopMusic()` call was stopping whatever the callbacks played. Reverted architecture: music is started inside the `StartTransitionThen` callback in both `StartEncounter()` and `StartEncounterFromCutscene()` (fires when screen is fully black). `InitializeCombatWithData()` keeps only `PlayClip()` as a no-op fallback; its `StopMusic()` was removed so it can't cut the music started by the callback.
+
+**Camera double-log** — `GetCombatCamera()` fallback now emits both `Debug.Log` (informational path) and `Debug.LogWarning` (camera-not-found path) so both appear in the console regardless of filter level.
+
+**Debug logs for all audio** — Added `Debug.Log` to every audio start/stop path: `MusicManager.PlayClip` (null case, already-playing case, success case), `MusicManager.StopMusic`, `SFXManager.Play`, `SFXManager.PlayLoop`, `SFXManager.StopLoop`. All messages in PT-BR.
+
+---
+
+## 2026-03-24 (session 8)
+
+### Fix: Battle music playing during forward transition then cutting out
+**File:** `Assets/Scripts/EncounterS/EncounterStarter.cs`
+
+`StartEncounter()` and `StartEncounterFromCutscene()` both called `StopMusic()` + `PlayClip()` immediately before starting the forward transition. This caused music to play while the screen was still visible (during the 0.7s fade-to-black), then `InitializeCombatWithData()` would stop and restart it a second time — audible as a cut.
+
+**Removed** music calls from both methods. Music is now started exclusively in `CombatSystem.InitializeCombatWithData()`, which runs after the screen is fully black and immediately before `PlayReverseTransition()`. Result: silence during the forward transition, battle music begins under the backward transition as the combat scene is revealed.
+
+---
+
+## 2026-03-24 (session 7)
+
+### Fix: Camera warning spam + transition frame skipping + music revert
+**Files:** `Assets/Scripts/Battle/CombatSystem.cs`, `Assets/Shaders/BattleTransition.shader`
+
+**Camera warning spam** — `GetCombatCamera()` was called 3+ separate times inside `InitializeCombatWithData()` (background fit, each party spawn, each enemy spawn), printing the warning once per call. **Resolved** `cam` once at the top of the method and passed it through — warning fires at most once per combat start. Assign `combatCamera` in the CombatSystem inspector to eliminate the warning entirely.
+
+**Transition frame skipping** — The shader used `step(grad, _Cutoff)` which is binary: each pixel is either fully black or fully transparent, with no blending in between. As `_Cutoff` advances per frame, large bands of pixels flip at once, producing a visible "jump". **Replaced** with `smoothstep(_Cutoff - 0.03, _Cutoff + 0.03, grad)` to create a 6% feathered edge at the sweep boundary — pixels near the threshold fade gradually instead of snapping.
+
+**Music revert** — The main branch merge had removed `StopMusic()` before `PlayClip()` in `InitializeCombatWithData`. Restored the `StopMusic()` call so the previous clip is always cleared before the battle music starts.
+
+---
+
 ## 2026-03-24 (session 6)
 
 ### Fix: Three console errors on play

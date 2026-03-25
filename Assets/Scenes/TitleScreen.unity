@@ -945,10 +945,10 @@ GameObject:
   m_Component:
   - component: {fileID: 953190416}
   - component: {fileID: 953190415}
-  - component: {fileID: 953190414}
   - component: {fileID: 953190418}
   - component: {fileID: 953190417}
   - component: {fileID: 953190419}
+  - component: {fileID: 953190420}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -956,14 +956,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!81 &953190414
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 953190413}
-  m_Enabled: 1
 --- !u!20 &953190415
 Camera:
   m_ObjectHideFlags: 0
@@ -1100,6 +1092,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67a43cda3eb123f448d9cd07d5538121, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SaveHandler
+--- !u!81 &953190420
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 953190413}
+  m_Enabled: 1
 --- !u!1 &962573043
 GameObject:
   m_ObjectHideFlags: 0
