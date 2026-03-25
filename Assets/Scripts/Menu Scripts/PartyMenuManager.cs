@@ -422,6 +422,7 @@ public class PartyMenuManager : MonoBehaviour
     public void OpenMenu()
     {
         if (isInBattle || !canOpenMenu) return; // Don't open during battle or cutscenes
+        SFXManager.Instance?.Play(SFXManager.Instance.uiForward);
 
         CloseObjectivesPanel();
         HideAllPanels();
@@ -441,6 +442,7 @@ public class PartyMenuManager : MonoBehaviour
 
     public void CloseMenu()
     {
+        SFXManager.Instance?.Play(SFXManager.Instance.uiBackward);
         HideAllPanels();
         if (MenuOpener != null) MenuOpener.SetActive(true);
         if (objectivesButton != null) objectivesButton.SetActive(true);

@@ -498,9 +498,5 @@ public class DialogueManager : MonoBehaviour
             instance.graphicRaycaster.enabled = false;
     }
 
-    [YarnCommand("wait")]
-    public static IEnumerator Wait(float seconds)
-    {
-        yield return new WaitForSeconds(seconds);
-    }
+    // <<wait seconds>> é um comando nativo do Yarn Spinner — não precisa de registro manual.
 }

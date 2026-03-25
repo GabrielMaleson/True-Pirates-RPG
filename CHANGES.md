@@ -2,6 +2,53 @@
 
 ---
 
+## 2026-03-24 (session 6)
+
+### Fix: Three console errors on play
+**Files:** `Assets/Scripts/Dialogue Scripts/ImageScript.cs`, `Assets/Shaders/BattleTransition.shader`
+
+**`[YarnCommand("wait")] duplicate registration`** — Yarn Spinner already registers `wait` as a built-in command. `DialogueManager` had a manual `[YarnCommand("wait")]` coroutine that conflicted with it, printing the error on every scene load. **Removed** the duplicate; Yarn's native `wait` handles `<<wait seconds>>` correctly.
+
+**`Material doesn't have texture property '_MainTex'`** — `RawImage` always tries to set `_MainTex` on any custom material assigned to it. `BattleTransition.shader` only declared `_GradientTex`. **Added** `_MainTex` as a declared (unused) property to the shader's Properties block so Unity stops logging the error.
+
+**`MissingComponentException on "Objective Canva"`** — Inspector fix only: add a `Canvas Group` component to the "Objective Canva" GameObject. `PartyMenuManager.GetObjectiveCanvasGroup()` calls `GetComponent<CanvasGroup>()` on it; without the component Unity throws every time objectives are toggled.
+
+---
+
+## 2026-03-24 (session 5)
+
+### Feature: SFX system — all player interactions now have sound effects
+**Files:** `Assets/Scripts/SFXManager.cs` (new), `Assets/Scripts/Battle/CombatUIManager.cs`, `Assets/Scripts/Menu Scripts/PartyMenuManager.cs`, `Assets/Scripts/Menu Scripts/ItemDetails.cs`, `Assets/Scripts/Interaction/ChestScript.cs`, `Assets/Scripts/Interaction/DoorScript.cs`, `Assets/Scripts/CraftingSimples.cs`
+
+**Created** `SFXManager` — DontDestroyOnLoad singleton with two AudioSources (one-shot SFX + looping ambiance). Public AudioClip fields for all 10 SFX files in `Assets/Sounds/SFX/`.
+
+**Wired into:**
+- `CombatUIManager` — UIForward on attacks/items/defend/wait/target-select; UIBackward on undo/cancel/cancel-targeting/defend-unavailable; SuccessAcquired on victory; DefeatFail on defeat
+- `PartyMenuManager` — UIForward on OpenMenu; UIBackward on CloseMenu
+- `ItemDetails` — UIForward on equip/use success; UIBackward on drop/close
+- `ChestScript` — ChestDoorOpen + PieceCraftFound2 on chest open
+- `DoorScript` — ChestDoorOpen on door open
+- `CraftingSimples` — PieceCraftFound on craft success; UIBackward on craft failure
+
+**BoatAmbiance / BoatAmbianceInside** — included in SFXManager with `PlayLoop(clip)` / `StopLoop()` methods; call from scene-specific scripts or Yarn commands as needed.
+
+**Inspector:** Create a GameObject named `SFXManager` in any persistent scene, attach the `SFXManager` component, and assign all 10 AudioClips from `Assets/Sounds/SFX/` to the matching fields.
+
+---
+
+## 2026-03-24 (session 4)
+
+### Feature: CrashingWaves added as 8th battle transition type
+**Files:** `Assets/Scripts/Battle/BattleTransitionManager.cs`, `Assets/Scripts/Battle/BattleTransitionConfig.cs`
+
+User initially requested replacing Gooey with CrashingWaves, then revised to keep both.
+
+**Added** `CrashingWaves = 7` to `BattleTransitionType` enum. **Added** procedural fallback in `GradientValue()` — two sinusoidal wave fronts (fromTop, fromBottom) collide at the horizontal center. **Added** `public Texture2D crashingWaves` field to `BattleTransitionConfig` and its corresponding `case` in `GetTexture()`. Gooey (procedural Voronoi) was retained at index 5; CrashingWaves is index 7.
+
+**Inspector:** Assign `crashingWaves` texture in BattleTransitionConfig asset; leave `gooey` empty to keep procedural fallback.
+
+---
+
 ## 2026-03-24 (session 3)
 
 ### Fix: Shop buttons unresponsive after returning from combat

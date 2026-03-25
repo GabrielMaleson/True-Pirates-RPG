@@ -2,6 +2,7 @@ Shader "Custom/BattleTransition"
 {
     Properties
     {
+        _MainTex ("Base (RGB)", 2D) = "white" {}   // exigido pelo RawImage — não usado pelo shader
         _GradientTex ("Gradient Texture", 2D) = "white" {}
         _Cutoff ("Cutoff", Range(0, 1)) = 0
     }

@@ -1,0 +1,75 @@
+using UnityEngine;
+
+/// <summary>
+/// Singleton para efeitos sonoros. Persiste entre cenas (DontDestroyOnLoad).
+/// Atribua os AudioClips no inspector e chame SFXManager.Instance.Play(clip).
+/// Para sons em loop (ambientação), use PlayLoop / StopLoop.
+/// </summary>
+public class SFXManager : MonoBehaviour
+{
+    public static SFXManager Instance { get; private set; }
+
+    [Header("UI")]
+    public AudioClip uiForward;
+    public AudioClip uiBackward;
+
+    [Header("Combate")]
+    public AudioClip defeatFail;
+    public AudioClip successAcquired;
+
+    [Header("Mundo")]
+    public AudioClip chestDoorOpen;
+    public AudioClip chestDoorClose;
+
+    [Header("Crafting")]
+    public AudioClip pieceCraftFound;
+    public AudioClip pieceCraftFound2;
+
+    [Header("Ambientação (loop)")]
+    public AudioClip boatAmbiance;
+    public AudioClip boatAmbianceInside;
+
+    private AudioSource sfxSource;
+    private AudioSource loopSource;
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+            sfxSource  = gameObject.AddComponent<AudioSource>();
+            sfxSource.playOnAwake = false;
+
+            loopSource = gameObject.AddComponent<AudioSource>();
+            loopSource.playOnAwake = false;
+            loopSource.loop = true;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    /// <summary>Reproduz um clip de efeito sonoro (one-shot).</summary>
+    public void Play(AudioClip clip)
+    {
+        if (clip == null || sfxSource == null) return;
+        sfxSource.PlayOneShot(clip);
+    }
+
+    /// <summary>Inicia um som em loop (ambientação). Substitui qualquer loop anterior.</summary>
+    public void PlayLoop(AudioClip clip)
+    {
+        if (clip == null || loopSource == null) return;
+        if (loopSource.clip == clip && loopSource.isPlaying) return;
+        loopSource.clip = clip;
+        loopSource.Play();
+    }
+
+    /// <summary>Para o som em loop atual.</summary>
+    public void StopLoop()
+    {
+        if (loopSource != null) loopSource.Stop();
+    }
+}

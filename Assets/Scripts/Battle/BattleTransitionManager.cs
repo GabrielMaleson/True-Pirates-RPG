@@ -12,6 +12,7 @@ public enum BattleTransitionType
     SpinningSpiral           = 4, // Espiral giratória varrendo a tela
     Gooey                    = 5, // Células orgânicas de Voronoi expandindo
     Trapped                  = 6, // Barras de grade fechando das bordas ao centro
+    CrashingWaves            = 7, // Ondas horizontais colidindo do topo e da base
 }
 
 public class BattleTransitionManager : MonoBehaviour
@@ -85,13 +86,41 @@ public class BattleTransitionManager : MonoBehaviour
     }
 
     // ── Gradient Generation ────────────────────────────────────────────────
+    //
+    // Fonte: BattleTransitionConfig ScriptableObject (Assets/Resources/BattleTransitionConfig.asset)
+    // Fallback: geração procedural para slots vazios.
+    //
+    // Requisitos das imagens de gradiente:
+    //   • Escala de cinza: preto (0) = transiciona PRIMEIRO, branco (1) = por ÚLTIMO
+    //   • Import Settings: sRGB desativado (Linear), Wrap = Clamp, Filter = Bilinear
+    //
+    // Nomes esperados (sem extensão):
+    //   Atribua as texturas no asset BattleTransitionConfig (Resources/BattleTransitionConfig.asset).
+    //   Fallback: geração procedural caso um slot esteja vazio.
 
     private void GenerateAllGradients()
     {
         var values = (BattleTransitionType[])Enum.GetValues(typeof(BattleTransitionType));
         gradientTextures = new Texture2D[values.Length];
+
+        BattleTransitionConfig config = Resources.Load<BattleTransitionConfig>("RPG/Battle Transitions/BattleTransitionConfig");
+        if (config == null)
+            Debug.LogWarning("[BattleTransitionManager] BattleTransitionConfig não encontrado em Resources/RPG/Battle Transitions/. Usando geração procedural para todas as transições.");
+
         foreach (var t in values)
-            gradientTextures[(int)t] = GenerateGradient(t);
+        {
+            Texture2D loaded = config?.GetTexture(t);
+            if (loaded != null)
+            {
+                gradientTextures[(int)t] = loaded;
+            }
+            else
+            {
+                gradientTextures[(int)t] = GenerateGradient(t);
+                if (config != null)
+                    Debug.Log($"[BattleTransitionManager] Slot vazio para '{t}' — usando geração procedural.");
+            }
+        }
     }
 
     private static Texture2D GenerateGradient(BattleTransitionType type)
@@ -214,6 +243,15 @@ public class BattleTransitionManager : MonoBehaviour
                 float hBars = Mathf.Abs(Mathf.Sin(y * Mathf.PI * 12f));
                 float vBars = Mathf.Abs(Mathf.Sin(x * Mathf.PI * 12f));
                 return Mathf.Clamp01(edge * 2f + Mathf.Max(hBars, vBars) * 0.3f - 0.05f);
+            }
+
+            // ── Crashing Waves ───────────────────────────────────────────────
+            // Ondas senoidais descem do topo e sobem da base, colidindo no centro.
+            case BattleTransitionType.CrashingWaves:
+            {
+                float fromTop    = y + Mathf.Sin(x * Mathf.PI * 6f) * 0.08f;
+                float fromBottom = (1f - y) + Mathf.Sin(x * Mathf.PI * 6f + 1.5f) * 0.08f;
+                return Mathf.Clamp01(Mathf.Min(fromTop, fromBottom));
             }
 
             default:

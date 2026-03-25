@@ -87,12 +87,14 @@ public class CraftingSimples : MonoBehaviour
                 Debug.Log($"Criado: {result.quantidade}x {result.item.nomeDoItem}");
             }
 
+            SFXManager.Instance?.Play(SFXManager.Instance.pieceCraftFound);
             inv.AddProgress("compass");
             Debug.Log("Progress 'compass' adicionado com sucesso!");
             Debug.Log($"Sucesso! Receita '{recipe.recipeName}' craftada com sucesso!");
         }
         else
         {
+            SFXManager.Instance?.Play(SFXManager.Instance.uiBackward);
             Debug.Log("Falha: Você não tem os itens necessários!");
         }
     }

@@ -368,6 +368,7 @@ public class CombatUIManager : MonoBehaviour
     private void OnAttacksSelected()
     {
         if (currentCharacter == null) return;
+        SFXManager.Instance?.Play(SFXManager.Instance.uiForward);
 
         // Hide action menu
         actionMenuPanel.SetActive(false);
@@ -413,6 +414,7 @@ public class CombatUIManager : MonoBehaviour
     private void OnItemsSelected()
     {
         if (playerInventory == null) return;
+        SFXManager.Instance?.Play(SFXManager.Instance.uiForward);
 
         // Hide action menu
         actionMenuPanel.SetActive(false);
@@ -462,10 +464,12 @@ public class CombatUIManager : MonoBehaviour
         // Check if character has max AP
         if (currentCharacter.currentAP < currentCharacter.MaxAP)
         {
+            SFXManager.Instance?.Play(SFXManager.Instance.uiBackward);
             statusText.text = "Só é possível defender com PA máximo!";
             StartCoroutine(ClearStatusMessageAfterDelay(1.5f));
             return;
         }
+        SFXManager.Instance?.Play(SFXManager.Instance.uiForward);
 
         // Hide action menu and both grids
         actionMenuPanel.SetActive(false);
@@ -481,6 +485,7 @@ public class CombatUIManager : MonoBehaviour
     private void OnWaitSelected()
     {
         if (currentCharacter == null) return;
+        SFXManager.Instance?.Play(SFXManager.Instance.uiForward);
 
         // Hide action menu
         actionMenuPanel.SetActive(false);
@@ -493,6 +498,7 @@ public class CombatUIManager : MonoBehaviour
     private void OnUndoSelected()
     {
         if (currentCharacter == null || combatSystem == null) return;
+        SFXManager.Instance?.Play(SFXManager.Instance.uiBackward);
 
         // Tell combat system to undo the last action
         combatSystem.UndoLastAction();
@@ -567,6 +573,7 @@ public class CombatUIManager : MonoBehaviour
 
     private void OnCancelGridSelected()
     {
+        SFXManager.Instance?.Play(SFXManager.Instance.uiBackward);
         ClearAllButtons();
         actionMenuPanel.SetActive(true);
     }
@@ -664,6 +671,7 @@ public class CombatUIManager : MonoBehaviour
 
     public void CancelTargeting()
     {
+        SFXManager.Instance?.Play(SFXManager.Instance.uiBackward);
         Debug.Log("Targeting cancelled via UI button");
 
         // Cancel targeting
@@ -753,6 +761,7 @@ public class CombatUIManager : MonoBehaviour
 
         if (!selectedTargets.Contains(target))
         {
+            SFXManager.Instance?.Play(SFXManager.Instance.uiForward);
             selectedTargets.Add(target);
             remainingTargetsToSelect--;
 
@@ -982,9 +991,15 @@ public class CombatUIManager : MonoBehaviour
         ClearAllButtons();
 
         if (result == CombatState.VICTORY)
-        { if (statusText != null) statusText.text = "Vitória!"; }
+        {
+            SFXManager.Instance?.Play(SFXManager.Instance.successAcquired);
+            if (statusText != null) statusText.text = "Vitória!";
+        }
         else if (result == CombatState.DEFEAT)
-        { if (statusText != null) statusText.text = "Derrota..."; }
+        {
+            SFXManager.Instance?.Play(SFXManager.Instance.defeatFail);
+            if (statusText != null) statusText.text = "Derrota...";
+        }
     }
 
     private void OnDestroy()

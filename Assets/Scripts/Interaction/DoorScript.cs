@@ -55,6 +55,7 @@ public class DoorScript : MonoBehaviour
 
     private IEnumerator TryOpenDoor()
     {
+        SFXManager.Instance?.Play(SFXManager.Instance.chestDoorOpen);
         spriteRenderer.sprite = opendoor;
         HidePopup();
         yield return new WaitForSeconds(0.3f);

@@ -119,6 +119,7 @@ public class ItemDetails : MonoBehaviour
 
         if (used && inventory != null)
         {
+            SFXManager.Instance?.Play(SFXManager.Instance.uiForward);
             inventory.RemoverItem(currentItem, 1);
 
             if (menuManager != null)
@@ -156,6 +157,7 @@ public class ItemDetails : MonoBehaviour
 
         if (equipped && inventory != null)
         {
+            SFXManager.Instance?.Play(SFXManager.Instance.uiForward);
             inventory.RemoverItem(currentItem, 1);
 
             if (menuManager != null)
@@ -175,6 +177,7 @@ public class ItemDetails : MonoBehaviour
     private void OnDropClicked()
     {
         if (currentItem == null || currentSlot == null || inventory == null) return;
+        SFXManager.Instance?.Play(SFXManager.Instance.uiBackward);
 
         inventory.RemoverItem(currentItem, 1);
 
@@ -186,6 +189,7 @@ public class ItemDetails : MonoBehaviour
 
     private void OnCloseClicked()
     {
+        SFXManager.Instance?.Play(SFXManager.Instance.uiBackward);
         Destroy(gameObject);
     }
 
