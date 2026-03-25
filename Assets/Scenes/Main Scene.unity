@@ -61642,7 +61642,7 @@ MonoBehaviour:
   playerGoldText: {fileID: 146550832}
   shopNameText: {fileID: 1353120971}
   itemDetailsNameText: {fileID: 699251902}
-  itemDetailsDescText: {fileID: 0}
+  itemDetailsDescText: {fileID: 629212439}
   itemDetailsPriceText: {fileID: 326723456}
   itemDetailsIcon: {fileID: 1987150491}
   buyButton: {fileID: 959366203}

@@ -104,7 +104,6 @@ title: sidequest1_complete
 	Soldado Machucado: Salvou minha vida!
 	<<progress savedlife>>
 	<<brighten>>
-
 ===
 
 title: comandante_conversa
