@@ -2,6 +2,15 @@
 
 ---
 
+## 2026-03-25 (session 26)
+
+### Remoção: MenuWaveEffect e shader MenuWave
+**Files removidos:** `Assets/Scripts/Menu Scripts/MenuWaveEffect.cs`, `Assets/Shaders/MenuWave.shader` (e seus `.meta`)
+
+Sistema de wave effect do menu removido completamente. O arquivo de cena `TitleScreen.unity` ainda referencia o componente — abrir a cena no editor mostrará "Missing Script"; remover manualmente o componente e qualquer material que use o shader MenuWave.
+
+---
+
 ## 2026-03-25 (session 25)
 
 ### Fix: BattleTransitionConfig nunca atribuído ao BattleTransitionManager
