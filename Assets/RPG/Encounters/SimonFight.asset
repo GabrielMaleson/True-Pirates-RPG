@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 45f82d0ba8ac12140a6c798ca507f0ec, type: 3}
-  m_Name: SimonTest
+  m_Name: SimonFight
   m_EditorClassIdentifier: Assembly-CSharp::EncounterFile
   encounterName: simon
   encounterIcon: {fileID: 21300000, guid: 3c311fccc1bc3470d85f8915b9df0227, type: 3}
@@ -30,4 +30,4 @@ MonoBehaviour:
   isBossEncounter: 1
   battleMusic: {fileID: 8300000, guid: d5792087d6909ff4d814edcbe542a6e6, type: 3}
   battleBackground: {fileID: 5459073353179444510, guid: f3e31f0669d976042949fa5a1eff2041, type: 3}
-  transitionType: 0
+  transitionType: 6

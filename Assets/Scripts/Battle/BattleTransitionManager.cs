@@ -114,9 +114,9 @@ public class BattleTransitionManager : MonoBehaviour
         gradientTextures = new Texture2D[values.Length];
 
         BattleTransitionConfig config = transitionConfig
-            ?? Resources.Load<BattleTransitionConfig>("RPG/Battle Transitions/BattleTransitionConfig");
+            ?? Resources.Load<BattleTransitionConfig>("Battle Transitions/BattleTransitionConfig");
         if (config == null)
-            Debug.LogWarning("[BattleTransitionManager] BattleTransitionConfig não atribuído no inspector e não encontrado em Resources/RPG/Battle Transitions/. Usando geração procedural para todas as transições.");
+            Debug.LogWarning("[BattleTransitionManager] BattleTransitionConfig não atribuído no inspector e não encontrado em Resources/Battle Transitions/. Usando geração procedural para todas as transições.");
 
         foreach (var t in values)
         {

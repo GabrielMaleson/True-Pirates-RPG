@@ -31,6 +31,31 @@ public class EncounterData : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
+    /// <summary>
+    /// Reconstrói a lista de inimigos a partir do EncounterFile para a tentativa de retry.
+    /// Deve ser chamado antes de recarregar a cena de combate após uma derrota.
+    /// </summary>
+    public void ResetEnemiesForRetry()
+    {
+        if (encounterFile == null) return;
+
+        enemyPartyMembers.Clear();
+        enemyPrefabs.Clear();
+        combatVictory = false;
+
+        foreach (var enemyData in encounterFile.enemies)
+        {
+            if (enemyData.characterData == null) continue;
+            PartyMemberState enemyState = new PartyMemberState(enemyData.characterData, enemyData.level);
+            if (enemyData.overrideHP > 0)
+                enemyState.currentHP = enemyData.overrideHP;
+            enemyPartyMembers.Add(enemyState);
+            enemyPrefabs.Add(enemyData.enemyPrefab);
+        }
+
+        Debug.Log($"[EncounterData] Inimigos reiniciados para retry — {enemyPartyMembers.Count} inimigo(s).");
+    }
+
     public void CalculateRewards()
     {
         if (encounterFile != null)

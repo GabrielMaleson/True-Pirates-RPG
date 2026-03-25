@@ -749,10 +749,9 @@ public class CombatSystem : MonoBehaviour
 
         if (currentState == CombatState.DEFEAT)
         {
-            // Derrota — mostrar tela de Game Over de forma aditiva (mantém exploração desativada para retry)
+            // Derrota — carrega Game Over por cima do combate (Combat permanece visível como fundo)
             EncounterData encounterData = FindFirstObjectByType<EncounterData>();
             if (encounterData != null) encounterData.combatVictory = false;
-            SceneManager.UnloadSceneAsync("Combat");
             SceneManager.LoadSceneAsync(gameOverSceneName, LoadSceneMode.Additive);
             yield break;
         }
