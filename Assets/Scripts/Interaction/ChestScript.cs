@@ -75,6 +75,7 @@ public class ChestScript : MonoBehaviour
             return;
         }
 
+        inventory.AddProgress("chested");
         inventory.AdicionarItem(item, quantidade);
 
         if (spriteRenderer != null && openchest != null)
