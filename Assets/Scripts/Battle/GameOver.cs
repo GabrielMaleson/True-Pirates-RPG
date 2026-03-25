@@ -66,9 +66,11 @@ public class GameOver : MonoBehaviour
     {
         EncounterData encounterData = FindFirstObjectByType<EncounterData>();
 
-        // Restaurar HP/AP do grupo para o estado pré-batalha
+        // Restaurar HP/AP do grupo e reiniciar inimigos para o estado pré-batalha
         if (encounterData != null && BattleSaveManager.Instance != null)
             BattleSaveManager.Instance.RestoreSnapshot(encounterData.playerPartyMembers);
+
+        encounterData?.ResetEnemiesForRetry();
 
         // Reiniciar a música de batalha
         if (encounterData != null && encounterData.encounterFile != null
@@ -78,8 +80,9 @@ public class GameOver : MonoBehaviour
             MusicManager.Instance?.PlayClip(encounterData.encounterFile.battleMusic);
         }
 
-        // Descarregar Game Over e recarregar a cena de combate
+        // Descarregar Game Over e a cena de combate anterior, depois recarregar combate
         SceneManager.UnloadSceneAsync("GameOver");
+        SceneManager.UnloadSceneAsync(combatSceneName);
         SceneManager.LoadSceneAsync(combatSceneName, LoadSceneMode.Additive);
     }
 

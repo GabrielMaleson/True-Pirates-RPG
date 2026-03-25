@@ -2,6 +2,24 @@
 
 ---
 
+## 2026-03-25 (session 28)
+
+### Fix: Game Over sobreposto ao combate (em vez de tela em branco)
+**Files:** `Assets/Scripts/Battle/CombatSystem.cs`, `Assets/Scripts/Battle/GameOver.cs`
+
+Antes: Combat era descarregado antes de carregar GameOver — a tela de derrota aparecia sobre a cena de exploração vazia. Agora: Combat permanece carregado e GameOver carrega de forma aditiva por cima. No retry, GameOver e o Combat antigo são descarregados antes de recarregar o combate.
+
+---
+
+## 2026-03-25 (session 27)
+
+### Fix: Botão Retry reiniciava combate com inimigos mortos
+**Files:** `Assets/Scripts/EncounterS/EncounterData.cs`, `Assets/Scripts/Battle/GameOver.cs`
+
+Ao tentar novamente após derrota, `EncounterData.enemyPartyMembers` ainda tinha os inimigos com HP = 0 da batalha anterior. `CombatSystem.InitializeCombat()` filtra membros com HP ≤ 0, então o combate terminava imediatamente sem inimigos. Adicionado `EncounterData.ResetEnemiesForRetry()` que reconstrói a lista de inimigos a partir do `EncounterFile` (igual ao setup original) e zera `combatVictory`. `GameOver.OnRetry()` agora chama esse método antes de recarregar a cena de combate. O snapshot de HP/AP do grupo (já existente em `BattleSaveManager`) é descartado na vitória via `ClearSnapshot()`.
+
+---
+
 ## 2026-03-25 (session 26)
 
 ### Remoção: MenuWaveEffect e shader MenuWave
