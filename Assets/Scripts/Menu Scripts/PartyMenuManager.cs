@@ -448,40 +448,9 @@ public class PartyMenuManager : MonoBehaviour
         if (objectivesButton != null) objectivesButton.SetActive(true);
     }
 
-    // Close Game with Save
     public void CloseGame()
     {
-        Debug.Log("Closing game... Saving before exit");
-
-        // Find SaveLoadManager instance
-        SaveLoadManager saveManager = SaveLoadManager.Instance;
-
-        if (saveManager != null)
-        {
-            // Save the game before closing
-            saveManager.SaveGame();
-            Debug.Log("Game saved successfully before closing");
-        }
-        else
-        {
-            Debug.LogWarning("SaveLoadManager not found! Game will close without saving.");
-        }
-
-        // Optionally add a small delay to ensure save completes
         StartCoroutine(QuitAfterDelay(0.2f));
-    }
-
-    public void SaveGame()
-    {
-        SaveLoadManager saveLoadManager = SaveLoadManager.Instance;
-        if (saveLoadManager != null)
-        {
-            saveLoadManager.SaveGame();
-        }
-        else
-        {
-            Debug.LogWarning("SaveLoadManager not found!");
-        }
     }
 
     private IEnumerator QuitAfterDelay(float delay)

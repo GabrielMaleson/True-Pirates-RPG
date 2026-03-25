@@ -70,16 +70,6 @@ public class PreviousScene : MonoBehaviour
             if (listener != null) listener.enabled = false;
         }
 
-        foreach (var ignoreObj in GameObject.FindGameObjectsWithTag("Ignore"))
-        {
-            // Re-enable camera that was disabled in UnloadScene
-            Camera ignoreCam = ignoreObj.GetComponent<Camera>();
-            if (ignoreCam != null) ignoreCam.enabled = true;
-
-            AudioListener listener = ignoreObj.GetComponent<AudioListener>();
-            if (listener != null) listener.enabled = false;
-        }
-
         // Reactivate stored objects — this triggers OnEnable on things like
         // ProgressCheck, which is how post-combat dialogue gets started.
         // Objects marked KeepDeactivated (dismissed via <<deactivate>> Yarn command)
@@ -94,10 +84,15 @@ public class PreviousScene : MonoBehaviour
         FixAudioListeners();
         FixEventSystems();
 
-        if (encounterData != null)
+        // Re-enable exploration cameras LAST — after all sceneObject OnEnables have fired —
+        // to ensure nothing that woke up during restoration accidentally leaves the camera off.
+        foreach (var ignoreObj in GameObject.FindGameObjectsWithTag("Ignore"))
         {
-            Vector3 playerPosition = Vector3.zero;
-            encounterData.ReactivateOriginalPlayer(playerPosition);
+            Camera ignoreCam = ignoreObj.GetComponent<Camera>();
+            if (ignoreCam != null) ignoreCam.enabled = true;
+
+            AudioListener listener = ignoreObj.GetComponent<AudioListener>();
+            if (listener != null) listener.enabled = false;
         }
 
         sceneObjects.Clear();

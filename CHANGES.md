@@ -2,6 +2,31 @@
 
 ---
 
+## 2026-03-25 (session 29)
+
+### Fix: Camera apagada ao retornar do combate
+**Files:** `Assets/Scripts/EncounterS/PreviousScene.cs`
+
+A câmera da exploração (tag "Ignore") era reativada antes dos objetos em sceneObjects, então qualquer `OnEnable` disparado durante a reativação poderia desabilitá-la novamente. Movida a re-habilitação da câmera para o final de `LoadScene()`, após todos os objetos serem reativados, FixAudioListeners e FixEventSystems. Também removido o `ReactivateOriginalPlayer(Vector3.zero)` que teletransportava o jogador para a origem.
+
+### Fix: Quests não sendo concluídas
+**Files:** `Assets/Scripts/SistemaInventario.cs`
+
+`AddProgress()` nunca notificava o `ObjectiveManager`. Adicionado `ObjectiveManager.Instance?.CheckAllObjectives()` ao final de `AddProgress()` — agora quests são marcadas como concluídas automaticamente quando as tags de progresso necessárias são adicionadas.
+
+### Fix: Tremido dos seguidores (Simon/Joodie)
+**Files:** `Assets/Scripts/LeaderFollower.cs`
+
+A animação `Andando` era controlada por `horizontalDistance > stoppingDistance`, causando flickering quando a distância oscilava na fronteira. Corrigido para usar `velocity.magnitude > 0.15f` como condição de movimento. Deceleração trocada de `Vector3.Lerp` para `Vector3.MoveTowards` com fator maior (8×speed) para parada mais limpa.
+**Inspector:** Para Joodie parecer mais afastada, aumente `Stopping Distance` no componente `FollowPlayer` dela para ~3.5 (Simon fica em ~2.0).
+
+### Remoção: Sistema de Save/Load
+**Files:** `Assets/Scripts/Dialogue Scripts/SaveLoadManager.cs` (removido), `Assets/Scripts/SaveHandler.cs`, `Assets/Scripts/Menu Scripts/PartyMenuManager.cs`
+
+Save/load marcado como opcional e removido. `SaveHandler` mantém apenas `NewGame()` (carrega cena "Beginning") e `ExitGame()`. `PartyMenuManager.CloseGame()` simplificado para apenas fechar o jogo sem salvar.
+
+---
+
 ## 2026-03-25 (session 28)
 
 ### Fix: Game Over sobreposto ao combate (em vez de tela em branco)
