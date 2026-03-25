@@ -2,6 +2,15 @@
 
 ---
 
+## 2026-03-25 (session 31)
+
+### Fix: Componente Camera desabilitado após luta dos ratos
+**Files:** `Assets/Scripts/EncounterS/PreviousScene.cs`
+
+`LoadScene()` usava `FindGameObjectsWithTag("Ignore")` para reativar câmeras, mas essa busca percorre todas as cenas carregadas — no momento da chamada, a cena de Combate ainda está carregada junto com a de exploração. Isso podia encontrar câmeras erradas ou perder a câmera certa. Fix: câmeras desabilitadas em `UnloadScene()` agora são salvas em `disabledIgnoreCameras` (lista de referências explícitas). `LoadScene()` restaura exatamente essas referências, sem depender de tag search cross-scene.
+
+---
+
 ## 2026-03-25 (session 30)
 
 ### Fix: Formação diagonal no combate + sorting order dos personagens

@@ -75,6 +75,10 @@ public class BattleTransitionManager : MonoBehaviour
         rt.offsetMin    = Vector2.zero;
         rt.offsetMax    = Vector2.zero;
 
+        // Disable BEFORE any early return — prevents the white RawImage from
+        // covering the screen if the shader is missing in a build.
+        transitionImage.enabled = false;
+
         var shader = Shader.Find("Custom/BattleTransition");
         if (shader == null)
         {
@@ -85,7 +89,6 @@ public class BattleTransitionManager : MonoBehaviour
         transitionMaterial        = new Material(shader);
         transitionImage.material  = transitionMaterial;
         transitionImage.color     = Color.white;
-        transitionImage.enabled   = false;
     }
 
     /// <summary>Define o config e regenera os gradientes. Chame antes de StartTransitionThen quando o config não foi atribuído no inspector.</summary>
