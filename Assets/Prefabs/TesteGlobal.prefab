@@ -3255,6 +3255,7 @@ GameObject:
   - component: {fileID: 1986476068124598944}
   - component: {fileID: 785058911814349946}
   - component: {fileID: 3348619874183832517}
+  - component: {fileID: 5377612498063822916}
   m_Layer: 0
   m_Name: Party Menu
   m_TagString: Untagged
@@ -3315,12 +3316,14 @@ MonoBehaviour:
   equipmentSlotParent: {fileID: 7622414098766558712}
   equipmentSlotPrefab: {fileID: 159576471053939692, guid: 3a945bfad8329544ba982ac8d4025df2, type: 3}
   objectivesButton: {fileID: 6291144729195675152}
+  configButton: {fileID: 0}
   inventoryGrid: {fileID: 2079989029885209790}
   itemSlotPrefab: {fileID: 159576471053939692, guid: d047e5f734bdc8646bbea9cca78834f7, type: 3}
   goldText: {fileID: 8890183529316148763}
   itemDetailsPrefab: {fileID: 6544876395421401408, guid: fcc4942286d09fb4387928048c130978, type: 3}
   partyMemberSelectorPrefab: {fileID: 6544876395421401408, guid: afae1ee2801ea2148be3199a3c572e3a, type: 3}
   inventory: {fileID: 8983900881636473733}
+  configSceneManager: {fileID: 5377612498063822916}
   canOpenMenu: 1
 --- !u!223 &1986476068124598944
 Canvas:
@@ -3385,6 +3388,19 @@ MonoBehaviour:
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
   m_PresetInfoIsWorld: 0
+--- !u!114 &5377612498063822916
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5020276079701135253}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51957062552f96d46aab65bfae33f01d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ConfigSceneManager
+  configSceneName: Config
 --- !u!1 &5044644987959598505
 GameObject:
   m_ObjectHideFlags: 0
@@ -5100,13 +5116,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5020276079701135253}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: 
+      - m_Target: {fileID: 991241101428107277}
+        m_TargetAssemblyTypeName: PartyMenuManager, Assembly-CSharp
+        m_MethodName: LoadConfig
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 

@@ -38,12 +38,41 @@ public class EncounterStarter : MonoBehaviour
         EncounterData encounterData = BuildEncounterData(encounterFile, playerInventory);
         encounterData.encounterStarterObject = this.gameObject;
 
+        MusicManager.Instance?.StopMusic();
+        if (encounterFile.battleMusic != null)
+            MusicManager.Instance?.PlayClip(encounterFile.battleMusic);
+
         BattleTransitionManager.GetOrCreate().StartTransitionThen(encounterFile.transitionType, () =>
         {
             GameObject sceneObj = new GameObject("PreviousScene");
             sceneObj.AddComponent<PreviousScene>();
             sceneObj.GetComponent<PreviousScene>().UnloadScene();
             SceneManager.LoadScene("Combat", LoadSceneMode.Additive);
+        });
+    }
+
+    /// <summary>
+    /// Chamado pelos gerenciadores de cutscene (DynamicCutsceneScript, SpecialCutsceneScript)
+    /// para iniciar um encontro. Centraliza: configuração de dados, início da música, transição e carregamento de cena.
+    /// Não define encounterStarterObject — este método é para triggers de cutscene, não objetos de zona descartáveis.
+    /// </summary>
+    public static void StartEncounterFromCutscene(EncounterFile encounterFile, SistemaInventario inventory)
+    {
+        BuildEncounterData(encounterFile, inventory);
+
+        MusicManager.Instance?.StopMusic();
+        if (encounterFile.battleMusic != null)
+            MusicManager.Instance?.PlayClip(encounterFile.battleMusic);
+        else
+            Debug.LogWarning($"[EncounterStarter] EncounterFile '{encounterFile.encounterName}' não tem battleMusic atribuído.");
+
+        BattleTransitionManager.GetOrCreate().StartTransitionThen(encounterFile.transitionType, () =>
+        {
+            GameObject sceneObj = new GameObject("PreviousScene");
+            sceneObj.AddComponent<PreviousScene>();
+            sceneObj.GetComponent<PreviousScene>().UnloadScene();
+            SceneManager.LoadSceneAsync("Combat", LoadSceneMode.Additive);
+            Debug.Log("Cena de combate sendo carregada.");
         });
     }
 
@@ -64,6 +93,9 @@ public class EncounterStarter : MonoBehaviour
         encounterData.playerInventory = inventory;
         encounterData.encounterFile = encounterFile;
         encounterData.playerPartyMembers = inventory.GetPartyMembersForCombat();
+
+        // Salvar snapshot do estado do grupo antes da batalha (para permitir tentativa em caso de derrota)
+        BattleSaveManager.GetOrCreate().SaveSnapshot(encounterData.playerPartyMembers);
 
         encounterData.enemyPartyMembers.Clear();
         encounterData.enemyPrefabs.Clear();

@@ -48,6 +48,7 @@ public class CombatSystem : MonoBehaviour
 
     [Header("Game Over")]
     public string mainMenuSceneName = "Menu";
+    public string gameOverSceneName  = "GameOver";
 
     [Header("Combat State")]
     public CombatState currentState = CombatState.STARTING;
@@ -162,7 +163,8 @@ public class CombatSystem : MonoBehaviour
 
         if (encounterData.encounterFile != null)
         {
-            MusicManager.Instance?.StopMusic();
+            // Música iniciada pelo trigger do encontro (EncounterStarter.StartEncounterFromCutscene / StartEncounter).
+            // PlayClip é chamado aqui como fallback — se a música já está tocando, o guard interno ignora a chamada.
             if (encounterData.encounterFile.battleMusic != null)
                 MusicManager.Instance?.PlayClip(encounterData.encounterFile.battleMusic);
             else
@@ -744,14 +746,17 @@ public class CombatSystem : MonoBehaviour
 
         if (currentState == CombatState.DEFEAT)
         {
-            // Game over — limpar estado e carregar menu principal
+            // Derrota — mostrar tela de Game Over de forma aditiva (mantém exploração desativada para retry)
             EncounterData encounterData = FindFirstObjectByType<EncounterData>();
             if (encounterData != null) encounterData.combatVictory = false;
-            SceneManager.LoadScene(mainMenuSceneName);
+            SceneManager.UnloadSceneAsync("Combat");
+            SceneManager.LoadSceneAsync(gameOverSceneName, LoadSceneMode.Additive);
             yield break;
         }
 
-        // Vitória — restaurar cena de exploração
+        // Vitória — descartar snapshot e restaurar cena de exploração
+        BattleSaveManager.Instance?.ClearSnapshot();
+
         if (menubutton != null) menubutton.SetActive(true);
         if (objbutton2 != null) objbutton2.SetActive(true);
 

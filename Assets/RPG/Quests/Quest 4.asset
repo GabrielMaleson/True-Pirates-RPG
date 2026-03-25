@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c7517180f5b0594f9dbe1cc168c3197, type: 3}
   m_Name: Quest 4
   m_EditorClassIdentifier: Assembly-CSharp::ObjectiveData
-  objectiveName: "Reportar ao Comandante sobre a Matriz Sin\xE1ptica"
-  objectiveDescription: "Est\xE1 na hora de terminar essa crise toda."
+  objectiveName: O Tesouro Do Timon
+  objectiveDescription: "Onde diabos est\xE1 esse ba\xFA...?"
   objectiveIcon: {fileID: 0}
   requiredProgressTags:
-  - beatgame
+  - chested
   playDialogueOnComplete: 0
   completionDialogueNode: 
   rewardGold: 0

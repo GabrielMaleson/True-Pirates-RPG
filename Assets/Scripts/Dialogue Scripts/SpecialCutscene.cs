@@ -222,11 +222,11 @@ public class SpecialCutsceneScript : MonoBehaviour
 
     private void StartEncounter()
     {
-        Debug.Log("StartEncounter command called");
+        Debug.Log("StartEncounter chamado");
 
         if (encounterToStart == null)
         {
-            Debug.LogError("No encounter assigned to SpecialCutsceneScript! Please assign an EncounterFile in the inspector.");
+            Debug.LogError("Nenhum encounter atribuído ao SpecialCutsceneScript! Atribua um EncounterFile no inspector.");
             return;
         }
 
@@ -246,16 +246,7 @@ public class SpecialCutsceneScript : MonoBehaviour
         }
 
         // Do NOT set encounterStarterObject — this script must survive after combat.
-        EncounterStarter.BuildEncounterData(encounterToStart, inventory);
-
-        BattleTransitionManager.GetOrCreate().StartTransitionThen(encounterToStart.transitionType, () =>
-        {
-            GameObject sceneObj = new GameObject("PreviousScene");
-            sceneObj.AddComponent<PreviousScene>();
-            sceneObj.GetComponent<PreviousScene>().UnloadScene();
-            SceneManager.LoadSceneAsync("Combat", LoadSceneMode.Additive);
-            Debug.Log("Cena de combate sendo carregada.");
-        });
+        EncounterStarter.StartEncounterFromCutscene(encounterToStart, inventory);
     }
 
     private IEnumerator MoveToPointAfterDelay(GameObject character, Vector3 target, float delay)
