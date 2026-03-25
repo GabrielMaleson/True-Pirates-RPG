@@ -1035,7 +1035,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   saveFileName: savegame.dat
-  continueObject: {fileID: 0}
+  continueObject: {fileID: 192553508}
 --- !u!114 &953190418
 MonoBehaviour:
   m_ObjectHideFlags: 0
