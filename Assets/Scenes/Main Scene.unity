@@ -73522,7 +73522,7 @@ GameObject:
   - component: {fileID: 1801672592}
   - component: {fileID: 1801672591}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: Quote
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -73567,7 +73567,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Quer comprar algo? Sou seu homem!
+  m_text: '"Quer comprar algo? Sou seu homem!"'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 226a9ffe09f7c2b4d940cd824ffe81a9, type: 2}
   m_sharedMaterial: {fileID: 5008586065033486741, guid: 226a9ffe09f7c2b4d940cd824ffe81a9, type: 2}

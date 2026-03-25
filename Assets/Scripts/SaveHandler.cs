@@ -1,11 +1,15 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class SaveHandler : MonoBehaviour
 {
     public void NewGame()
     {
-        SceneManager.LoadScene("Beginning");
+        SaveLoadManager.Instance?.NewGame();
+    }
+
+    public void LoadGame()
+    {
+        SaveLoadManager.Instance?.LoadGame();
     }
 
     public void ExitGame()
