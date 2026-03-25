@@ -91,6 +91,8 @@ title: sidequest1_potion
 	<<darken>>
 	Soldado Machucado: Socorro! Esses mutantes me atacaram... preciso de uma poção urgente!
 	Narração: Objetivo atualizado.
+	<<deactivate hurtguyog>>
+	<<activate hurtguy>>
 	<<add_objective "Pânico Total">>
 	<<brighten>>
 ===
@@ -102,6 +104,8 @@ title: sidequest1_complete
 	Soldado Machucado: Salvou minha vida!
 	<<progress savedlife>>
 	<<brighten>>
+
+===
 
 title: comandante_conversa
 ---

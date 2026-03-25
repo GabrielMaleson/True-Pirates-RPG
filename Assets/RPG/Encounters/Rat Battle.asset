@@ -24,7 +24,6 @@ MonoBehaviour:
     additionalAttacks:
     - {fileID: 11400000, guid: d369b83fa4db8f04bac4c9db9dfa92b2, type: 2}
     - {fileID: 11400000, guid: d9c158eca45a3d14eb29938036df67f2, type: 2}
-    - {fileID: 11400000, guid: c8b51e9b639870241a24cc09b8d2fc01, type: 2}
     enemySpecificDrops: []
   baseGoldReward: 200
   baseExpReward: 100

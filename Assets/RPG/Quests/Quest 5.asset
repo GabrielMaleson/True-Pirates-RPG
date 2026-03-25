@@ -17,8 +17,8 @@ MonoBehaviour:
   objectiveIcon: {fileID: 0}
   requiredProgressTags:
   - savedlife
-  playDialogueOnComplete: 0
-  completionDialogueNode: 
+  playDialogueOnComplete: 1
+  completionDialogueNode: sidequest1_complete
   rewardGold: 0
   rewardItems: []
   progressRewards: []
