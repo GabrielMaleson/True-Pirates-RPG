@@ -120,7 +120,7 @@ MonoBehaviour:
   - attack: {fileID: 11400000, guid: acf0af2f26abfe944be5fedc89b0f380, type: 2}
     unlockLevel: 1
   - attack: {fileID: 11400000, guid: c6d13a484147a6f44841e5ae3a35a34e, type: 2}
-    unlockLevel: 2
+    unlockLevel: 1
   - attack: {fileID: 11400000, guid: ce8560d22fb76fd43ab93d3624b55f0a, type: 2}
     unlockLevel: 3
   baseExpValue: 50

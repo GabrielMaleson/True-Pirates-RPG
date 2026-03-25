@@ -23,7 +23,7 @@ MonoBehaviour:
     overrideHP: 0
     additionalAttacks: []
     enemySpecificDrops: []
-  baseGoldReward: 100
+  baseGoldReward: 10
   baseExpReward: 100
   guaranteedDrops: []
   randomDrops: []

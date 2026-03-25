@@ -986,7 +986,7 @@ Transform:
   m_GameObject: {fileID: 150022141}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 15.87, y: -4.13, z: 0}
+  m_LocalPosition: {x: 21.08, y: -4.13, z: 0}
   m_LocalScale: {x: 0.70832, y: 0.70832, z: 0.70832}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -60548,7 +60548,7 @@ Transform:
   m_GameObject: {fileID: 754411964}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 15.87, y: -4.13, z: 0}
+  m_LocalPosition: {x: 21.080002, y: -4.13, z: 0}
   m_LocalScale: {x: 0.70832, y: 0.70832, z: 0.70832}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -61623,16 +61623,16 @@ MonoBehaviour:
   shopName: Shop
   itemsForSale:
   - item: {fileID: 11400000, guid: dcc1005cefe96a9478a682dcc28fb1c0, type: 2}
-    price: 100
+    price: 10
     quantity: 1
   - item: {fileID: 11400000, guid: 7840db85a48c5b74f98f7e580208eef1, type: 2}
-    price: 100
+    price: 10
     quantity: 1
   - item: {fileID: 11400000, guid: 429c578530f4a9044ad0af2628215113, type: 2}
-    price: 50
-    quantity: 2
+    price: 5
+    quantity: 1
   - item: {fileID: 11400000, guid: d6c02d5a193db474bb40dbc3041facdd, type: 2}
-    price: 50
+    price: 5
     quantity: 1
   interactKey: 32
   interactionPopup: {fileID: 0}

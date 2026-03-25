@@ -35,7 +35,7 @@ MonoBehaviour:
     overrideHP: 0
     additionalAttacks: []
     enemySpecificDrops: []
-  baseGoldReward: 100
+  baseGoldReward: 10
   baseExpReward: 100
   guaranteedDrops:
   - {fileID: 11400000, guid: 429c578530f4a9044ad0af2628215113, type: 2}
