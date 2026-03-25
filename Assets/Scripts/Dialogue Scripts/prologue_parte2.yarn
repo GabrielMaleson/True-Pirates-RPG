@@ -103,7 +103,7 @@ title: sidequest1_complete
 	<<progress savedlife>>
 	<<brighten>>
 
-title: commandant_true
+title: comandante_conversa
 ---
 	<<darken>>
 	<<sprite joodie.neutral icon>>
@@ -296,11 +296,4 @@ title: pos_batalha_nepal
 	<<removesprite icon>>
 	<<brighten>>
 	<<sceneload Finale>>
-===
-
-title: sidequest2_complete
----
-	<<darken>>
-	// TODO: adicionar diálogo aqui
-	<<brighten>>
 ===

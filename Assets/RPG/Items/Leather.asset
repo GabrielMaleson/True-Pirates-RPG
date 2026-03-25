@@ -18,7 +18,7 @@ MonoBehaviour:
   descricao: Protege bem mais do que parece.
   valorEmOuro: 2
   ehEmpilhavel: 0
-  ehEquipavel: 0
+  ehEquipavel: 1
   slotEquipamento: 1
   modificadoresStats:
   - statType: 2
