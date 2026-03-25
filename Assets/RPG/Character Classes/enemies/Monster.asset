@@ -16,9 +16,9 @@ MonoBehaviour:
   partyIcon: {fileID: -4549667453659451116, guid: 90c58ed25b3a5d044a0b35cb6b19a063, type: 3}
   battlePortrait: {fileID: -4549667453659451116, guid: 90c58ed25b3a5d044a0b35cb6b19a063, type: 3}
   animatorController: {fileID: 9100000, guid: 45841d217043fce418df56544d2b5829, type: 2}
-  baseHP: 20
+  baseHP: 35
   baseAttack: 5
-  baseDefense: 10
+  baseDefense: 5
   baseMaxAP: 10
   hpGrowth:
     serializedVersion: 2

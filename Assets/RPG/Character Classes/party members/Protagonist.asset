@@ -17,7 +17,7 @@ MonoBehaviour:
   battlePortrait: {fileID: 6787899602028675171, guid: 94502a1b07f15bf45b7c05f0f317d88e, type: 3}
   animatorController: {fileID: 9100000, guid: 0a25d65453e1df34f8369c6f0bee19ae, type: 2}
   baseHP: 20
-  baseAttack: 5
+  baseAttack: 8
   baseDefense: 8
   baseMaxAP: 10
   hpGrowth:
