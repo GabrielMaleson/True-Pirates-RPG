@@ -204,9 +204,7 @@ public class CombatSystem : MonoBehaviour
 
                 if (partyMemberVisualPrefab != null)
                 {
-                    Vector3 spawnPos = (partySpawnPoints != null && i < partySpawnPoints.Count && partySpawnPoints[i] != null)
-                        ? partySpawnPoints[i].position
-                        : GetDefaultPartySpawnPos(i, cam);
+                    Vector3 spawnPos = GetDefaultPartySpawnPos(i, cam);
                     Debug.Log($"[CombatSystem] Spawning party visual for {memberData.CharacterName} at {spawnPos}");
                     GameObject memberObj = Instantiate(partyMemberVisualPrefab, spawnPos, Quaternion.identity);
                     SceneManager.MoveGameObjectToScene(memberObj, gameObject.scene);
@@ -242,9 +240,7 @@ public class CombatSystem : MonoBehaviour
 
                 if (prefabToUse != null)
                 {
-                    Vector3 spawnPos = (enemySpawnPoints != null && i < enemySpawnPoints.Count && enemySpawnPoints[i] != null)
-                        ? enemySpawnPoints[i].position
-                        : GetDefaultEnemySpawnPos(i, cam);
+                    Vector3 spawnPos = GetDefaultEnemySpawnPos(i, cam);
                     Debug.Log($"[CombatSystem] Spawning enemy visual for {enemyData.CharacterName} at {spawnPos}");
                     GameObject enemyObj = Instantiate(prefabToUse, spawnPos, Quaternion.identity);
                     SceneManager.MoveGameObjectToScene(enemyObj, gameObject.scene);

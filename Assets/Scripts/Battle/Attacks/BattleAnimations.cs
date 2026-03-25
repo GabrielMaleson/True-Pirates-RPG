@@ -152,10 +152,13 @@ public class BattleAnimationData : ScriptableObject
                 Object.Destroy(hit, hitEffectDuration);
             }
 
-            // Hit sound
+            // Hit sound — reproduzido via SFXManager (2D) para garantir audibilidade
             if (hitSound != null)
             {
-                AudioSource.PlayClipAtPoint(hitSound, targetTransform.position);
+                if (SFXManager.Instance != null)
+                    SFXManager.Instance.Play(hitSound);
+                else
+                    AudioSource.PlayClipAtPoint(hitSound, Camera.main?.transform.position ?? Vector3.zero);
             }
         }
 

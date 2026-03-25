@@ -27,11 +27,17 @@ public class PreviousScene : MonoBehaviour
                 continue;
             }
 
-            // Ignore-tagged objects are not stored and not touched —
-            // they keep whatever state they're in (e.g. a deactivated NPC stays deactivated)
+            // Ignore-tagged objects are not stored and not deactivated —
+            // they keep whatever state they're in (e.g. a deactivated NPC stays deactivated).
+            // Exception: Camera components are disabled to prevent rendering conflicts with the
+            // combat camera. They are re-enabled in LoadScene().
             if (obj.CompareTag("Ignore"))
             {
-                Debug.Log($"Ignoring object: {obj.name}");
+                Camera ignoreCam = obj.GetComponent<Camera>();
+                if (ignoreCam != null) ignoreCam.enabled = false;
+                AudioListener ignoreListener = obj.GetComponent<AudioListener>();
+                if (ignoreListener != null) ignoreListener.enabled = false;
+                Debug.Log($"Ignorando objeto: {obj.name}");
                 continue;
             }
 
@@ -66,6 +72,10 @@ public class PreviousScene : MonoBehaviour
 
         foreach (var ignoreObj in GameObject.FindGameObjectsWithTag("Ignore"))
         {
+            // Re-enable camera that was disabled in UnloadScene
+            Camera ignoreCam = ignoreObj.GetComponent<Camera>();
+            if (ignoreCam != null) ignoreCam.enabled = true;
+
             AudioListener listener = ignoreObj.GetComponent<AudioListener>();
             if (listener != null) listener.enabled = false;
         }

@@ -2,6 +2,42 @@
 
 ---
 
+## 2026-03-25 (session 25)
+
+### Fix: BattleTransitionConfig nunca atribuído ao BattleTransitionManager
+**Files:** `Assets/Scripts/Battle/BattleTransitionManager.cs`, `Assets/Scripts/EncounterS/EncounterStarter.cs`
+
+`BattleTransitionManager` é criado em runtime via `GetOrCreate()`, então seu campo `[SerializeField]` fica sempre null e `Resources.Load` falha porque o asset não está em uma pasta `Resources`. Solução: (1) campo `transitionConfig` agora é `public` (visível no inspector se o objeto estiver na cena); (2) novo método `Configure(BattleTransitionConfig)` define o config e regenera os gradientes; (3) `EncounterStarter` ganhou campo `public BattleTransitionConfig transitionConfig` e chama `btm.Configure(transitionConfig)` antes de cada transição — basta atribuir o asset no inspector do EncounterStarter.
+
+---
+
+## 2026-03-25 (session 24)
+
+### Fix: Som de ataque da batalha não tocava
+**File:** `Assets/Scripts/Battle/Attacks/BattleAnimations.cs`
+
+`PlayAnimation()` usava `AudioSource.PlayClipAtPoint(hitSound, targetTransform.position)` para reproduzir o som de acerto — isso cria uma AudioSource 3D temporária na posição do alvo. Com o AudioListener no SFXManager (posição de mundo ~0,0,0) e os personagens de batalha a 5-7 unidades de distância, o volume caia para ~15% pelo rolloff logarítmico, tornando o som praticamente inaudível. Corrigido: agora usa `SFXManager.Instance.Play(hitSound)` (2D, sem atenuação por distância).
+
+---
+
+## 2026-03-25 (session 23)
+
+### Fix: SFX de combate não tocava
+**Files:** `Assets/Scripts/EncounterS/PreviousScene.cs`, `Assets/Scripts/SFXManager.cs`
+
+Dois problemas combinados: (1) `PreviousScene.UnloadScene()` desabilitava o componente `Camera` de objetos "Ignore", mas deixava o `AudioListener` ativo — durante o combate havia dois AudioListeners ativos e o Unity escolhia um imprevisível, muitas vezes o da câmera de exploração distante do SFXManager. Corrigido: agora desabilita também o `AudioListener` em objetos "Ignore". (2) As AudioSources do SFXManager tinham `spatialBlend = 1` (3D padrão), fazendo o volume depender da distância ao AudioListener. Corrigido: `spatialBlend = 0` (2D) garante volume total independente de posição.
+
+---
+
+## 2026-03-25 (session 22)
+
+### Fix: Câmera de exploração permanecia ativa durante combate
+**File:** `Assets/Scripts/EncounterS/PreviousScene.cs`
+
+A câmera de exploração estava marcada com a tag "Ignore", fazendo com que `PreviousScene.UnloadScene()` a ignorasse completamente e nunca desabilitasse. Com duas câmeras ativas simultaneamente, o background não carregava (FitToCamera pegava a câmera errada) e os personagens pareciam ter escala errada. Corrigido: `UnloadScene()` agora desabilita o componente `Camera` em objetos "Ignore", e `LoadScene()` o reabilita ao restaurar a cena.
+
+---
+
 ## 2026-03-25 (session 21)
 
 ### Fix: Personagens da batalha do rato aparecendo fora da câmera

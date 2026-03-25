@@ -42,10 +42,12 @@ public class SFXManager : MonoBehaviour
 
             sfxSource  = gameObject.AddComponent<AudioSource>();
             sfxSource.playOnAwake = false;
+            sfxSource.spatialBlend = 0f; // 2D — volume não depende de distância
 
             loopSource = gameObject.AddComponent<AudioSource>();
             loopSource.playOnAwake = false;
             loopSource.loop = true;
+            loopSource.spatialBlend = 0f; // 2D
         }
         else
         {

@@ -23,7 +23,7 @@ public class BattleTransitionManager : MonoBehaviour
     private const float TransitionSeconds = 0.7f;
 
     [Header("Config")]
-    [SerializeField] private BattleTransitionConfig transitionConfig;
+    public BattleTransitionConfig transitionConfig;
 
     private Texture2D[] gradientTextures;
     private Material    transitionMaterial;
@@ -86,6 +86,13 @@ public class BattleTransitionManager : MonoBehaviour
         transitionImage.material  = transitionMaterial;
         transitionImage.color     = Color.white;
         transitionImage.enabled   = false;
+    }
+
+    /// <summary>Define o config e regenera os gradientes. Chame antes de StartTransitionThen quando o config não foi atribuído no inspector.</summary>
+    public void Configure(BattleTransitionConfig config)
+    {
+        transitionConfig = config;
+        GenerateAllGradients();
     }
 
     // ── Gradient Generation ────────────────────────────────────────────────

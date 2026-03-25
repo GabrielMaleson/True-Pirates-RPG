@@ -47542,6 +47542,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EncounterStarter
   encounterFile: {fileID: 11400000, guid: 468d7a0ddc04675409cc593c3782a056, type: 2}
+  transitionConfig: {fileID: 11400000, guid: 0842cfee73b41f7418f1f9c61ad38f5b, type: 2}
   playerInventory: {fileID: 0}
 --- !u!61 &230615028
 BoxCollider2D:
@@ -58920,6 +58921,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EncounterStarter
   encounterFile: {fileID: 11400000, guid: 17f184c5b43201940b920808ce9b5cd3, type: 2}
+  transitionConfig: {fileID: 11400000, guid: 0842cfee73b41f7418f1f9c61ad38f5b, type: 2}
   playerInventory: {fileID: 0}
 --- !u!114 &695128007
 MonoBehaviour:
@@ -59391,6 +59393,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EncounterStarter
   encounterFile: {fileID: 0}
+  transitionConfig: {fileID: 11400000, guid: 0842cfee73b41f7418f1f9c61ad38f5b, type: 2}
   playerInventory: {fileID: 0}
 --- !u!114 &711182236
 MonoBehaviour:
@@ -75890,7 +75893,7 @@ GameObject:
   - component: {fileID: 2102209534}
   - component: {fileID: 2102209532}
   m_Layer: 0
-  m_Name: Main Camera (1)
+  m_Name: Fight Room Camera
   m_TagString: Ignore
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

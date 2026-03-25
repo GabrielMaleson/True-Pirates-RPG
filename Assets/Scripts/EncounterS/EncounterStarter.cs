@@ -7,6 +7,9 @@ public class EncounterStarter : MonoBehaviour
     [Header("Encounter Configuration")]
     public EncounterFile encounterFile;
 
+    [Header("Transição de batalha")]
+    public BattleTransitionConfig transitionConfig;
+
     [Header("Player Reference")]
     public SistemaInventario playerInventory;
 
@@ -38,7 +41,9 @@ public class EncounterStarter : MonoBehaviour
         EncounterData encounterData = BuildEncounterData(encounterFile, playerInventory);
         encounterData.encounterStarterObject = this.gameObject;
 
-        BattleTransitionManager.GetOrCreate().StartTransitionThen(encounterFile.transitionType, () =>
+        BattleTransitionManager btm = BattleTransitionManager.GetOrCreate();
+        if (transitionConfig != null) btm.Configure(transitionConfig);
+        btm.StartTransitionThen(encounterFile.transitionType, () =>
         {
             // Tela completamente preta — inicia música de batalha aqui para evitar que toque durante a transição de entrada
             MusicManager.Instance?.StopMusic();
