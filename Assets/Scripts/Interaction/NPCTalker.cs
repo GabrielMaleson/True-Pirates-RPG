@@ -14,6 +14,7 @@ public class NPCTalker : MonoBehaviour
     public GameObject Activator2;
     public GameObject Killer;
     public bool compassquest = false;
+    public bool chestquest = false;
 
     [Header("Itens para dar via Yarn")]
     public List<DadosItem> giveableItems = new List<DadosItem>();
@@ -42,7 +43,7 @@ public class NPCTalker : MonoBehaviour
 
     void Update()
     {
-        if (!hasstarted && playerInRange && !compassquest)
+        if (!hasstarted && playerInRange && !chestquest && !compassquest)
         {
             ShowPopup();
         }
@@ -52,7 +53,11 @@ public class NPCTalker : MonoBehaviour
             compassquest = false;
         }
 
-        if (!hasstarted && !compassquest && playerInRange && Input.GetKeyDown(KeyCode.Space))
+        if (SistemaInventario.Instance.HasProgress("chested"))
+        {
+            chestquest = false;
+        }
+        if (!hasstarted && !chestquest && !compassquest && playerInRange && Input.GetKeyDown(KeyCode.Space))
         {
             hasstarted = true;
             activeItems.Clear();

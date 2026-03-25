@@ -77,6 +77,7 @@ public class ChestScript : MonoBehaviour
 
         SFXManager.Instance?.Play(SFXManager.Instance.chestDoorOpen);
         SFXManager.Instance?.Play(SFXManager.Instance.pieceCraftFound2);
+        inventory.AddProgress("chested");
         inventory.AdicionarItem(item, quantidade);
 
         if (spriteRenderer != null && openchest != null)

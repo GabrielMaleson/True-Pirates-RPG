@@ -28,6 +28,10 @@ MonoBehaviour:
   guaranteedDrops: []
   randomDrops: []
   isBossEncounter: 1
-  battleMusic: {fileID: 8300000, guid: c48acbfb53ddd574996fc46fca848a11, type: 3}
+  battleMusic: {fileID: 8300000, guid: d5792087d6909ff4d814edcbe542a6e6, type: 3}
   battleBackground: {fileID: 5459073353179444510, guid: f3e31f0669d976042949fa5a1eff2041, type: 3}
+<<<<<<< HEAD
   transitionType: 5
+=======
+  transitionType: 0
+>>>>>>> main

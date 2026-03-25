@@ -86,6 +86,23 @@ title: joodie_conversa_privada
 	<<brighten>>
 ===
 
+title: sidequest1_potion
+---
+	<<darken>>
+	Soldado Machucado: Socorro! Esses mutantes me atacaram... preciso de uma poção urgente!
+	Narração: Objetivo atualizado.
+	<<add_objective "Pânico Total">>
+	<<brighten>>
+===
+
+title: sidequest1_complete
+---
+	<<darken>>
+	Soldado Machucado: Ah, obrigado! Me sinto como novo!
+	Soldado Machucado: Salvou minha vida!
+	<<progress savedlife>>
+	<<brighten>>
+
 title: commandant_true
 ---
 	<<darken>>
@@ -116,26 +133,16 @@ title: sidequest2_vela
 	Simon: Como se importasse pra você, Timon...
 	<<removesprite icon>>
 	Timon: É, realmente, não importa muito.
-	Timon: Pivete, uma palavra de conselho...
-	Timon: (O Simon não dura em lutas, mas ele é extremamente forte.)
-	Timon: (Se você quer sobreviver aqui, não se preocupe com ele.)
-	Timon: ... Quer saber? Gostei da sua cara.
-	Timon: Normalmente eu iria tentar gastar seu tempo por me irritar, mas...
-	Timon: Eu realmente tenho um monte de tralha aqui. 
-	Timon: Achei esse troço metálico preso nas cordas da vela. Deve ser de alguém aqui do navio.
-	Narração: O marinheiro entrega um fragmento metálico. É parte do dispositivo de navegação.
+	Timon: Pivete, me faz um favor?
+	Timon: Tenho um baú por aqui... não lembro onde, mas eu preciso do objeto dentro delete.
+	Timon: Vai pegar ele e traz pra mim. Não me decepcione.
 	<<removesprite icon>>
-	<<progress piece2>>
-	<<additem "piece2item">>
-	<<brighten>>
+	<<add_objective "O Tesouro Do Timon">>
 	<<brighten>>
 ===
 
 title: sidequest2_done
 ---
-<<declare $first_guy = true as bool>>
-
-<<if $first_guy>>
 	<<darken>>
 	Timon: O que mais você quer, menino? Já falei tudo que tenho que falar pra você.
 	Timon: Ah, não, espera... você acha que eu tenho algo a te dar, né?
@@ -143,16 +150,14 @@ title: sidequest2_done
 	<<sprite benito.happy icon>>
 	Benito: Eu não diria que não!
 	<<removesprite icon>>
+	Timon: ... Quer saber? Gostei da sua cara.
 	Timon: Normalmente eu iria tentar gastar seu tempo por me irritar, mas...
 	Timon: Eu realmente tenho um monte de tralha aqui. 
 	Timon: Achei esse troço metálico preso nas cordas da vela. Deve ser de alguém aqui do navio.
 	Narração: O marinheiro entrega um fragmento metálico. É parte do dispositivo de navegação.
 	<<removesprite icon>>
 	<<progress piece2>>
-	<<set $first_guy to false>>
-	<<additem "piece2item">>
 	<<brighten>>
-	<<endif>>
 ===
 
 title: sidequest3_rat

@@ -268,21 +268,7 @@ public class DynamicCutsceneScript : MonoBehaviour
         }
 
         // Do NOT set encounterStarterObject — this script must survive after combat.
-        EncounterStarter.BuildEncounterData(instance.encounterToStart, inventory);
-
-        bool transitionDone = false;
-        BattleTransitionManager.GetOrCreate().StartTransitionThen(instance.encounterToStart.transitionType, () =>
-        {
-            GameObject sceneObj = new GameObject("PreviousScene");
-            sceneObj.AddComponent<PreviousScene>();
-            sceneObj.GetComponent<PreviousScene>().UnloadScene();
-            SceneManager.LoadSceneAsync("Combat", LoadSceneMode.Additive);
-            Debug.Log("Cena de combate sendo carregada.");
-            transitionDone = true;
-        });
-
-        // Manter Yarn bloqueado até a transição completar e a cena começar a carregar
-        yield return new WaitUntil(() => transitionDone);
+        EncounterStarter.StartEncounterFromCutscene(instance.encounterToStart, inventory);
     }
 
     private void OnDestroy()
