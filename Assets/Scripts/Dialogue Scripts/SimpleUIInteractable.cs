@@ -235,14 +235,10 @@ public class SimpleUIInteractable : MonoBehaviour
             // Optional: Close UI after successful action
             CloseUI();
 
-            // Optional: Play a sound or show a notification
-            ShowSuccessNotification();
         }
         else
         {
-            // Player doesn't have the required item
-            Debug.Log($"Cannot perform action: Missing {itemToRemove?.nomeDoItem ?? "item"}");
-            ShowFailureNotification();
+            uiTitle = "Você não tem uma poção!";
         }
     }
 
