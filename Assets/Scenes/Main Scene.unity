@@ -62349,156 +62349,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2044415137178512020, guid: 68762d1a7146a6041ba387c2ee10840e, type: 3}
   m_PrefabInstance: {fileID: 4306362573018584605}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1010998258
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1010998261}
-  - component: {fileID: 1010998260}
-  - component: {fileID: 1010998259}
-  m_Layer: 0
-  m_Name: MusicManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!82 &1010998259
-AudioSource:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1010998258}
-  m_Enabled: 1
-  serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
-  m_Volume: 1
-  m_Pitch: 1
-  Loop: 0
-  Mute: 0
-  Spatialize: 0
-  SpatializePostEffects: 0
-  Priority: 128
-  DopplerLevel: 1
-  MinDistance: 1
-  MaxDistance: 500
-  Pan2D: 0
-  rolloffMode: 0
-  BypassEffects: 0
-  BypassListenerEffects: 0
-  BypassReverbZones: 0
-  rolloffCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  panLevelCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  spreadCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  reverbZoneMixCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
---- !u!114 &1010998260
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1010998258}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7e572fcaf4805044490dae1af9ba2502, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MusicManager
-  musicTracks:
-  - musicName: ratbattle
-    clip: {fileID: 8300000, guid: c48acbfb53ddd574996fc46fca848a11, type: 3}
-  - musicName: simon
-    clip: {fileID: 8300000, guid: d5792087d6909ff4d814edcbe542a6e6, type: 3}
-  - musicName: simonfight
-    clip: {fileID: 8300000, guid: 0cc163690391ac94ca4acc5bc4415560, type: 3}
-  audioSource: {fileID: 1010998259}
---- !u!4 &1010998261
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1010998258}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1015645324
 GameObject:
   m_ObjectHideFlags: 0
@@ -62707,6 +62557,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1358603880}
     m_Modifications:
+    - target: {fileID: 3709533896233690990, guid: 227430e3408d9ea4991df0bfefac914d, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5967072725792524423, guid: 227430e3408d9ea4991df0bfefac914d, type: 3}
       propertyPath: m_Name
       value: ShopItem (4)
@@ -63097,6 +62951,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1358603880}
     m_Modifications:
+    - target: {fileID: 3709533896233690990, guid: 227430e3408d9ea4991df0bfefac914d, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5967072725792524423, guid: 227430e3408d9ea4991df0bfefac914d, type: 3}
       propertyPath: m_Name
       value: ShopItem (2)
@@ -68209,8 +68067,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -681, y: 32.603}
-  m_SizeDelta: {x: 411.58, y: 243.85}
+  m_AnchoredPosition: {x: -645.2957, y: 32.603}
+  m_SizeDelta: {x: 400, y: 243.85}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1358603881
 MonoBehaviour:
@@ -68232,7 +68090,7 @@ MonoBehaviour:
   m_ChildAlignment: 1
   m_StartCorner: 0
   m_StartAxis: 1
-  m_CellSize: {x: 170, y: 40}
+  m_CellSize: {x: 170, y: 60}
   m_Spacing: {x: 10, y: 10}
   m_Constraint: 1
   m_ConstraintCount: 2
@@ -68404,6 +68262,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1358603880}
     m_Modifications:
+    - target: {fileID: 3709533896233690990, guid: 227430e3408d9ea4991df0bfefac914d, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5967072725792524423, guid: 227430e3408d9ea4991df0bfefac914d, type: 3}
       propertyPath: m_Name
       value: ShopItem (1)
@@ -70818,6 +70680,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1358603880}
     m_Modifications:
+    - target: {fileID: 3709533896233690990, guid: 227430e3408d9ea4991df0bfefac914d, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5967072725792524423, guid: 227430e3408d9ea4991df0bfefac914d, type: 3}
       propertyPath: m_Name
       value: ShopItem (3)
@@ -70920,6 +70786,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1358603880}
     m_Modifications:
+    - target: {fileID: 3709533896233690990, guid: 227430e3408d9ea4991df0bfefac914d, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5967072725792524423, guid: 227430e3408d9ea4991df0bfefac914d, type: 3}
       propertyPath: m_Name
       value: ShopItem
@@ -72199,14 +72069,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 2.531028, y: 2.8595483}
   m_EdgeRadius: 0
---- !u!81 &1630534230
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 976115666}
-  m_Enabled: 1
 --- !u!1 &1641945158
 GameObject:
   m_ObjectHideFlags: 0
@@ -76583,9 +76445,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8931263230098566763, guid: 1e7f3dc7f8881124c80d49cc85d2388b, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1630534229}
-    - targetCorrespondingSourceObject: {fileID: 8931263230098566763, guid: 1e7f3dc7f8881124c80d49cc85d2388b, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1630534230}
   m_SourcePrefab: {fileID: 100100000, guid: 1e7f3dc7f8881124c80d49cc85d2388b, type: 3}
 --- !u!1001 &4306362573018584605
 PrefabInstance:
@@ -76691,4 +76550,3 @@ SceneRoots:
   - {fileID: 222407286}
   - {fileID: 351988981}
   - {fileID: 1256341992}
-  - {fileID: 1010998261}

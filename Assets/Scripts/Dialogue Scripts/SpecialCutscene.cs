@@ -351,6 +351,7 @@ public class SpecialCutsceneScript : MonoBehaviour
             dialogueRunner.RemoveCommandHandler("guysleave");
             dialogueRunner.RemoveCommandHandler("playerphew");
             dialogueRunner.RemoveCommandHandler("playerflip");
+            dialogueRunner.RemoveCommandHandler("addsimon");
             dialogueRunner.RemoveCommandHandler("startencounter");
         }
     }

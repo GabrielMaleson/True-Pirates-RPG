@@ -369,7 +369,11 @@ public class CombatUIManager : MonoBehaviour
     {
         if (currentCharacter == null) return;
         SFXManager.Instance?.Play(SFXManager.Instance.uiForward);
+        ShowAttackGrid();
+    }
 
+    private void ShowAttackGrid()
+    {
         // Hide action menu
         actionMenuPanel.SetActive(false);
 
@@ -415,7 +419,11 @@ public class CombatUIManager : MonoBehaviour
     {
         if (playerInventory == null) return;
         SFXManager.Instance?.Play(SFXManager.Instance.uiForward);
+        ShowItemGrid();
+    }
 
+    private void ShowItemGrid()
+    {
         // Hide action menu
         actionMenuPanel.SetActive(false);
 
@@ -580,6 +588,7 @@ public class CombatUIManager : MonoBehaviour
 
     private void OnAttackSelected(AttackFile attack)
     {
+        SFXManager.Instance?.Play(SFXManager.Instance.uiForward);
         selectedAttack = attack;
         selectedItem = null;
 
@@ -597,6 +606,7 @@ public class CombatUIManager : MonoBehaviour
 
     private void OnItemSelected(DadosItem item)
     {
+        SFXManager.Instance?.Play(SFXManager.Instance.uiForward);
         selectedItem = item;
         selectedAttack = null;
 
@@ -683,11 +693,11 @@ public class CombatUIManager : MonoBehaviour
         if (targetingPanel != null)
             targetingPanel.SetActive(false);
 
-        // Repopulate and restore whichever panel was open before targeting
+        // Repopulate e restaurar o painel anterior sem reproduzir o som de avanço
         if (wasAttackPanelOpen)
-            OnAttacksSelected();
+            ShowAttackGrid();
         else
-            OnItemsSelected();
+            ShowItemGrid();
 
         // Clear selection
         selectedAttack = null;

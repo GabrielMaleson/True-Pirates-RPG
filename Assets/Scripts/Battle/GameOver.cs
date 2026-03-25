@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -8,6 +9,7 @@ using UnityEngine.UI;
 /// Setup na cena GameOver:
 ///   - Canvas com Image (preto, full-screen, Raycast Target = true)
 ///   - TextMeshPro "GAME OVER" centralizado
+///   - TextMeshPro para a frase motivacional — arraste em quoteText
 ///   - Dois botões: Retry e Quit
 ///   - Este script em um GameObject pai — arraste os botões nos campos do inspector
 ///   - A cena GameOver deve ter seu próprio EventSystem
@@ -22,9 +24,31 @@ public class GameOver : MonoBehaviour
     public Button retryButton;
     public Button quitButton;
 
+    [Header("Frase Motivacional")]
+    public TMP_Text quoteText;
+
     [Header("Nomes das Cenas")]
     public string combatSceneName = "Combat";
     public string menuSceneName   = "Menu";
+
+    private static readonly string[] quotes = new string[]
+    {
+        "Todo grande aventureiro já caiu antes de conquistar.",
+        "A derrota de hoje é a lição de amanhã.",
+        "Piratas não desistem — eles mudam o rumo.",
+        "O mar não derrota quem continua remando.",
+        "Cada fracasso é um mapa para o tesouro.",
+        "Até as tempestades mais fortes passam.",
+        "A coragem não é não ter medo — é continuar mesmo assim.",
+        "Nenhuma lenda foi escrita sem tropeços.",
+        "O horizonte sempre aparece para quem não vira a popa.",
+        "Cair faz parte da viagem. Levantar é a aventura.",
+        "Os maiores capitães já naufragaram antes de comandar frotas.",
+        "A batalha perdida não é o fim da guerra.",
+        "Força não é nunca cair — é sempre se erguer.",
+        "O vento contra é o que afila as velas.",
+        "Todo tesouro exige uma jornada difícil.",
+    };
 
     private void Start()
     {
@@ -33,6 +57,9 @@ public class GameOver : MonoBehaviour
 
         if (quitButton != null)
             quitButton.onClick.AddListener(OnQuit);
+
+        if (quoteText != null)
+            quoteText.text = quotes[Random.Range(0, quotes.Length)];
     }
 
     private void OnRetry()

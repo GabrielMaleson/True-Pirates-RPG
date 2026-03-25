@@ -12178,9 +12178,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8931263230098566763, guid: 1e7f3dc7f8881124c80d49cc85d2388b, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1366551815}
-    - targetCorrespondingSourceObject: {fileID: 8931263230098566763, guid: 1e7f3dc7f8881124c80d49cc85d2388b, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1366551816}
   m_SourcePrefab: {fileID: 100100000, guid: 1e7f3dc7f8881124c80d49cc85d2388b, type: 3}
 --- !u!1 &1366551814 stripped
 GameObject:
@@ -12233,14 +12230,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 2.531028, y: 2.8595483}
   m_EdgeRadius: 0
---- !u!81 &1366551816
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1366551814}
-  m_Enabled: 1
 --- !u!1 &1454063904
 GameObject:
   m_ObjectHideFlags: 0

@@ -70,6 +70,11 @@ public class DynamicCutsceneScript : MonoBehaviour
                 pointDictionary[entry.pointName] = entry.pointTransform;
             }
         }
+
+        // Registrar startratfight como AddCommandHandler (instância) em vez de [YarnCommand] estático
+        // — padrão idêntico ao SpecialCutsceneScript para garantir que o encontro inicie corretamente.
+        if (dialogueRunner != null)
+            dialogueRunner.AddCommandHandler("startratfight", StartRatFightCommand);
     }
 
     [YarnCommand("activate")]
@@ -245,30 +250,23 @@ public class DynamicCutsceneScript : MonoBehaviour
         inventory.AddPartyMember(joodie);
     }
 
-    [YarnCommand("startratfight")]
-    public static IEnumerator StartRatEncounter()
+    private void StartRatFightCommand()
     {
-        if (instance == null)
+        if (encounterToStart == null)
         {
-            Debug.LogError("Nenhuma instância de DynamicCutsceneScript encontrada!");
-            yield break;
-        }
-
-        if (instance.encounterToStart == null)
-        {
-            Debug.LogError("Nenhum EncounterFile atribuído ao DynamicCutsceneScript!");
-            yield break;
+            Debug.LogError("[DynamicCutsceneScript] Nenhum EncounterFile atribuído no campo 'Encounter To Start' no inspector.");
+            return;
         }
 
         SistemaInventario inventory = SistemaInventario.Instance;
         if (inventory == null)
         {
-            Debug.LogError("SistemaInventario.Instance não encontrado!");
-            yield break;
+            Debug.LogError("[DynamicCutsceneScript] SistemaInventario.Instance não encontrado!");
+            return;
         }
 
-        // Do NOT set encounterStarterObject — this script must survive after combat.
-        EncounterStarter.StartEncounterFromCutscene(instance.encounterToStart, inventory);
+        // Não definir encounterStarterObject — este script deve sobreviver ao combate.
+        EncounterStarter.StartEncounterFromCutscene(encounterToStart, inventory);
     }
 
     private void OnDestroy()

@@ -2,6 +2,131 @@
 
 ---
 
+## 2026-03-25 (session 21)
+
+### Fix: Personagens da batalha do rato aparecendo fora da câmera
+**File:** `Assets/Scripts/Battle/CombatSystem.cs`
+
+O código ignorava os spawn points configurados no inspector e usava sempre o cálculo por viewport. Corrigido: agora usa `partySpawnPoints[i].position` / `enemySpawnPoints[i].position` quando o slot está atribuído no inspector, caindo para o cálculo por viewport apenas quando o slot está vazio. Basta posicionar os GameObjects de spawn point dentro da área visível da câmera de combate.
+
+### Fix: Diálogo `pos_batalha_nepal` nunca disparava após batalha do rato
+**File:** `Assets/Scripts/Dialogue Scripts/prologue_parte2.yarn`
+
+Adicionado `<<progress rat_fight_completed>>` no nó `rat_fight` antes de `<<startratfight>>`. Ao restaurar a cena após a batalha, esse flag já está em progresso e o ProgressCheck pode verificá-lo. Adicionado `<<progress pos_batalha_nepal_done>>` no início de `pos_batalha_nepal` para evitar replay. **Ação necessária no inspector:** no ProgressCheck de `pos_batalha_nepal`, defina condição `"rat_fight_completed"` com `conditionMeansItDoesNotLoad = false` (obrigatório) e condição `"pos_batalha_nepal_done"` com `conditionMeansItDoesNotLoad = true` (evitar repetição).
+
+### Fix: Vazamento de comando Yarn `addsimon` no OnDestroy
+**File:** `Assets/Scripts/Dialogue Scripts/SpecialCutscene.cs`
+
+`OnDestroy()` removia todos os handlers registrados exceto `addsimon`. Corrigido: adicionado `RemoveCommandHandler("addsimon")`.
+
+### Novo: Música de fundo com zonas e trilha de início
+**Files:** `Assets/Scripts/MusicManager.cs`, `Assets/Scripts/ZoneMusicTrigger.cs` (novo)
+
+`MusicManager`: adicionado campo `startupMusicName` — preencha com o nome de uma trilha cadastrada em `musicTracks` para que a música inicie automaticamente quando o jogo carrega. `ZoneMusicTrigger`: novo script para transição de música por zona. Adicione a um GameObject com `BoxCollider2D` (Is Trigger), preencha `musicaAoEntrar` (e opcionalmente `musicaAoSair`) com nomes de trilhas de `MusicManager.musicTracks`. Configure duas zonas para alternar entre música interna e externa da embarcação.
+
+---
+
+## 2026-03-25 (session 20)
+
+### Redesign: Efeito de onda PixelWave — grade de pixels com escalonamento por coluna
+**Files:** `Assets/Shaders/MenuWave.shader`, `Assets/Scripts/Menu Scripts/MenuWaveEffect.cs`
+
+Shader e script completamente reescritos com algoritmo inspirado em vin-ni/PixelWave (MIT). O shader quantiza a tela em blocos de pixel (`floor(uv / _PixelSize)`), aplica um hash estável por coluna como limiar de escalonamento (equivalente ao Fisher-Yates do PixelWave), e divide cada banda em três zonas: lacuna (invisível), frente escalonada (colunas surgem progressivamente) e corpo cheio. Espuma aparece nas colunas que surgem mais cedo na frente. Gradiente de profundidade: #8BC6F6 → #3F75BA → #3468A9 → #10204A → #080C1B. Properties novas: `_ScrollSpeed`, `_WaveSpeed`, `_PixelSize`, `_NumBands`, `_GapRatio`, `_FrontWidth`. `MenuWaveEffect.cs` atualizado para expor e enviar as novas properties ao shader (removidas as antigas: `_Frequency`, `_Amplitude`, `_WaterRatio`).
+
+---
+
+## 2026-03-25 (session 19)
+
+### Fix: Batalha do rato não carregava personagens
+**File:** `Assets/Scripts/Dialogue Scripts/DynamicMovementDialogue.cs`
+
+`<<startratfight>>` era um `[YarnCommand]` em método **estático** `IEnumerator`. O Yarn Spinner não consegue determinar qual MonoBehaviour deve hospedar a coroutine estática, fazendo com que o encontro não fosse iniciado corretamente. **Corrigido:** removido o atributo e o método estático; adicionado `dialogueRunner.AddCommandHandler("startratfight", StartRatFightCommand)` no `Start()` e método de instância `StartRatFightCommand()` — padrão idêntico ao `SpecialCutsceneScript` (batalha do Simon), que funciona corretamente. O arquivo `.yarn` e o nome do comando não mudam.
+
+---
+
+## 2026-03-24 (session 18)
+
+### Redesign: Ondas em mosaico com rolagem vertical
+**Files:** `Assets/Shaders/MenuWave.shader`, `Assets/Scripts/Menu Scripts/MenuWaveEffect.cs`
+
+Shader reescrito com UV em mosaico (`frac(y * numBands - t * scrollSpeed)`): bandas de onda sobem continuamente, aparecem na base e somem no topo. Cada banda tem fase única via hash do índice, gradiente de profundidade (#8BC6F6 espuma → #080C1B abismo) e lacuna transparente entre ondas. Script expõe scrollSpeed, waveSpeed, frequency, amplitude, numBands e waterRatio. Rotacionar o GameObject -90° no eixo Z faz as ondas viajarem para a direita.
+
+---
+
+## 2026-03-24 (session 17)
+
+### Redesign: Efeito de onda do menu — 3 linhas viajantes com paleta de cor
+**Files:** `Assets/Shaders/MenuWave.shader`, `Assets/Scripts/Menu Scripts/MenuWaveEffect.cs`
+
+Shader reescrito: substitui o preenchimento de água por 3 linhas finas animadas que aparecem pela esquerda, atingem opacidade máxima no centro e somem à direita (envelope horizontal `smoothstep`). Cada linha tem núcleo nítido + brilho suave. Cores fixas da paleta fornecida: espuma #8BC6F6, transição #3F75BA, azul médio #3468A9. `MenuWaveEffect.cs` expõe posições Y individuais das 3 ondas, velocidade, frequência e amplitude no inspector.
+
+---
+
+## 2026-03-24 (session 16)
+
+### Feature: Frases motivacionais no Game Over
+**File:** `Assets/Scripts/Battle/GameOver.cs`
+
+Adicionado campo `quoteText` (TMP_Text) e array de 15 frases motivacionais em português com temática pirata/aventura. Em `Start()`, uma frase aleatória é exibida. Adicione um TextMeshPro à cena GameOver e arraste-o no campo **Quote Text** do inspector.
+
+---
+
+## 2026-03-24 (session 15)
+
+### Fix: SFX duplo no cancelar mira + SFX faltando nos botões de ataque
+**File:** `Assets/Scripts/Battle/CombatUIManager.cs`
+
+**SFX duplo ao cancelar** — `CancelTargeting()` restaurava o painel chamando `OnAttacksSelected()`/`OnItemsSelected()`, que tocam UIForward. Resultado: cancelar tocava UIBackward (correto) + UIForward (errado). Extraída a lógica de painel em `ShowAttackGrid()` e `ShowItemGrid()` (sem SFX); `OnAttacksSelected`/`OnItemsSelected` chamam essas helpers + tocam UIForward; `CancelTargeting` chama as helpers diretamente.
+
+**SFX faltando nos botões de ataque/item** — `OnAttackSelected` e `OnItemSelected` (clique em um ataque/item específico da grade) não tocavam nenhum SFX. Adicionado UIForward em ambos.
+
+---
+
+## 2026-03-24 (session 14)
+
+### Fix: TitleScreenCleanup destruía singletons únicos (SFXManager, MusicManager)
+**File:** `Assets/Scripts/Dialogue Scripts/TitleScreenCleanup.cs`
+
+A limpeza destruía qualquer objeto DontDestroyOnLoad fora da cena ativa, inclusive gerenciadores únicos. Dois problemas: (1) objetos que se auto-destroem no `Awake` (singletons duplicados) ainda aparecem para `FindObjectsByType` no mesmo frame; (2) singletons únicos eram destruídos sem necessidade. **Correções:** `Start()` agora dispara a limpeza via coroutine com `yield return null` (espera um frame para que os `Destroy()` diferidos sejam processados), e `CleanupNonTitleScreenObjects()` conta as ocorrências de cada nome — objetos únicos são preservados, apenas duplicatas são destruídas.
+
+---
+
+## 2026-03-24 (session 13)
+
+### Fix: TitleScreenCleanup destruía SFXManager e MusicManager
+**File:** `Assets/Scripts/Dialogue Scripts/TitleScreenCleanup.cs`
+
+`CleanupNonTitleScreenObjects()` destruía todos os objetos DontDestroyOnLoad que não fossem tagged "TitleScreen" ou nomeados "[Debug Updater]", incluindo os gerenciadores de áudio. Adicionadas verificações de componente para `SFXManager` e `MusicManager` para que sejam preservados durante a limpeza da tela de título.
+
+---
+
+## 2026-03-24 (session 12)
+
+### Feature: Onda oceânica procedural no menu principal
+**Files:** `Assets/Shaders/MenuWave.shader` (novo), `Assets/Scripts/Menu Scripts/MenuWaveEffect.cs` (novo)
+
+Shader `Custom/MenuWave` gera duas camadas de ondas senoidais animadas (onda frontal + traseira) com espuma na crista e gradiente de profundidade. A onda flui da esquerda para a direita. `MenuWaveEffect` cria um Canvas ScreenSpaceOverlay e um RawImage cobrindo a tela inteira, aplicando o shader. Adicione `MenuWaveEffect` a qualquer GameObject na cena do título e ajuste no inspector: `waveY` (posição vertical da crista), `sortingOrder` (deve ser menor que o Canvas dos botões), cor, velocidade e amplitude.
+
+---
+
+## 2026-03-24 (session 11)
+
+### Fix: Permanent AudioListener on SFXManager
+**File:** `Assets/Scripts/SFXManager.cs`
+
+Added `gameObject.AddComponent<AudioListener>()` in `Awake` so the SFXManager (DontDestroyOnLoad) always carries the single active listener. This prevents audio muting during scene transitions when the player object is deactivated by PreviousScene. Remove AudioListener from the player and any cameras that previously held one.
+
+---
+
+## 2026-03-24 (session 10)
+
+### Fix: BattleTransitionConfig not found + SFX inspector field
+**File:** `Assets/Scripts/Battle/BattleTransitionManager.cs`
+
+`Resources.Load` requires the asset to live inside an `Assets/Resources/` folder; the config was at `Assets/RPG/Battle Transitions/`. Added `[SerializeField] private BattleTransitionConfig transitionConfig;` inspector field to `BattleTransitionManager`. `GenerateAllGradients()` now uses the inspector-assigned value first, with `Resources.Load` as a fallback. Place `BattleTransitionManager` in your starting scene and drag the config asset onto the field to resolve the warning permanently.
+
+---
+
 ## 2026-03-24 (session 9)
 
 ### Fix: Music not playing + camera double-log + debug logs for all audio

@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(grep -r \"sceneload\\\\|LoadScene\" 'c:\\\\Users\\\\3853827\\\\Documents\\\\GitHub\\\\True-Pirates-RPG\\\\Assets\\\\Scripts\\\\Dialogue Scripts' --include=*.yarn)"
+      "Bash(grep -r \"sceneload\\\\|LoadScene\" 'c:\\\\Users\\\\3853827\\\\Documents\\\\GitHub\\\\True-Pirates-RPG\\\\Assets\\\\Scripts\\\\Dialogue Scripts' --include=*.yarn)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)"
     ]
   }
 }

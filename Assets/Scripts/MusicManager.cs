@@ -27,6 +27,10 @@ public class MusicManager : MonoBehaviour
     [Header("Named Music Tracks")]
     public List<MusicEntry> musicTracks = new List<MusicEntry>();
 
+    [Header("Música de Início")]
+    [Tooltip("Trilha tocada automaticamente ao iniciar o jogo. Deixe em branco para não tocar nada.")]
+    public string startupMusicName;
+
     [Header("Audio Source")]
     public AudioSource audioSource;
 
@@ -47,6 +51,9 @@ public class MusicManager : MonoBehaviour
 
         audioSource.loop = true;
         audioSource.playOnAwake = false;
+
+        if (!string.IsNullOrEmpty(startupMusicName))
+            PlayMusicCommand(startupMusicName);
     }
 
     /// <summary>

@@ -15,6 +15,14 @@ public class TitleScreenCleanup : MonoBehaviour
     void Start()
     {
         CheckAndEnableContinueButton();
+        StartCoroutine(CleanupAfterFrame());
+    }
+
+    // Aguarda um frame para que os Destroy() diferidos (ex: singletons duplicados que
+    // se auto-destroem no Awake) sejam processados antes de contar duplicatas.
+    private IEnumerator CleanupAfterFrame()
+    {
+        yield return null;
         CleanupNonTitleScreenObjects();
     }
 
@@ -61,35 +69,42 @@ public class TitleScreenCleanup : MonoBehaviour
     public void CleanupNonTitleScreenObjects()
     {
         Time.timeScale = 1f;
-        // Get all active GameObjects in the scene
+
         GameObject[] allObjects = FindObjectsByType<GameObject>(FindObjectsSortMode.None);
+
+        // Contar quantas vezes cada nome de objeto aparece (para detectar duplicatas)
+        Dictionary<string, int> nameCounts = new Dictionary<string, int>();
+        foreach (GameObject obj in allObjects)
+        {
+            if (obj == null) continue;
+            if (!nameCounts.ContainsKey(obj.name))
+                nameCounts[obj.name] = 0;
+            nameCounts[obj.name]++;
+        }
+
         List<GameObject> objectsToDestroy = new List<GameObject>();
 
         foreach (GameObject obj in allObjects)
         {
-            // Don't destroy this cleanup script's object
+            if (obj == null) continue;
             if (obj == gameObject) continue;
-
-            // Don't destroy objects called "[Debug Updater]"
             if (obj.name == "[Debug Updater]") continue;
-
-            // Check if this object or any of its parents have the TitleScreen tag
             if (IsInTitleScreenHierarchy(obj)) continue;
-
-            // Don't destroy objects that are part of the title screen scene
             if (obj.scene.name == SceneManager.GetActiveScene().name) continue;
 
-            objectsToDestroy.Add(obj);
+            // Apenas destruir se for uma duplicata — objetos únicos são preservados
+            if (nameCounts.TryGetValue(obj.name, out int count) && count > 1)
+                objectsToDestroy.Add(obj);
         }
 
-        // Destroy all identified objects
         foreach (GameObject obj in objectsToDestroy)
         {
+            if (obj == null) continue;
             Destroy(obj);
-            Debug.Log("Destroyed object: " + obj.name);
+            Debug.Log("Destruído objeto duplicado: " + obj.name);
         }
 
-        Debug.Log("Title screen cleanup completed. Destroyed " + objectsToDestroy.Count + " objects.");
+        Debug.Log("Limpeza da tela de título concluída. Destruídos " + objectsToDestroy.Count + " objetos.");
     }
 
     private bool IsInTitleScreenHierarchy(GameObject obj)

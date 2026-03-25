@@ -22,6 +22,9 @@ public class BattleTransitionManager : MonoBehaviour
     private const int   TexSize           = 256;
     private const float TransitionSeconds = 0.7f;
 
+    [Header("Config")]
+    [SerializeField] private BattleTransitionConfig transitionConfig;
+
     private Texture2D[] gradientTextures;
     private Material    transitionMaterial;
     private RawImage    transitionImage;
@@ -103,9 +106,10 @@ public class BattleTransitionManager : MonoBehaviour
         var values = (BattleTransitionType[])Enum.GetValues(typeof(BattleTransitionType));
         gradientTextures = new Texture2D[values.Length];
 
-        BattleTransitionConfig config = Resources.Load<BattleTransitionConfig>("RPG/Battle Transitions/BattleTransitionConfig");
+        BattleTransitionConfig config = transitionConfig
+            ?? Resources.Load<BattleTransitionConfig>("RPG/Battle Transitions/BattleTransitionConfig");
         if (config == null)
-            Debug.LogWarning("[BattleTransitionManager] BattleTransitionConfig não encontrado em Resources/RPG/Battle Transitions/. Usando geração procedural para todas as transições.");
+            Debug.LogWarning("[BattleTransitionManager] BattleTransitionConfig não atribuído no inspector e não encontrado em Resources/RPG/Battle Transitions/. Usando geração procedural para todas as transições.");
 
         foreach (var t in values)
         {

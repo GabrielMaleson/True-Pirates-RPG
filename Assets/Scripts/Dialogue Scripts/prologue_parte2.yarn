@@ -268,11 +268,13 @@ title: rat_fight
 	Simon: Preparem-se!
 	<<brighten>>
 	<<deactivate rat>>
+	<<progress rat_fight_completed>>
 	<<startratfight>>
-===		
+===
 
 title: pos_batalha_nepal
 ---
+	<<progress pos_batalha_nepal_done>>
 	<<darken>>
 	Narração: Os propulsores do Highwaker rugem ao ganhar altitude. Os Mutantes estão derrotados. Joodie e Simon olham um para o outro, impressionados com a habilidade e a destreza de Benito durante o combate.
 	Narração: Antes que qualquer palavra de agradecimento possa ser dita, Benito se esgueira entre os dois e se abaixa perto do corpo da Matriz Sináptica.
