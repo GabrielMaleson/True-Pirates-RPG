@@ -26,10 +26,11 @@ MonoBehaviour:
     - {fileID: 11400000, guid: d9c158eca45a3d14eb29938036df67f2, type: 2}
     - {fileID: 11400000, guid: c8b51e9b639870241a24cc09b8d2fc01, type: 2}
     enemySpecificDrops: []
-  baseGoldReward: 100
+  baseGoldReward: 200
   baseExpReward: 100
   guaranteedDrops: []
   randomDrops: []
   isBossEncounter: 1
   battleMusic: {fileID: 8300000, guid: c48acbfb53ddd574996fc46fca848a11, type: 3}
   battleBackground: {fileID: 5459073353179444510, guid: f3e31f0669d976042949fa5a1eff2041, type: 3}
+  transitionType: 0

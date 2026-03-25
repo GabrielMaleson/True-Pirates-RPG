@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c7517180f5b0594f9dbe1cc168c3197, type: 3}
   m_Name: Quest 5
   m_EditorClassIdentifier: Assembly-CSharp::ObjectiveData
-  objectiveName: g
-  objectiveDescription: "Onde diabos est\xE1 esse ba\xFA...?"
+  objectiveName: "P\xE2nico Total"
+  objectiveDescription: "Compre uma po\xE7\xE3o para salvar o soldado!"
   objectiveIcon: {fileID: 0}
   requiredProgressTags:
-  - chested
+  - savedlife
   playDialogueOnComplete: 0
   completionDialogueNode: 
   rewardGold: 0
