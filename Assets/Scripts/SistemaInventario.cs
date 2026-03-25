@@ -457,6 +457,7 @@ public class SistemaInventario : MonoBehaviour
         if (!gameProgress.Contains(thing))
         {
             gameProgress.Add(thing);
+            ObjectiveManager.Instance?.CheckAllObjectives();
         }
     }
 

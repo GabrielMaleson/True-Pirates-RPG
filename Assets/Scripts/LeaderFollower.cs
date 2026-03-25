@@ -22,19 +22,15 @@ public class FollowPlayer : MonoBehaviour
     {
         if (target == null) return;
 
-        // Calculate target position with height limitations
         Vector3 targetPosition = GetLimitedTargetPosition();
 
-        // Calculate distance (using only horizontal distance for movement decision)
         float horizontalDistance = Vector2.Distance(
             new Vector2(transform.position.x, 0),
             new Vector2(targetPosition.x, 0)
         );
 
-        // Only move if the follower is outside the stopping distance
         if (horizontalDistance >= stoppingDistance)
         {
-            // Smoothly move towards the target position
             transform.position = Vector3.SmoothDamp(
                 transform.position,
                 targetPosition,
@@ -45,31 +41,27 @@ public class FollowPlayer : MonoBehaviour
         }
         else
         {
-            // Gradually stop when within stopping distance
-            velocity = Vector3.Lerp(velocity, Vector3.zero, Time.deltaTime * 5f);
+            // Decelerate quickly — fast damp prevents oscillation at stopping boundary
+            velocity = Vector3.MoveTowards(velocity, Vector3.zero, speed * Time.deltaTime * 8f);
         }
 
-        // Calculate movement direction for animation
-        Vector3 moveDirection = (targetPosition - transform.position).normalized;
-        currentMoveDirectionX = Mathf.Lerp(currentMoveDirectionX, moveDirection.x, Time.deltaTime * 10f);
+        // Drive animation from velocity, not distance — prevents flickering at boundary
+        float velMag = new Vector2(velocity.x, velocity.y).magnitude;
+        bool isMoving = velMag > 0.15f;
 
-        // Update animator
+        if (isMoving)
+            currentMoveDirectionX = Mathf.Lerp(currentMoveDirectionX,
+                velocity.x >= 0f ? 1f : -1f, Time.deltaTime * 12f);
+
         if (animator != null)
         {
-            bool isMoving = horizontalDistance > stoppingDistance;
             animator.SetBool("Andando", isMoving);
-
             if (isMoving)
-            {
                 animator.SetFloat("Horizontal", currentMoveDirectionX);
-            }
         }
 
-        // Flip sprite based on movement direction
-        if (spriteRenderer != null && Mathf.Abs(currentMoveDirectionX) > 0.1f)
-        {
-            spriteRenderer.flipX = currentMoveDirectionX < 0;
-        }
+        if (spriteRenderer != null && velMag > 0.15f)
+            spriteRenderer.flipX = velocity.x < 0f;
     }
 
     private Vector3 GetLimitedTargetPosition()
