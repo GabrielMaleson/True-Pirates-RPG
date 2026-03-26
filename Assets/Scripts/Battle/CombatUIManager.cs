@@ -56,6 +56,13 @@ public class CombatUIManager : MonoBehaviour
     [Header("Panels")]
     public GameObject waitPanel;
 
+    [Header("Attack Info Box")]
+    public TextMeshProUGUI attackInfoPlaceholder; // "Attack info Here" — hidden while info is shown
+    public GameObject attackInfoContent;          // container with name/desc/cost — hidden while placeholder is shown
+    public TextMeshProUGUI attackInfoName;
+    public TextMeshProUGUI attackInfoEffects;
+    public TextMeshProUGUI attackInfoAPCost;
+
     [Header("Debug")]
     public Button winButton;
 
@@ -90,6 +97,7 @@ public class CombatUIManager : MonoBehaviour
             combatSystem.onCombatEnded += OnCombatEnded;
             combatSystem.onAttackStarted += OnAttackStarted;
             combatSystem.onAttackFinished += OnAttackFinished;
+            combatSystem.onDamageTaken += OnDamageTaken;
         }
         if (battleAnimationText != null)
         {
@@ -304,6 +312,65 @@ public class CombatUIManager : MonoBehaviour
         }
     }
 
+    private void ShowAttackInfo(AttackFile attack)
+    {
+        if (attackInfoPlaceholder != null) attackInfoPlaceholder.gameObject.SetActive(false);
+        if (attackInfoContent     != null) attackInfoContent.SetActive(true);
+        if (attackInfoName        != null) attackInfoName.text        = attack.attackName;
+        if (attackInfoEffects != null) attackInfoEffects.text = BuildEffectsText(attack);
+        if (attackInfoAPCost      != null) attackInfoAPCost.text      = $"PA: {attack.actionPointCost}";
+    }
+
+    private static string BuildEffectsText(AttackFile attack)
+    {
+        if (attack.effects == null || attack.effects.Count == 0) return "";
+
+        var lines = new System.Text.StringBuilder();
+        foreach (var e in attack.effects)
+        {
+            string targetStr = e.numberOfTargets > 1 ? $" | Alvos: {e.numberOfTargets}" : "";
+            string accuracyStr = e.accuracy < 100 ? $" | Precisão: {e.accuracy}%" : "";
+
+            switch (e.effectType)
+            {
+                case EffectType.Damage:
+                case EffectType.Attack:
+                    lines.AppendLine($"Dano: {e.value}{accuracyStr}{targetStr}");
+                    break;
+                case EffectType.MultiHit:
+                    lines.AppendLine($"{e.hitCount} golpes | Dano: {e.value / Mathf.Max(1, e.hitCount)} cada{accuracyStr}{targetStr}");
+                    break;
+                case EffectType.Heal:
+                case EffectType.HP_Restore:
+                    lines.AppendLine($"Cura: {e.value}{targetStr}");
+                    break;
+                case EffectType.ManaRestore:
+                    lines.AppendLine($"Restaura PA: {e.value}{targetStr}");
+                    break;
+                case EffectType.Revive:
+                    lines.AppendLine($"Revive com {e.value} HP{targetStr}");
+                    break;
+                case EffectType.StatusEffect:
+                    string statusName = e.statusEffect != null ? e.statusEffect.effectName : "?";
+                    lines.AppendLine($"Aplica: {statusName}{accuracyStr}{targetStr}");
+                    break;
+                case EffectType.Buff:
+                    lines.AppendLine($"Melhora atributos{targetStr}");
+                    break;
+                case EffectType.Debuff:
+                    lines.AppendLine($"Reduz atributos{accuracyStr}{targetStr}");
+                    break;
+            }
+        }
+        return lines.ToString().TrimEnd();
+    }
+
+    private void ClearAttackInfo()
+    {
+        if (attackInfoPlaceholder != null) attackInfoPlaceholder.gameObject.SetActive(true);
+        if (attackInfoContent     != null) attackInfoContent.SetActive(false);
+    }
+
     private void RefreshSharedApBar(PartyMemberState character)
     {
         float pct = Mathf.Clamp01((float)character.currentAP / character.MaxAP);
@@ -328,6 +395,14 @@ public class CombatUIManager : MonoBehaviour
         if (sharedApBar  != null) sharedApBar.fillAmount  = 0f;
         if (sharedApBar2 != null) sharedApBar2.fillAmount = 0f;
         if (sharedApText != null) sharedApText.text = "";
+    }
+
+    private void OnDamageTaken(PartyMemberState target, int amount)
+    {
+        if (partyUIDictionary.TryGetValue(target, out CharacterUI cui))
+            cui.ShowDamage(amount);
+        else if (enemyUIDictionary.TryGetValue(target, out EnemyUI eui))
+            eui.ShowDamage(amount);
     }
 
     private void OnAttackStarted(PartyMemberState attacker)
@@ -459,7 +534,9 @@ public class CombatUIManager : MonoBehaviour
                     ActionButton btn = btnObj.GetComponent<ActionButton>();
                     if (btn != null)
                     {
-                        btn.Initialize(attack, () => OnAttackSelected(attack));
+                        btn.Initialize(attack, () => OnAttackSelected(attack),
+                            hoverEnter: ShowAttackInfo,
+                            hoverExit:  ClearAttackInfo);
                     }
                 }
             }
@@ -644,6 +721,7 @@ public class CombatUIManager : MonoBehaviour
     {
         SFXManager.Instance?.Play(SFXManager.Instance.uiBackward);
         ClearAllButtons();
+        ClearAttackInfo();
         actionMenuPanel.SetActive(true);
     }
 
@@ -1086,6 +1164,7 @@ public class CombatUIManager : MonoBehaviour
             combatSystem.onCombatEnded -= OnCombatEnded;
             combatSystem.onAttackStarted -= OnAttackStarted;
             combatSystem.onAttackFinished -= OnAttackFinished;
+            combatSystem.onDamageTaken -= OnDamageTaken;
         }
 
         if (attacksMenuButton != null)

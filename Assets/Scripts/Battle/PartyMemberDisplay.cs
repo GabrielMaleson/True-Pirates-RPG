@@ -22,6 +22,10 @@ public class CharacterUI : MonoBehaviour, IPointerClickHandler, IPointerEnterHan
     public TextMeshProUGUI selectedHpText;
     public Image selectedHealthBar;
 
+    // ── Damage indicator ───────────────────────────────────────────────────────
+    [Header("Damage Indicator")]
+    public TextMeshProUGUI damageText;
+
     // ── Targeting ──────────────────────────────────────────────────────────────
     [Header("Targeting")]
     public Image portraitBackground;  // root background — alpha 75 % normally, 100 % when targetable
@@ -39,6 +43,7 @@ public class CharacterUI : MonoBehaviour, IPointerClickHandler, IPointerEnterHan
     private System.Action onClickCallback;
     private bool isTargetable;
     private Coroutine pulseCoroutine;
+    private Coroutine damageCoroutine;
 
     private const float DefaultBgAlpha = 0.75f;
 
@@ -72,6 +77,7 @@ public class CharacterUI : MonoBehaviour, IPointerClickHandler, IPointerEnterHan
         // Background starts at 75 % alpha
         SetBackgroundAlpha(DefaultBgAlpha);
 
+        if (damageText        != null) damageText.gameObject.SetActive(false);
         if (targetableOutline != null) { targetableOutline.enabled = false; targetableOutline.effectDistance = new Vector2(2f, 2f); }
         if (targetIndicator   != null) targetIndicator.SetActive(false);
 
@@ -176,6 +182,61 @@ public class CharacterUI : MonoBehaviour, IPointerClickHandler, IPointerEnterHan
             targetableOutline.effectDistance = new Vector2(size, size);
             yield return null;
         }
+    }
+
+    // ── Damage indicator ───────────────────────────────────────────────────────
+
+    public void ShowDamage(int amount)
+    {
+        if (damageText == null) return;
+        if (damageCoroutine != null) StopCoroutine(damageCoroutine);
+        damageCoroutine = StartCoroutine(DamagePopRoutine(amount));
+        StartCoroutine(ShakePortrait());
+    }
+
+    private IEnumerator DamagePopRoutine(int amount)
+    {
+        damageText.text  = $"-{amount}";
+        damageText.color = new Color(1f, 0.2f, 0.2f, 1f);
+        damageText.gameObject.SetActive(true);
+
+        RectTransform rt    = damageText.rectTransform;
+        Vector2       start = rt.anchoredPosition;
+        float duration      = 0.8f;
+        float elapsed       = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / duration;
+            rt.anchoredPosition = start + Vector2.down * (50f * t);
+            float alpha = t < 0.4f ? 1f : Mathf.Lerp(1f, 0f, (t - 0.4f) / 0.6f);
+            Color c = damageText.color; c.a = alpha; damageText.color = c;
+            yield return null;
+        }
+
+        damageText.gameObject.SetActive(false);
+        rt.anchoredPosition = start;
+        damageCoroutine = null;
+    }
+
+    private IEnumerator ShakePortrait()
+    {
+        RectTransform rt = GetComponent<RectTransform>();
+        if (rt == null) yield break;
+        Vector2 origin  = rt.anchoredPosition;
+        float duration  = 0.3f;
+        float elapsed   = 0f;
+        float magnitude = 5f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            rt.anchoredPosition = origin + new Vector2(
+                Random.Range(-magnitude, magnitude),
+                Random.Range(-magnitude * 0.4f, magnitude * 0.4f));
+            yield return null;
+        }
+        rt.anchoredPosition = origin;
     }
 
     // ── Defeated ───────────────────────────────────────────────────────────────

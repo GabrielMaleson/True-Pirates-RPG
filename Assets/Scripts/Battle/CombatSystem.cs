@@ -65,6 +65,8 @@ public class CombatSystem : MonoBehaviour
     // Fired just before / just after each individual attack animation
     public System.Action<PartyMemberState> onAttackStarted;
     public System.Action<PartyMemberState> onAttackFinished;
+    // Fired whenever a character takes damage — carries the raw damage dealt
+    public System.Action<PartyMemberState, int> onDamageTaken;
 
     private Queue<PartyMemberState> playerTurnQueue = new Queue<PartyMemberState>();
     private Queue<PartyMemberState> enemyTurnQueue = new Queue<PartyMemberState>();
@@ -616,6 +618,7 @@ public class CombatSystem : MonoBehaviour
                         int defense = IsDefending(target) ? target.Defense * 3 : target.Defense;
                         int damage = Mathf.Max(1, effect.value + user.Attack - defense);
                         target.TakeDamage(damage);
+                        onDamageTaken?.Invoke(target, damage);
                         onCharacterUpdated?.Invoke(target);
                         break;
                     }
@@ -624,6 +627,7 @@ public class CombatSystem : MonoBehaviour
                         int defense = IsDefending(target) ? target.Defense * 3 : target.Defense;
                         int damage = Mathf.Max(1, user.Attack + effect.value - defense);
                         target.TakeDamage(damage);
+                        onDamageTaken?.Invoke(target, damage);
                         onCharacterUpdated?.Invoke(target);
                         break;
                     }
@@ -663,15 +667,20 @@ public class CombatSystem : MonoBehaviour
                     break;
 
                 case EffectType.MultiHit:
-                    for (int i = 0; i < effect.hitCount; i++)
                     {
-                        int defense = IsDefending(target) ? target.Defense * 3 : target.Defense;
-                        int damage = Mathf.Max(1, (effect.value + user.Attack - defense) / effect.hitCount);
-                        target.TakeDamage(damage);
-                        if (target.currentHP <= 0) break;
+                        int totalMultiDamage = 0;
+                        for (int i = 0; i < effect.hitCount; i++)
+                        {
+                            int defense = IsDefending(target) ? target.Defense * 3 : target.Defense;
+                            int damage = Mathf.Max(1, (effect.value + user.Attack - defense) / effect.hitCount);
+                            target.TakeDamage(damage);
+                            totalMultiDamage += damage;
+                            if (target.currentHP <= 0) break;
+                        }
+                        onDamageTaken?.Invoke(target, totalMultiDamage);
+                        onCharacterUpdated?.Invoke(target);
+                        break;
                     }
-                    onCharacterUpdated?.Invoke(target);
-                    break;
             }
         }
     }
