@@ -13,6 +13,7 @@ public class NPCTalker : MonoBehaviour
     public GameObject Activator;
     public GameObject Activator2;
     public GameObject Killer;
+    public GameObject NotificationThing;
     public bool compassquest = false;
     public bool chestquest = false;
 
@@ -43,6 +44,15 @@ public class NPCTalker : MonoBehaviour
 
     void Update()
     {
+
+        if (hasstarted)
+        {
+            if (NotificationThing != null)
+            {  
+                NotificationThing.SetActive(false); 
+            }
+        }
+
         if (!hasstarted && playerInRange && !chestquest && !compassquest)
         {
             ShowPopup();
