@@ -2,6 +2,26 @@
 
 ---
 
+## 2026-03-26 (session 35)
+
+### Feature: Botão de objetivos se oculta quando painel abre
+**Files:** `Assets/Scripts/Menu Scripts/PartyMenuManager.cs`
+
+Adicionado campo `objectivesButtonCanvasGroup` (CanvasGroup) no header "HUD Buttons". `ToggleObjectives` agora oculta o botão de objetivos via CanvasGroup (alpha=0, interactable=false, blocksRaycasts=false) quando o painel abre, e restaura quando fecha. Não usa `SetActive` para não quebrar o Grid Layout. `CloseObjectivesPanel` também restaura o botão. O botão dentro do painel pode chamar `ToggleObjectives` diretamente — mesma lógica.
+
+**Inspector:** Adicionar componente CanvasGroup no GameObject do botão de objetivos e atribuir ao campo `Objectives Button Canvas Group`.
+
+---
+
+## 2026-03-26 (session 34)
+
+### Fix: Ouro desativado separadamente durante combate
+**Files:** `Assets/Scripts/Menu Scripts/PartyMenuManager.cs`
+
+Adicionado campo `goldContainer` (GameObject) no header "Gold Count". Em `SetBattleState(true)`, desativa `goldContainer` separadamente de `hudButtonsContainer` para evitar bug visual onde o texto de ouro aparecia distorcido quando estava dentro do container de HUD. Atribua o GameObject pai do texto de ouro no Inspector.
+
+---
+
 ## 2026-03-26 (session 33)
 
 ### Feature: Barra de AP compartilhada no combat UI

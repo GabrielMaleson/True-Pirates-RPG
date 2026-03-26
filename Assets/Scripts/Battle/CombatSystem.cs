@@ -119,6 +119,8 @@ public class CombatSystem : MonoBehaviour
         if (menubutton != null) menubutton.SetActive(false);
         if (objbutton2 != null) objbutton2.SetActive(false);
 
+        FindFirstObjectByType<PartyMenuManager>()?.SetBattleState(true);
+
         EncounterData encounterData = FindFirstObjectByType<EncounterData>();
         if (encounterData != null)
             InitializeCombatWithData(encounterData);
@@ -827,6 +829,7 @@ public class CombatSystem : MonoBehaviour
             previousScene.LoadScene();
             SceneManager.UnloadSceneAsync("Combat");
             MusicManager.Instance?.ResumeAmbience();
+            FindFirstObjectByType<PartyMenuManager>()?.SetBattleState(false);
         }
     }
 

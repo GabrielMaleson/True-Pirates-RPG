@@ -41,11 +41,14 @@ public class PartyMenuManager : MonoBehaviour
         new Dictionary<EquipmentSlot, EquipmentSlotUI>();
 
     [Header("HUD Buttons")]
+    public GameObject hudButtonsContainer; // Root that holds Group/Objectives/Settings buttons
     public GameObject objectivesButton;
+    public CanvasGroup objectivesButtonCanvasGroup; // CanvasGroup on the objectives button — hides it without breaking the grid layout
     public GameObject settingsButton;
 
     [Header("Gold Count")]
     public TextMeshProUGUI goldCount; // Always visible, root of Party Menu
+    public GameObject goldContainer; // Parent GameObject of goldCount — toggled off during battle
 
     [Header("Inventory Display")]
     public Transform inventoryGrid;
@@ -113,14 +116,16 @@ public class PartyMenuManager : MonoBehaviour
         }
     }
 
-    // Called by combat system when battle starts
+    // Called by combat system when battle starts/ends
     public void SetBattleState(bool inBattle)
     {
         isInBattle = inBattle;
         if (inBattle && partyMenuPanel.activeSelf)
-        {
             CloseMenu();
-        }
+        if (hudButtonsContainer != null)
+            hudButtonsContainer.SetActive(!inBattle);
+        if (goldContainer != null)
+            goldContainer.SetActive(!inBattle);
     }
 
     // Called by cutscene system
@@ -156,6 +161,15 @@ public class PartyMenuManager : MonoBehaviour
         cg.alpha = willShow ? 1f : 0f;
         cg.interactable = willShow;
         cg.blocksRaycasts = willShow;
+
+        // Hide the HUD objectives button while the panel is open (stays in layout — no SetActive)
+        if (objectivesButtonCanvasGroup != null)
+        {
+            objectivesButtonCanvasGroup.alpha = willShow ? 0f : 1f;
+            objectivesButtonCanvasGroup.interactable = !willShow;
+            objectivesButtonCanvasGroup.blocksRaycasts = !willShow;
+        }
+
         if (willShow && ObjectiveManager.Instance != null)
             ObjectiveManager.Instance.RefreshQuestList();
     }
@@ -164,6 +178,14 @@ public class PartyMenuManager : MonoBehaviour
     {
         CanvasGroup cg = GetObjectiveCanvasGroup();
         if (cg != null) cg.alpha = 0f;
+
+        // Restore the HUD objectives button
+        if (objectivesButtonCanvasGroup != null)
+        {
+            objectivesButtonCanvasGroup.alpha = 1f;
+            objectivesButtonCanvasGroup.interactable = true;
+            objectivesButtonCanvasGroup.blocksRaycasts = true;
+        }
     }
 
     /// <summary>
