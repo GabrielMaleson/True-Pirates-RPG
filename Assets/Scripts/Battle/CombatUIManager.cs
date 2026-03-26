@@ -202,6 +202,9 @@ public class CombatUIManager : MonoBehaviour
         if (turnText != null) turnText.text = "";
         if (statusText != null) statusText.text = "";
         if (battleAnimationText != null) battleAnimationText.text = "";
+
+        // Info box starts with placeholder visible
+        ClearAttackInfo();
     }
 
     private void ActivateParentChain(Transform t)
@@ -318,7 +321,7 @@ public class CombatUIManager : MonoBehaviour
         if (attackInfoContent     != null) attackInfoContent.SetActive(true);
         if (attackInfoName        != null) attackInfoName.text        = attack.attackName;
         if (attackInfoEffects != null) attackInfoEffects.text = BuildEffectsText(attack);
-        if (attackInfoAPCost      != null) attackInfoAPCost.text      = $"PA: {attack.actionPointCost}";
+        if (attackInfoAPCost      != null) attackInfoAPCost.text      = $"AP: {attack.actionPointCost}";
     }
 
     private static string BuildEffectsText(AttackFile attack)
@@ -328,44 +331,74 @@ public class CombatUIManager : MonoBehaviour
         var lines = new System.Text.StringBuilder();
         foreach (var e in attack.effects)
         {
-            string targetStr = e.numberOfTargets > 1 ? $" | Alvos: {e.numberOfTargets}" : "";
-            string accuracyStr = e.accuracy < 100 ? $" | Precisão: {e.accuracy}%" : "";
-
             switch (e.effectType)
             {
                 case EffectType.Damage:
                 case EffectType.Attack:
-                    lines.AppendLine($"Dano: {e.value}{accuracyStr}{targetStr}");
+                {
+                    string line = $"Dano: {e.value}";
+                    if (e.accuracy < 100)       line += $" | Precisão: {e.accuracy}%";
+                    if (e.numberOfTargets > 1)  line += $" | {e.numberOfTargets} golpes";
+                    lines.AppendLine(line);
                     break;
+                }
                 case EffectType.MultiHit:
-                    lines.AppendLine($"{e.hitCount} golpes | Dano: {e.value / Mathf.Max(1, e.hitCount)} cada{accuracyStr}{targetStr}");
+                {
+                    string line = $"{e.hitCount} golpes | Dano: {e.value / Mathf.Max(1, e.hitCount)} cada";
+                    if (e.accuracy < 100) line += $" | Precisão: {e.accuracy}%";
+                    lines.AppendLine(line);
                     break;
+                }
                 case EffectType.Heal:
                 case EffectType.HP_Restore:
-                    lines.AppendLine($"Cura: {e.value}{targetStr}");
+                {
+                    string line = $"Cura: {e.value}";
+                    if (e.numberOfTargets > 1) line += $" | Alvos: {e.numberOfTargets}";
+                    lines.AppendLine(line);
                     break;
+                }
                 case EffectType.ManaRestore:
-                    lines.AppendLine($"Restaura PA: {e.value}{targetStr}");
+                {
+                    string line = $"Restaura AP: {e.value}";
+                    if (e.numberOfTargets > 1) line += $" | Alvos: {e.numberOfTargets}";
+                    lines.AppendLine(line);
                     break;
+                }
                 case EffectType.Revive:
-                    lines.AppendLine($"Revive com {e.value} HP{targetStr}");
+                    lines.AppendLine($"Revive com {e.value} HP");
                     break;
                 case EffectType.StatusEffect:
+                {
                     string statusName = e.statusEffect != null ? e.statusEffect.effectName : "?";
-                    lines.AppendLine($"Aplica: {statusName}{accuracyStr}{targetStr}");
+                    string line = $"Aplica: {statusName}";
+                    if (e.accuracy < 100) line += $" | Precisão: {e.accuracy}%";
+                    lines.AppendLine(line);
                     break;
+                }
                 case EffectType.Buff:
-                    lines.AppendLine($"Melhora atributos{targetStr}");
+                    lines.AppendLine("Melhora atributos");
                     break;
                 case EffectType.Debuff:
-                    lines.AppendLine($"Reduz atributos{accuracyStr}{targetStr}");
+                {
+                    string line = "Reduz atributos";
+                    if (e.accuracy < 100) line += $" | Precisão: {e.accuracy}%";
+                    lines.AppendLine(line);
                     break;
+                }
             }
         }
         return lines.ToString().TrimEnd();
     }
 
+    // Fully hides the info box — called when the attack panel is closed or on turn start
     private void ClearAttackInfo()
+    {
+        if (attackInfoPlaceholder != null) attackInfoPlaceholder.gameObject.SetActive(false);
+        if (attackInfoContent     != null) attackInfoContent.SetActive(false);
+    }
+
+    // Shows placeholder, hides content — called when attack panel opens or hover exits
+    private void ResetAttackInfoToPlaceholder()
     {
         if (attackInfoPlaceholder != null) attackInfoPlaceholder.gameObject.SetActive(true);
         if (attackInfoContent     != null) attackInfoContent.SetActive(false);
@@ -387,7 +420,7 @@ public class CombatUIManager : MonoBehaviour
             sharedApBar2.fillAmount = pct;
         }
         if (sharedApText != null)
-            sharedApText.text = $"PA: {character.currentAP}/{character.MaxAP}";
+            sharedApText.text = $"AP: {character.currentAP}/{character.MaxAP}";
     }
 
     private void ClearSharedApBar()
@@ -427,6 +460,7 @@ public class CombatUIManager : MonoBehaviour
         DisableAllTargeting();
         HideAllActionPanels();
         ClearAllButtons();
+        ClearAttackInfo();
 
         if (!isInitialized) return;
 
@@ -459,7 +493,7 @@ public class CombatUIManager : MonoBehaviour
             {
                 statusText.text = character.currentAP == character.MaxAP
                     ? "Escolha uma ação"
-                    : $"PA: {character.currentAP}/{character.MaxAP} - Escolha outra ação ou Espere";
+                    : $"AP: {character.currentAP}/{character.MaxAP} - Escolha outra ação ou Espere";
             }
 
             UpdateActionMenuButtons();
@@ -510,6 +544,9 @@ public class CombatUIManager : MonoBehaviour
 
     private void ShowAttackGrid()
     {
+        // Show placeholder in the info box now that the attack panel is open
+        ResetAttackInfoToPlaceholder();
+
         // Hide action menu
         actionMenuPanel.SetActive(false);
 
@@ -536,7 +573,7 @@ public class CombatUIManager : MonoBehaviour
                     {
                         btn.Initialize(attack, () => OnAttackSelected(attack),
                             hoverEnter: ShowAttackInfo,
-                            hoverExit:  ClearAttackInfo);
+                            hoverExit:  ResetAttackInfoToPlaceholder);
                     }
                 }
             }
@@ -664,14 +701,14 @@ public class CombatUIManager : MonoBehaviour
         if (itemButtonGrid != null)
             itemButtonGrid.gameObject.SetActive(false);
 
-        statusText.text = $"PA: {currentCharacter.currentAP}/{currentCharacter.MaxAP} - Ação desfeita";
+        statusText.text = $"AP: {currentCharacter.currentAP}/{currentCharacter.MaxAP} - Ação desfeita";
     }
 
     private IEnumerator ClearStatusMessageAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
         if (currentCharacter != null && statusText != null)
-            statusText.text = $"PA: {currentCharacter.currentAP}/{currentCharacter.MaxAP} - Escolha outra ação ou Espere";
+            statusText.text = $"AP: {currentCharacter.currentAP}/{currentCharacter.MaxAP} - Escolha outra ação ou Espere";
     }
 
     private IEnumerator ExecuteDefend()
@@ -958,7 +995,7 @@ public class CombatUIManager : MonoBehaviour
             actionMenuPanel.SetActive(true);
 
             // Update status text
-            if (statusText != null) statusText.text = $"PA: {currentCharacter.currentAP}/{currentCharacter.MaxAP} - Selecione outra ação ou Espere";
+            if (statusText != null) statusText.text = $"AP: {currentCharacter.currentAP}/{currentCharacter.MaxAP} - Selecione outra ação ou Espere";
 
             // Update button states (this will show undo button if there are pending actions)
             UpdateActionMenuButtons();
