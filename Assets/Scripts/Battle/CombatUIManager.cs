@@ -57,8 +57,7 @@ public class CombatUIManager : MonoBehaviour
     public GameObject waitPanel;
 
     [Header("Attack Info Box")]
-    public TextMeshProUGUI attackInfoPlaceholder; // "Attack info Here" — hidden while info is shown
-    public GameObject attackInfoContent;          // container with name/desc/cost — hidden while placeholder is shown
+    public TextMeshProUGUI attackInfoPlaceholder;
     public TextMeshProUGUI attackInfoName;
     public TextMeshProUGUI attackInfoEffects;
     public TextMeshProUGUI attackInfoAPCost;
@@ -318,10 +317,9 @@ public class CombatUIManager : MonoBehaviour
     private void ShowAttackInfo(AttackFile attack)
     {
         if (attackInfoPlaceholder != null) attackInfoPlaceholder.gameObject.SetActive(false);
-        if (attackInfoContent     != null) attackInfoContent.SetActive(true);
-        if (attackInfoName        != null) attackInfoName.text        = attack.attackName;
-        if (attackInfoEffects != null) attackInfoEffects.text = BuildEffectsText(attack);
-        if (attackInfoAPCost      != null) attackInfoAPCost.text      = $"AP: {attack.actionPointCost}";
+        if (attackInfoName    != null) { attackInfoName.text    = attack.attackName;               attackInfoName.gameObject.SetActive(true); }
+        if (attackInfoEffects != null) { attackInfoEffects.text = BuildEffectsText(attack);        attackInfoEffects.gameObject.SetActive(true); }
+        if (attackInfoAPCost  != null) { attackInfoAPCost.text  = $"AP: {attack.actionPointCost}"; attackInfoAPCost.gameObject.SetActive(true); }
     }
 
     private static string BuildEffectsText(AttackFile attack)
@@ -390,18 +388,22 @@ public class CombatUIManager : MonoBehaviour
         return lines.ToString().TrimEnd();
     }
 
-    // Fully hides the info box — called when the attack panel is closed or on turn start
+    // Fully hides everything — called when the attack panel is closed or on turn start
     private void ClearAttackInfo()
     {
         if (attackInfoPlaceholder != null) attackInfoPlaceholder.gameObject.SetActive(false);
-        if (attackInfoContent     != null) attackInfoContent.SetActive(false);
+        if (attackInfoName        != null) attackInfoName.gameObject.SetActive(false);
+        if (attackInfoEffects     != null) attackInfoEffects.gameObject.SetActive(false);
+        if (attackInfoAPCost      != null) attackInfoAPCost.gameObject.SetActive(false);
     }
 
     // Shows placeholder, hides content — called when attack panel opens or hover exits
     private void ResetAttackInfoToPlaceholder()
     {
         if (attackInfoPlaceholder != null) attackInfoPlaceholder.gameObject.SetActive(true);
-        if (attackInfoContent     != null) attackInfoContent.SetActive(false);
+        if (attackInfoName        != null) attackInfoName.gameObject.SetActive(false);
+        if (attackInfoEffects     != null) attackInfoEffects.gameObject.SetActive(false);
+        if (attackInfoAPCost      != null) attackInfoAPCost.gameObject.SetActive(false);
     }
 
     private void RefreshSharedApBar(PartyMemberState character)
