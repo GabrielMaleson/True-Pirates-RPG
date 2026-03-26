@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -46,6 +47,9 @@ public class CombatSystem : MonoBehaviour
     [Header("Background")]
     public SpriteRenderer backgroundRenderer;
 
+    [Header("UI")]
+    public TextMeshProUGUI attackQueueText;
+
     [Header("Game Over")]
     public string mainMenuSceneName = "Menu";
     public string gameOverSceneName  = "GameOver";
@@ -58,6 +62,9 @@ public class CombatSystem : MonoBehaviour
     public System.Action<PartyMemberState> onCharacterUpdated;
     public System.Action<PartyMemberState, AttackFile, List<PartyMemberState>> onActionExecuted;
     public System.Action<CombatState> onCombatEnded;
+    // Fired just before / just after each individual attack animation
+    public System.Action<PartyMemberState> onAttackStarted;
+    public System.Action<PartyMemberState> onAttackFinished;
 
     private Queue<PartyMemberState> playerTurnQueue = new Queue<PartyMemberState>();
     private Queue<PartyMemberState> enemyTurnQueue = new Queue<PartyMemberState>();
@@ -357,6 +364,7 @@ public class CombatSystem : MonoBehaviour
         endTurnRequested = false;
         pendingActions.Clear();
         apSnapshots.Clear();
+        RefreshQueueText(pendingActions);
 
         currentState = CombatState.PLAYER_TURN;
         onTurnStarted?.Invoke(currentCharacter);
@@ -462,11 +470,15 @@ public class CombatSystem : MonoBehaviour
 
     private IEnumerator ExecuteActionQueue(List<QueuedAction> actions)
     {
-        foreach (var action in actions)
+        for (int i = 0; i < actions.Count; i++)
         {
+            var action = actions[i];
             if (action.isItem || action.attack == null) continue;
             if (action.targets == null || action.targets.Count == 0) continue;
             if (CheckBattleEnd()) yield break;
+
+            // Show only the actions still waiting to execute
+            RefreshQueueText(actions.GetRange(i, actions.Count - i));
 
             yield return StartCoroutine(ExecuteAttackWithAnimation(currentCharacter, action.attack, action.targets));
 
@@ -478,6 +490,7 @@ public class CombatSystem : MonoBehaviour
             yield return new WaitForSeconds(0.2f);
         }
 
+        RefreshQueueText(new List<QueuedAction>());
         pendingActions.Clear();
         apSnapshots.Clear();
     }
@@ -485,6 +498,7 @@ public class CombatSystem : MonoBehaviour
     private IEnumerator ExecuteAttackWithAnimation(PartyMemberState user, AttackFile attack, List<PartyMemberState> targets)
     {
         isAnimating = true;
+        onAttackStarted?.Invoke(user);
 
         if (attack.battleAnimation != null)
         {
@@ -496,7 +510,22 @@ public class CombatSystem : MonoBehaviour
             yield return null;
         }
 
+        onAttackFinished?.Invoke(user);
         isAnimating = false;
+    }
+
+    // ─── Attack Queue Display ─────────────────────────────────────────────────────
+
+    private void RefreshQueueText(List<QueuedAction> actions)
+    {
+        if (attackQueueText == null) return;
+
+        var names = actions
+            .Where(a => !a.isItem && a.attack != null)
+            .Select(a => a.attack.attackName)
+            .ToList();
+
+        attackQueueText.text = names.Count > 0 ? string.Join(" > ", names) : "";
     }
 
     // ─── Public API for UI ────────────────────────────────────────────────────────
@@ -524,6 +553,7 @@ public class CombatSystem : MonoBehaviour
         apSnapshots.Push(currentCharacter.currentAP);
         currentCharacter.currentAP -= action.actionPointCost;
         pendingActions.Add(new QueuedAction(action, targets));
+        RefreshQueueText(pendingActions);
         onCharacterUpdated?.Invoke(currentCharacter);
     }
 
@@ -552,6 +582,7 @@ public class CombatSystem : MonoBehaviour
 
         pendingActions.RemoveAt(pendingActions.Count - 1);
         currentCharacter.currentAP = apSnapshots.Pop();
+        RefreshQueueText(pendingActions);
         onCharacterUpdated?.Invoke(currentCharacter);
     }
 

@@ -2,6 +2,34 @@
 
 ---
 
+## 2026-03-26 (session 33)
+
+### Feature: Barra de AP compartilhada no combat UI
+**Files:** `Assets/Scripts/Battle/CombatSystem.cs`, `Assets/Scripts/Battle/CombatUIManager.cs`
+
+Adicionado campo `sharedApBar` (Image) + `sharedApText` (TMP) no CombatUIManager (Header "AP Bar"). A barra mostra o AP do personagem ativo na vez do jogador e se atualiza a cada mudança de personagem ou gasto de AP. Zerada/apagada durante a vez do inimigo.
+
+### Feature: Retratos Default/Selected para personagens e inimigos
+**Files:** `Assets/Scripts/Battle/PartyMemberDisplay.cs`, `Assets/Scripts/Battle/EnemyDisplay.cs`, `Assets/Scripts/Battle/CombatSystem.cs`, `Assets/Scripts/Battle/CombatUIManager.cs`
+
+Adicionados campos `defaultContainer` e `selectedContainer` (GameObject) em CharacterUI e EnemyUI. `SetSelected(bool)` troca entre os dois. Personagens do jogador: ativam Selected no início de sua vez, voltam para Default quando outra vez começa. Inimigos: Selected só fica ativo enquanto o inimigo está executando um ataque (`onAttackStarted`/`onAttackFinished` novos eventos no CombatSystem). HP reflete em ambos os estados via `selectedHpText`/`selectedHealthBar`.
+
+### Feature: Retratos clicáveis para targeting + outline de hover
+**Files:** `Assets/Scripts/Battle/PartyMemberDisplay.cs`, `Assets/Scripts/Battle/EnemyDisplay.cs`
+
+Removido sistema de botão separado para selecionar alvo. CharacterUI e EnemyUI implementam `IPointerClickHandler`, `IPointerEnterHandler`, `IPointerExitHandler`. Quando um retrato se torna alvo válido: background sobe para 100% alpha (de 75%). Ao passar o mouse: `targetableOutline` aparece. Ao clicar: seleciona o alvo. Campo `portraitBackground` (Image) controla o alpha; campo `targetableOutline` (GameObject) controlado por hover.
+
+---
+
+## 2026-03-26 (session 32)
+
+### Feature: Fila de ataques exibida em texto durante o combate
+**Files:** `Assets/Scripts/Battle/CombatSystem.cs`
+
+Adicionado campo `attackQueueText` (TextMeshProUGUI) no inspector (Header "UI"). Mostra as ações enfileiradas no formato `Ataque > Ataque > Ataque`. Atualiza ao adicionar ação (`SelectPlayerAction`), desfazer (`UndoLastAction`) e ao iniciar turno (limpa). Durante a execução (`ExecuteActionQueue`), cada ação é removida do texto no momento em que começa a ser executada, usando `GetRange(i, remaining)` para mostrar apenas o que ainda falta.
+
+---
+
 ## 2026-03-25 (session 31)
 
 ### Fix: Componente Camera desabilitado após luta dos ratos

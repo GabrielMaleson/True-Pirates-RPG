@@ -44,6 +44,11 @@ public class CombatUIManager : MonoBehaviour
     public GameObject targetingPanel;         // Optional panel to show during targeting
     private Button targetingBackButtonComponent; // Cache the button component
 
+    [Header("AP Bar")]
+    public Image sharedApBar;
+    public Image sharedApBar2;
+    public TextMeshProUGUI sharedApText;
+
     [Header("Text Displays")]
     public TextMeshProUGUI turnText;
     public TextMeshProUGUI statusText;
@@ -83,6 +88,8 @@ public class CombatUIManager : MonoBehaviour
             combatSystem.onTurnStarted += OnTurnStarted;
             combatSystem.onCharacterUpdated += OnCharacterUpdated;
             combatSystem.onCombatEnded += OnCombatEnded;
+            combatSystem.onAttackStarted += OnAttackStarted;
+            combatSystem.onAttackFinished += OnAttackFinished;
         }
         if (battleAnimationText != null)
         {
@@ -297,6 +304,45 @@ public class CombatUIManager : MonoBehaviour
         }
     }
 
+    private void RefreshSharedApBar(PartyMemberState character)
+    {
+        float pct = Mathf.Clamp01((float)character.currentAP / character.MaxAP);
+        if (sharedApBar != null)
+        {
+            sharedApBar.type = Image.Type.Filled;
+            sharedApBar.fillMethod = Image.FillMethod.Horizontal;
+            sharedApBar.fillAmount = pct;
+        }
+        if (sharedApBar2 != null)
+        {
+            sharedApBar2.type = Image.Type.Filled;
+            sharedApBar2.fillMethod = Image.FillMethod.Horizontal;
+            sharedApBar2.fillAmount = pct;
+        }
+        if (sharedApText != null)
+            sharedApText.text = $"PA: {character.currentAP}/{character.MaxAP}";
+    }
+
+    private void ClearSharedApBar()
+    {
+        if (sharedApBar  != null) sharedApBar.fillAmount  = 0f;
+        if (sharedApBar2 != null) sharedApBar2.fillAmount = 0f;
+        if (sharedApText != null) sharedApText.text = "";
+    }
+
+    private void OnAttackStarted(PartyMemberState attacker)
+    {
+        // Enemies show their selected portrait only while actively attacking
+        if (enemyUIDictionary.TryGetValue(attacker, out EnemyUI enemyUI))
+            enemyUI.SetSelected(true);
+    }
+
+    private void OnAttackFinished(PartyMemberState attacker)
+    {
+        if (enemyUIDictionary.TryGetValue(attacker, out EnemyUI enemyUI))
+            enemyUI.SetSelected(false);
+    }
+
     private void OnTurnStarted(PartyMemberState character)
     {
         currentCharacter = character;
@@ -308,6 +354,21 @@ public class CombatUIManager : MonoBehaviour
         ClearAllButtons();
 
         if (!isInitialized) return;
+
+        // Reset selected state on all portraits; activate only the current party member's
+        foreach (var kvp in partyUIDictionary) kvp.Value.SetSelected(false);
+        foreach (var kvp in enemyUIDictionary) kvp.Value.SetSelected(false);
+
+        if (combatSystem.partyMembers.Contains(character))
+        {
+            if (partyUIDictionary.TryGetValue(character, out CharacterUI activeCui))
+                activeCui.SetSelected(true);
+            RefreshSharedApBar(character);
+        }
+        else
+        {
+            ClearSharedApBar();
+        }
 
         if (combatSystem.partyMembers.Contains(character))
         {
@@ -991,6 +1052,10 @@ public class CombatUIManager : MonoBehaviour
         {
             UpdateActionMenuButtons();
         }
+
+        // Keep shared AP bar in sync whenever the active player character changes
+        if (character == currentCharacter && combatSystem.partyMembers.Contains(character))
+            RefreshSharedApBar(character);
     }
 
     private void OnCombatEnded(CombatState result)
@@ -1019,6 +1084,8 @@ public class CombatUIManager : MonoBehaviour
             combatSystem.onTurnStarted -= OnTurnStarted;
             combatSystem.onCharacterUpdated -= OnCharacterUpdated;
             combatSystem.onCombatEnded -= OnCombatEnded;
+            combatSystem.onAttackStarted -= OnAttackStarted;
+            combatSystem.onAttackFinished -= OnAttackFinished;
         }
 
         if (attacksMenuButton != null)

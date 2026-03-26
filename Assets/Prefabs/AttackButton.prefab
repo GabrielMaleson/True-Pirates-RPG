@@ -34,8 +34,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 27.4, y: 7.399994}
-  m_SizeDelta: {x: -60.7, y: -19.353}
+  m_AnchoredPosition: {x: 27.4, y: 14.4924}
+  m_SizeDelta: {x: -60.7, y: -34.3437}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8226552541446278465
 CanvasRenderer:
@@ -67,8 +67,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: AP
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 9c6c64e5bd8a1e54aa7c178c46d3efe9, type: 2}
-  m_sharedMaterial: {fileID: -6458570065300030959, guid: 9c6c64e5bd8a1e54aa7c178c46d3efe9, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: a4ea0ae4d467a78439601a5f4a86d6b7, type: 2}
+  m_sharedMaterial: {fileID: 7991318608361535419, guid: a4ea0ae4d467a78439601a5f4a86d6b7, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -171,8 +171,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -34.4, y: 0.0000076294}
-  m_SizeDelta: {x: 20.6043, y: 20.9748}
+  m_AnchoredPosition: {x: -19.8, y: 0.0000076294}
+  m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7023552575480274523
 CanvasRenderer:
@@ -225,6 +225,7 @@ GameObject:
   - component: {fileID: 6234017541194920606}
   - component: {fileID: 5159339156487119333}
   - component: {fileID: -1638536764874183049}
+  - component: {fileID: 5790845155718778953}
   m_Layer: 5
   m_Name: AttackButton
   m_TagString: Untagged
@@ -245,14 +246,14 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6493883355354566816}
-  - {fileID: 1743373168038124738}
   - {fileID: 3350080767595446964}
+  - {fileID: 1743373168038124738}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 276.5, y: 427.9}
-  m_SizeDelta: {x: 100, y: 30}
+  m_SizeDelta: {x: 100, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2790392284236879849
 CanvasRenderer:
@@ -352,6 +353,19 @@ MonoBehaviour:
   apCostText: {fileID: 524446584259671965}
   button: {fileID: 5159339156487119333}
   image: {fileID: 5746514386620092196}
+--- !u!114 &5790845155718778953
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6544876395421401408}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31a19414c41e5ae4aae2af33fee712f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Mask
+  m_ShowMaskGraphic: 1
 --- !u!1 &7605054204991743468
 GameObject:
   m_ObjectHideFlags: 0
@@ -386,8 +400,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 11.476013, y: -5.3234997}
-  m_SizeDelta: {x: -28.852, y: -10.647}
+  m_AnchoredPosition: {x: 11.476013, y: -7.6276016}
+  m_SizeDelta: {x: -28.852, y: -21.416}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7660539557977279556
 CanvasRenderer:
@@ -417,10 +431,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: (sem ataque)
+  m_text: (Ataque sem Nome)
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 9c6c64e5bd8a1e54aa7c178c46d3efe9, type: 2}
-  m_sharedMaterial: {fileID: -6458570065300030959, guid: 9c6c64e5bd8a1e54aa7c178c46d3efe9, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: a4ea0ae4d467a78439601a5f4a86d6b7, type: 2}
+  m_sharedMaterial: {fileID: 7991318608361535419, guid: a4ea0ae4d467a78439601a5f4a86d6b7, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -444,15 +458,15 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 16
-  m_fontSizeBase: 16
+  m_fontSize: 8
+  m_fontSizeBase: 8
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
   m_fontSizeMax: 0
-  m_fontStyle: 0
+  m_fontStyle: 32
   m_HorizontalAlignment: 2
-  m_VerticalAlignment: 512
+  m_VerticalAlignment: 1024
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_characterHorizontalScale: 1
