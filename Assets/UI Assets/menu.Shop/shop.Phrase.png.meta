@@ -1,0 +1,1573 @@
+fileFormatVersion: 2
+guid: a79d003e96fdb4a418d172166c17bac5
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -8703024552985299140
+    second: shop.Phrase_0
+  - first:
+      213: -4274197122644421040
+    second: shop.Phrase_1
+  - first:
+      213: 4881465938867709592
+    second: shop.Phrase_2
+  - first:
+      213: 7219357751728671171
+    second: shop.Phrase_3
+  - first:
+      213: 7268456876876552954
+    second: shop.Phrase_4
+  - first:
+      213: 1005110479019145927
+    second: shop.Phrase_5
+  - first:
+      213: 367880201133627487
+    second: shop.Phrase_6
+  - first:
+      213: -3892704444647552244
+    second: shop.Phrase_7
+  - first:
+      213: -6420087088494805476
+    second: shop.Phrase_8
+  - first:
+      213: 4308136904839653036
+    second: shop.Phrase_9
+  - first:
+      213: -7818617417515697746
+    second: shop.Phrase_10
+  - first:
+      213: 2707182568684126002
+    second: shop.Phrase_11
+  - first:
+      213: -2963242091687086408
+    second: shop.Phrase_12
+  - first:
+      213: 3589379458233202566
+    second: shop.Phrase_13
+  - first:
+      213: -928734650269667311
+    second: shop.Phrase_14
+  - first:
+      213: -5964868856227966092
+    second: shop.Phrase_15
+  - first:
+      213: 8990266125831626886
+    second: shop.Phrase_16
+  - first:
+      213: 6920515168487702967
+    second: shop.Phrase_17
+  - first:
+      213: 4028559273873234058
+    second: shop.Phrase_18
+  - first:
+      213: -7755966011638312216
+    second: shop.Phrase_19
+  - first:
+      213: 2010345881849932871
+    second: shop.Phrase_20
+  - first:
+      213: -5252349769922716344
+    second: shop.Phrase_21
+  - first:
+      213: -232436942333595083
+    second: shop.Phrase_22
+  - first:
+      213: -564465457028129266
+    second: shop.Phrase_23
+  - first:
+      213: 6590762088264897858
+    second: shop.Phrase_24
+  - first:
+      213: -7626661760785605484
+    second: shop.Phrase_25
+  - first:
+      213: 7651379908369483192
+    second: shop.Phrase_26
+  - first:
+      213: -230147057974165142
+    second: shop.Phrase_27
+  - first:
+      213: 7657839824646851942
+    second: shop.Phrase_28
+  - first:
+      213: 1291871899498801924
+    second: shop.Phrase_29
+  - first:
+      213: -5952094734742772029
+    second: shop.Phrase_30
+  - first:
+      213: -5085965285658880305
+    second: shop.Phrase_31
+  - first:
+      213: 986925089870902319
+    second: shop.Phrase_32
+  - first:
+      213: -4718142117701261116
+    second: shop.Phrase_33
+  - first:
+      213: 7708465966442025277
+    second: shop.Phrase_34
+  - first:
+      213: -6853037915103425074
+    second: shop.Phrase_35
+  - first:
+      213: -5143730160674632528
+    second: shop.Phrase_36
+  - first:
+      213: -4300465203263668848
+    second: shop.Phrase_37
+  - first:
+      213: 8331720301106722091
+    second: shop.Phrase_38
+  - first:
+      213: 8739980251236000713
+    second: shop.Phrase_39
+  - first:
+      213: -1873293232258204114
+    second: shop.Phrase_40
+  - first:
+      213: 7106038545361471733
+    second: shop.Phrase_41
+  - first:
+      213: 6982137583802298768
+    second: shop.Phrase_42
+  - first:
+      213: 59408217945402256
+    second: shop.Phrase_43
+  - first:
+      213: 62281048830401821
+    second: shop.Phrase_44
+  - first:
+      213: -7243569707345411446
+    second: shop.Phrase_45
+  - first:
+      213: -7345880906810819328
+    second: shop.Phrase_46
+  - first:
+      213: -8951783960581812019
+    second: shop.Phrase_47
+  - first:
+      213: -738570304221800548
+    second: shop.Phrase_48
+  - first:
+      213: -712892703369410221
+    second: shop.Phrase_49
+  - first:
+      213: -4582284412525669411
+    second: shop.Phrase_50
+  - first:
+      213: 6645363553589756395
+    second: shop.Phrase_51
+  - first:
+      213: 5410396416930216139
+    second: shop.Phrase_52
+  - first:
+      213: 6579578342365009967
+    second: shop.Phrase_53
+  - first:
+      213: 7374222370994613541
+    second: shop.Phrase_54
+  - first:
+      213: 6335439124800240206
+    second: shop.Phrase_55
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: shop.Phrase_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 13
+        width: 33
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c37fec79745a83780800000000000000
+      internalID: -8703024552985299140
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_1
+      rect:
+        serializedVersion: 2
+        x: 103
+        y: 12
+        width: 33
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 05658c4dc500fa4c0800000000000000
+      internalID: -4274197122644421040
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_2
+      rect:
+        serializedVersion: 2
+        x: 181
+        y: 12
+        width: 22
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 896e06588637eb340800000000000000
+      internalID: 4881465938867709592
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_3
+      rect:
+        serializedVersion: 2
+        x: 526
+        y: 53
+        width: 11
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3c9004a10af403460800000000000000
+      internalID: 7219357751728671171
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_4
+      rect:
+        serializedVersion: 2
+        x: 581
+        y: 53
+        width: 10
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: afad873050fbed460800000000000000
+      internalID: 7268456876876552954
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_5
+      rect:
+        serializedVersion: 2
+        x: 870
+        y: 53
+        width: 11
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7ca75f5c7aed2fd00800000000000000
+      internalID: 1005110479019145927
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_6
+      rect:
+        serializedVersion: 2
+        x: 1029
+        y: 12
+        width: 33
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f5818740819fa1500800000000000000
+      internalID: 367880201133627487
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_7
+      rect:
+        serializedVersion: 2
+        x: 1127
+        y: 12
+        width: 34
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c0bc2399ee55af9c0800000000000000
+      internalID: -3892704444647552244
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_8
+      rect:
+        serializedVersion: 2
+        x: 1343
+        y: 53
+        width: 11
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c1ef13fdec447e6a0800000000000000
+      internalID: -6420087088494805476
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_9
+      rect:
+        serializedVersion: 2
+        x: 1699
+        y: 12
+        width: 21
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ca6e7b080b399cb30800000000000000
+      internalID: 4308136904839653036
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_10
+      rect:
+        serializedVersion: 2
+        x: 1827
+        y: 53
+        width: 11
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea97b4232e0be7390800000000000000
+      internalID: -7818617417515697746
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_11
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 13
+        width: 20
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 23ffb84f338d19520800000000000000
+      internalID: 2707182568684126002
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_12
+      rect:
+        serializedVersion: 2
+        x: 63
+        y: 12
+        width: 34
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b6718d740370e6d0800000000000000
+      internalID: -2963242091687086408
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_13
+      rect:
+        serializedVersion: 2
+        x: 146
+        y: 12
+        width: 30
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 687f214999900d130800000000000000
+      internalID: 3589379458233202566
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_14
+      rect:
+        serializedVersion: 2
+        x: 207
+        y: 12
+        width: 35
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 110741891c87c13f0800000000000000
+      internalID: -928734650269667311
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_15
+      rect:
+        serializedVersion: 2
+        x: 247
+        y: 12
+        width: 30
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 473ddb4e067883da0800000000000000
+      internalID: -5964868856227966092
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_16
+      rect:
+        serializedVersion: 2
+        x: 302
+        y: 12
+        width: 33
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 680eb62b867d3cc70800000000000000
+      internalID: 8990266125831626886
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_17
+      rect:
+        serializedVersion: 2
+        x: 341
+        y: 12
+        width: 29
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b1896811eb9a0060800000000000000
+      internalID: 6920515168487702967
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_18
+      rect:
+        serializedVersion: 2
+        x: 376
+        y: 12
+        width: 29
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a88d1dbb05158e730800000000000000
+      internalID: 4028559273873234058
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_19
+      rect:
+        serializedVersion: 2
+        x: 411
+        y: 12
+        width: 33
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8e29b4a51064d5490800000000000000
+      internalID: -7755966011638312216
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_20
+      rect:
+        serializedVersion: 2
+        x: 451
+        y: 13
+        width: 31
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 74ca553adee26eb10800000000000000
+      internalID: 2010345881849932871
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_21
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 12
+        width: 33
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84dd6af56b7eb17b0800000000000000
+      internalID: -5252349769922716344
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_22
+      rect:
+        serializedVersion: 2
+        x: 527
+        y: 13
+        width: 9
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 532378b15d736ccf0800000000000000
+      internalID: -232436942333595083
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_23
+      rect:
+        serializedVersion: 2
+        x: 543
+        y: 12
+        width: 30
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e0e1cd158ad9a28f0800000000000000
+      internalID: -564465457028129266
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_24
+      rect:
+        serializedVersion: 2
+        x: 582
+        y: 13
+        width: 8
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 245142e2337177b50800000000000000
+      internalID: 6590762088264897858
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_25
+      rect:
+        serializedVersion: 2
+        x: 597
+        y: 12
+        width: 30
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 49c915e4987a82690800000000000000
+      internalID: -7626661760785605484
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_26
+      rect:
+        serializedVersion: 2
+        x: 653
+        y: 0
+        width: 34
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b58ce7ec792f2a60800000000000000
+      internalID: 7651379908369483192
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_27
+      rect:
+        serializedVersion: 2
+        x: 692
+        y: 12
+        width: 31
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a61495b587a5eccf0800000000000000
+      internalID: -230147057974165142
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_28
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 13
+        width: 20
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66d4aee5fbc164a60800000000000000
+      internalID: 7657839824646851942
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_29
+      rect:
+        serializedVersion: 2
+        x: 755
+        y: 12
+        width: 31
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 40b6fe0e5a6ade110800000000000000
+      internalID: 1291871899498801924
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_30
+      rect:
+        serializedVersion: 2
+        x: 813
+        y: 12
+        width: 30
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3c62f22df59e56da0800000000000000
+      internalID: -5952094734742772029
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_31
+      rect:
+        serializedVersion: 2
+        x: 866
+        y: 0
+        width: 14
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fc69550f4850b69b0800000000000000
+      internalID: -5085965285658880305
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_32
+      rect:
+        serializedVersion: 2
+        x: 887
+        y: 12
+        width: 34
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f24fca9e32342bd00800000000000000
+      internalID: 986925089870902319
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_33
+      rect:
+        serializedVersion: 2
+        x: 928
+        y: 13
+        width: 20
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4c86b92edbac58eb0800000000000000
+      internalID: -4718142117701261116
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_34
+      rect:
+        serializedVersion: 2
+        x: 953
+        y: 13
+        width: 31
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d3117fc84f8f9fa60800000000000000
+      internalID: 7708465966442025277
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_35
+      rect:
+        serializedVersion: 2
+        x: 991
+        y: 12
+        width: 31
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ecd0afd335e15e0a0800000000000000
+      internalID: -6853037915103425074
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_36
+      rect:
+        serializedVersion: 2
+        x: 1070
+        y: 12
+        width: 31
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0bc8688ebaccd98b0800000000000000
+      internalID: -5143730160674632528
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_37
+      rect:
+        serializedVersion: 2
+        x: 1168
+        y: 12
+        width: 34
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 09d7a86beada154c0800000000000000
+      internalID: -4300465203263668848
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_38
+      rect:
+        serializedVersion: 2
+        x: 1229
+        y: 12
+        width: 30
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b257063787730a370800000000000000
+      internalID: 8331720301106722091
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_39
+      rect:
+        serializedVersion: 2
+        x: 1267
+        y: 13
+        width: 49
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9c3e9da6bb5aa4970800000000000000
+      internalID: 8739980251236000713
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_40
+      rect:
+        serializedVersion: 2
+        x: 1338
+        y: 0
+        width: 14
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e2e3b1bfab9b006e0800000000000000
+      internalID: -1873293232258204114
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_41
+      rect:
+        serializedVersion: 2
+        x: 1359
+        y: 12
+        width: 35
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5f801885868bd9260800000000000000
+      internalID: 7106038545361471733
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_42
+      rect:
+        serializedVersion: 2
+        x: 1397
+        y: 13
+        width: 34
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 091b077b32985e060800000000000000
+      internalID: 6982137583802298768
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_43
+      rect:
+        serializedVersion: 2
+        x: 1434
+        y: 12
+        width: 33
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 09bef5f957f03d000800000000000000
+      internalID: 59408217945402256
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_44
+      rect:
+        serializedVersion: 2
+        x: 1474
+        y: 13
+        width: 49
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d1d56cfa8444dd000800000000000000
+      internalID: 62281048830401821
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_45
+      rect:
+        serializedVersion: 2
+        x: 1550
+        y: 12
+        width: 30
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a8285efaabba97b90800000000000000
+      internalID: -7243569707345411446
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_46
+      rect:
+        serializedVersion: 2
+        x: 1585
+        y: 13
+        width: 34
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 00d77334c303e0a90800000000000000
+      internalID: -7345880906810819328
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_47
+      rect:
+        serializedVersion: 2
+        x: 1622
+        y: 12
+        width: 34
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dc05b7b9aefd4c380800000000000000
+      internalID: -8951783960581812019
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_48
+      rect:
+        serializedVersion: 2
+        x: 1662
+        y: 13
+        width: 31
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c97153fa83210c5f0800000000000000
+      internalID: -738570304221800548
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_49
+      rect:
+        serializedVersion: 2
+        x: 1726
+        y: 12
+        width: 31
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 359c2b40ddb4b16f0800000000000000
+      internalID: -712892703369410221
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_50
+      rect:
+        serializedVersion: 2
+        x: 1765
+        y: 13
+        width: 20
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dd31993da947860c0800000000000000
+      internalID: -4582284412525669411
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_51
+      rect:
+        serializedVersion: 2
+        x: 1788
+        y: 12
+        width: 33
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be18b0f71f2193c50800000000000000
+      internalID: 6645363553589756395
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_52
+      rect:
+        serializedVersion: 2
+        x: 1828
+        y: 13
+        width: 9
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bc8fb2d20e6951b40800000000000000
+      internalID: 5410396416930216139
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_53
+      rect:
+        serializedVersion: 2
+        x: 1845
+        y: 13
+        width: 20
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f28158c64ab5f4b50800000000000000
+      internalID: 6579578342365009967
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_54
+      rect:
+        serializedVersion: 2
+        x: 1868
+        y: 12
+        width: 34
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 52d6fd51d20865660800000000000000
+      internalID: 7374222370994613541
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shop.Phrase_55
+      rect:
+        serializedVersion: 2
+        x: 1909
+        y: 12
+        width: 10
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e4a74d141500ce750800000000000000
+      internalID: 6335439124800240206
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      shop.Phrase_0: -8703024552985299140
+      shop.Phrase_1: -4274197122644421040
+      shop.Phrase_10: -7818617417515697746
+      shop.Phrase_11: 2707182568684126002
+      shop.Phrase_12: -2963242091687086408
+      shop.Phrase_13: 3589379458233202566
+      shop.Phrase_14: -928734650269667311
+      shop.Phrase_15: -5964868856227966092
+      shop.Phrase_16: 8990266125831626886
+      shop.Phrase_17: 6920515168487702967
+      shop.Phrase_18: 4028559273873234058
+      shop.Phrase_19: -7755966011638312216
+      shop.Phrase_2: 4881465938867709592
+      shop.Phrase_20: 2010345881849932871
+      shop.Phrase_21: -5252349769922716344
+      shop.Phrase_22: -232436942333595083
+      shop.Phrase_23: -564465457028129266
+      shop.Phrase_24: 6590762088264897858
+      shop.Phrase_25: -7626661760785605484
+      shop.Phrase_26: 7651379908369483192
+      shop.Phrase_27: -230147057974165142
+      shop.Phrase_28: 7657839824646851942
+      shop.Phrase_29: 1291871899498801924
+      shop.Phrase_3: 7219357751728671171
+      shop.Phrase_30: -5952094734742772029
+      shop.Phrase_31: -5085965285658880305
+      shop.Phrase_32: 986925089870902319
+      shop.Phrase_33: -4718142117701261116
+      shop.Phrase_34: 7708465966442025277
+      shop.Phrase_35: -6853037915103425074
+      shop.Phrase_36: -5143730160674632528
+      shop.Phrase_37: -4300465203263668848
+      shop.Phrase_38: 8331720301106722091
+      shop.Phrase_39: 8739980251236000713
+      shop.Phrase_4: 7268456876876552954
+      shop.Phrase_40: -1873293232258204114
+      shop.Phrase_41: 7106038545361471733
+      shop.Phrase_42: 6982137583802298768
+      shop.Phrase_43: 59408217945402256
+      shop.Phrase_44: 62281048830401821
+      shop.Phrase_45: -7243569707345411446
+      shop.Phrase_46: -7345880906810819328
+      shop.Phrase_47: -8951783960581812019
+      shop.Phrase_48: -738570304221800548
+      shop.Phrase_49: -712892703369410221
+      shop.Phrase_5: 1005110479019145927
+      shop.Phrase_50: -4582284412525669411
+      shop.Phrase_51: 6645363553589756395
+      shop.Phrase_52: 5410396416930216139
+      shop.Phrase_53: 6579578342365009967
+      shop.Phrase_54: 7374222370994613541
+      shop.Phrase_55: 6335439124800240206
+      shop.Phrase_6: 367880201133627487
+      shop.Phrase_7: -3892704444647552244
+      shop.Phrase_8: -6420087088494805476
+      shop.Phrase_9: 4308136904839653036
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
