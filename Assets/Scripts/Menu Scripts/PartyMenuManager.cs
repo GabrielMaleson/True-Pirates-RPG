@@ -40,9 +40,12 @@ public class PartyMenuManager : MonoBehaviour
     private Dictionary<EquipmentSlot, EquipmentSlotUI> equipmentSlots =
         new Dictionary<EquipmentSlot, EquipmentSlotUI>();
 
-    [Header("Objectives")]
+    [Header("HUD Buttons")]
     public GameObject objectivesButton;
-    public GameObject configButton; // Add a button to open config
+    public GameObject settingsButton;
+
+    [Header("Gold Count")]
+    public TextMeshProUGUI goldCount; // Always visible, root of Party Menu
 
     [Header("Inventory Display")]
     public Transform inventoryGrid;
@@ -85,6 +88,7 @@ public class PartyMenuManager : MonoBehaviour
         HideAllPanels();
         MenuOpener.SetActive(true);
         CreatePartyMemberDisplays();
+        RefreshInventoryDisplay();
     }
 
     private void Update()
@@ -341,10 +345,9 @@ public class PartyMenuManager : MonoBehaviour
     {
         if (inventory == null) return;
 
-        if (goldText != null)
-        {
-            goldText.text = "Ouro: " + inventory.moedas.ToString();
-        }
+        string goldStr = "Ouro: " + inventory.moedas.ToString();
+        if (goldText  != null) goldText.text  = goldStr;
+        if (goldCount != null) goldCount.text = goldStr;
 
         foreach (Transform child in inventoryGrid)
         {
@@ -427,6 +430,7 @@ public class PartyMenuManager : MonoBehaviour
         CloseObjectivesPanel();
         HideAllPanels();
         if (objectivesButton != null) objectivesButton.SetActive(false);
+        if (settingsButton   != null) settingsButton.SetActive(false);
         partyMenuPanel.SetActive(true);
 
         CanvasGroup canvasGroup = partyMenuPanel.GetComponent<CanvasGroup>();
@@ -444,8 +448,9 @@ public class PartyMenuManager : MonoBehaviour
     {
         SFXManager.Instance?.Play(SFXManager.Instance.uiBackward);
         HideAllPanels();
-        if (MenuOpener != null) MenuOpener.SetActive(true);
-        if (objectivesButton != null) objectivesButton.SetActive(true);
+        if (MenuOpener        != null) MenuOpener.SetActive(true);
+        if (objectivesButton  != null) objectivesButton.SetActive(true);
+        if (settingsButton    != null) settingsButton.SetActive(true);
     }
 
     public void CloseGame()
