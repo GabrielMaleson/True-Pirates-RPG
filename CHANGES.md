@@ -2,6 +2,15 @@
 
 ---
 
+## 2026-03-27 (session 2)
+
+### Fix: Personagens mortos de combates anteriores não spawnavam visual corretamente no retry
+**Files:** `Assets/Scripts/Battle/CombatSystem.cs`
+
+`InitializeCombatWithData()` spawnava visuals e adicionava à lista `partyMembers` todos os membros do grupo — incluindo os com HP=0 de combates anteriores. `InitializeCombat()` os filtrava da fila de turnos, mas o visual já estava na cena. Corrigido com check `currentHP <= 0` antes de spawnar, usando `aliveIndex` separado para posicionamento (evita lacunas). Mesmo guard adicionado para inimigos. O `InitializeCombat()` ainda filtra como segunda camada de segurança.
+
+---
+
 ## 2026-03-27
 
 ### Feature: Menu de pausa em combate + saída com reinício de batalha
