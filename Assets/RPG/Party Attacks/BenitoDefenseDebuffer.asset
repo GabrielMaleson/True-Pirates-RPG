@@ -15,7 +15,7 @@ MonoBehaviour:
   attackName: Debuff Salgado
   description: "Benito cobre um inimigo em \xE1gua salgada, algas, peixes e *elemento
     x super valioso que vem da fauna*. O inimigo recebe 20% mais dano por 2 rodadas."
-  icon: {fileID: -855298285791758126, guid: b476064aaa731504bbcfe847087a18cb, type: 3}
+  icon: {fileID: 21300000, guid: b2d9cb37b02e3c54f8536d6de988018a, type: 3}
   partyMemberOnly: 1
   actionPointCost: 6
   effects:
