@@ -1,3 +1,4 @@
+using NUnit.Framework.Interfaces;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -26,6 +27,7 @@ public class ActionButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         onClick      = callback;
         onHoverEnter = hoverEnter;
         onHoverExit  = hoverExit;
+        if (image != null) image.sprite = attack.icon;
 
         actionNameText.text = attackFile.attackName;
         apCostText.text     = $"AP: {attackFile.actionPointCost}";

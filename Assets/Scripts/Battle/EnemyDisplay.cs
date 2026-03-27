@@ -44,8 +44,10 @@ public class EnemyUI : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
     private bool isTargetable;
     private Coroutine pulseCoroutine;
     private Coroutine damageCoroutine;
+    private int hoverCounter; // Track how many children are being hovered
 
     private const float DefaultBgAlpha = 0.75f;
+    private const float DefaultBgColor = 0.56f;
 
     // ──────────────────────────────────────────────────────────────────────────
 
@@ -70,9 +72,10 @@ public class EnemyUI : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
 
         SetSelected(false);
         SetBackgroundAlpha(DefaultBgAlpha);
+        SetBackgroundColor(DefaultBgColor);
 
-        if (damageText         != null) damageText.gameObject.SetActive(false);
-        if (targetableOutline  != null) { targetableOutline.enabled = false; targetableOutline.effectDistance = new Vector2(2f, 2f); }
+        if (damageText != null) damageText.gameObject.SetActive(false);
+        if (targetableOutline != null) { targetableOutline.enabled = false; targetableOutline.effectDistance = new Vector2(2f, 2f); }
         if (targetButtonObject != null) targetButtonObject.SetActive(false);
 
         UpdateDisplay();
@@ -82,6 +85,9 @@ public class EnemyUI : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
         if (rootHitbox == null) rootHitbox = gameObject.AddComponent<Image>();
         rootHitbox.color = Color.clear;
         rootHitbox.raycastTarget = true;
+
+        // Make sure all children that need to trigger hover have raycast targets enabled
+        SetupRaycastTargetsForChildren();
 
         if (characterVisualObject != null)
         {
@@ -100,7 +106,7 @@ public class EnemyUI : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
     /// </summary>
     public void SetSelected(bool selected)
     {
-        if (defaultContainer  != null) defaultContainer.SetActive(!selected);
+        if (defaultContainer != null) defaultContainer.SetActive(!selected);
         if (selectedContainer != null) selectedContainer.SetActive(selected);
     }
 
@@ -110,13 +116,13 @@ public class EnemyUI : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
     {
         if (memberState == null) return;
 
-        float hpPct  = Mathf.Clamp01((float)memberState.currentHP / memberState.MaxHP);
+        float hpPct = Mathf.Clamp01((float)memberState.currentHP / memberState.MaxHP);
         string hpStr = $"{memberState.currentHP}/{memberState.MaxHP}";
 
-        if (hpText            != null) hpText.text                  = hpStr;
-        if (healthBar         != null) healthBar.fillAmount          = hpPct;
-        if (selectedHpText    != null) selectedHpText.text           = hpStr;
-        if (selectedHealthBar != null) selectedHealthBar.fillAmount  = hpPct;
+        if (hpText != null) hpText.text = hpStr;
+        if (healthBar != null) healthBar.fillAmount = hpPct;
+        if (selectedHpText != null) selectedHpText.text = hpStr;
+        if (selectedHealthBar != null) selectedHealthBar.fillAmount = hpPct;
     }
 
     // ── Targeting ──────────────────────────────────────────────────────────────
@@ -127,18 +133,20 @@ public class EnemyUI : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
     /// </summary>
     public void ShowTargetButton(TargetSelector selector)
     {
-        isTargetable    = true;
+        isTargetable = true;
         onClickCallback = selector.OnTargetSelected;
         SetBackgroundAlpha(1f);
+        SetBackgroundColor(0.809f);
         if (targetButtonObject != null) targetButtonObject.SetActive(false); // legacy hidden
     }
 
     public void HideTargetButton()
     {
-        isTargetable    = false;
+        isTargetable = false;
         onClickCallback = null;
         StopPulse();
         SetBackgroundAlpha(DefaultBgAlpha);
+        SetBackgroundColor(DefaultBgColor);
         if (targetButtonObject != null) targetButtonObject.SetActive(false);
     }
 
@@ -152,31 +160,95 @@ public class EnemyUI : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
     // IPointerEnterHandler — hovering starts the pulsating outline
     public void OnPointerEnter(PointerEventData eventData)
     {
+        hoverCounter++;
+
         if (!isTargetable || targetableOutline == null) return;
-        targetableOutline.enabled = true;
-        pulseCoroutine = StartCoroutine(PulseOutline());
+
+        // Only start the outline if this is the first hover (no children already being hovered)
+        if (hoverCounter >= 1)
+        {
+            targetableOutline.enabled = true;
+            if (pulseCoroutine == null)
+                pulseCoroutine = StartCoroutine(PulseOutline());
+        }
     }
 
     // IPointerExitHandler — leaving stops and hides the outline
     public void OnPointerExit(PointerEventData eventData)
     {
-        StopPulse();
+        hoverCounter--;
+
+        // Only stop the outline when no children are being hovered
+        if (hoverCounter <= 0)
+        {
+            hoverCounter = 0;
+            StopPulse();
+        }
     }
 
     private void StopPulse()
     {
-        if (pulseCoroutine != null) { StopCoroutine(pulseCoroutine); pulseCoroutine = null; }
-        if (targetableOutline != null) { targetableOutline.enabled = false; targetableOutline.effectDistance = new Vector2(2f, 2f); }
+        if (pulseCoroutine != null)
+        {
+            StopCoroutine(pulseCoroutine);
+            pulseCoroutine = null;
+        }
+        if (targetableOutline != null)
+        {
+            targetableOutline.enabled = false;
+            targetableOutline.effectDistance = new Vector2(2f, 2f);
+        }
     }
 
     private IEnumerator PulseOutline()
     {
         while (true)
         {
-            float t    = (Mathf.Sin(Time.time * 4f) + 1f) * 0.5f;
+            float t = (Mathf.Sin(Time.time * 4f) + 1f) * 0.5f;
             float size = Mathf.Lerp(2f, 5f, t);
             targetableOutline.effectDistance = new Vector2(size, size);
             yield return null;
+        }
+    }
+
+    // ── Helper to set up children for event propagation ───────────────────────
+
+    private void SetupRaycastTargetsForChildren()
+    {
+        // Get all Image components in children
+        Image[] allImages = GetComponentsInChildren<Image>(true);
+        foreach (Image img in allImages)
+        {
+            // Skip the root clear image and any images that should not block clicks
+            if (img == GetComponent<Image>()) continue;
+
+            // Enable raycast target for all images to ensure they capture hover events
+            img.raycastTarget = true;
+        }
+
+        // Also enable raycast for TextMeshProUGUI components
+        TextMeshProUGUI[] allTexts = GetComponentsInChildren<TextMeshProUGUI>(true);
+        foreach (TextMeshProUGUI text in allTexts)
+        {
+            text.raycastTarget = true;
+        }
+
+        // Make sure all child GameObjects have a GraphicRaycaster-compatible component
+        // If any child doesn't have an image but needs to be clickable, add one
+        RectTransform[] allChildren = GetComponentsInChildren<RectTransform>(true);
+        foreach (RectTransform child in allChildren)
+        {
+            // Skip the root object
+            if (child == transform) continue;
+
+            // If this child doesn't have any Graphic component, add a small transparent image
+            Graphic graphic = child.GetComponent<Graphic>();
+            if (graphic == null)
+            {
+                Image transparentImage = child.gameObject.AddComponent<Image>();
+                transparentImage.color = Color.clear;
+                transparentImage.raycastTarget = true;
+            }
         }
     }
 
@@ -192,14 +264,14 @@ public class EnemyUI : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
 
     private IEnumerator DamagePopRoutine(int amount)
     {
-        damageText.text  = $"-{amount}";
+        damageText.text = $"-{amount}";
         damageText.color = new Color(1f, 0.2f, 0.2f, 1f);
         damageText.gameObject.SetActive(true);
 
-        RectTransform rt    = damageText.rectTransform;
-        Vector2       start = rt.anchoredPosition;
-        float duration      = 0.8f;
-        float elapsed       = 0f;
+        RectTransform rt = damageText.rectTransform;
+        Vector2 start = rt.anchoredPosition;
+        float duration = 0.8f;
+        float elapsed = 0f;
 
         while (elapsed < duration)
         {
@@ -220,9 +292,9 @@ public class EnemyUI : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
     {
         RectTransform rt = GetComponent<RectTransform>();
         if (rt == null) yield break;
-        Vector2 origin  = rt.anchoredPosition;
-        float duration  = 0.3f;
-        float elapsed   = 0f;
+        Vector2 origin = rt.anchoredPosition;
+        float duration = 0.3f;
+        float elapsed = 0f;
         float magnitude = 5f;
         while (elapsed < duration)
         {
@@ -247,7 +319,7 @@ public class EnemyUI : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
         GrayOutPortrait(portraitImage);
         GrayOutPortrait(selectedPortraitImage);
 
-        if (healthBar         != null) healthBar.fillAmount         = 0f;
+        if (healthBar != null) healthBar.fillAmount = 0f;
         if (selectedHealthBar != null) selectedHealthBar.fillAmount = 0f;
 
         HideTargetButton();
@@ -258,16 +330,16 @@ public class EnemyUI : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
     private static void InitBar(Image bar)
     {
         if (bar == null) return;
-        bar.type        = Image.Type.Filled;
-        bar.fillMethod  = Image.FillMethod.Horizontal;
-        bar.fillOrigin  = 0;
+        bar.type = Image.Type.Filled;
+        bar.fillMethod = Image.FillMethod.Horizontal;
+        bar.fillOrigin = 0;
     }
 
     private static void ApplyPortrait(Image img, Sprite sprite)
     {
         if (img == null) return;
         if (sprite != null) { img.sprite = sprite; img.gameObject.SetActive(true); }
-        else                  img.gameObject.SetActive(false);
+        else img.gameObject.SetActive(false);
     }
 
     private void SetBackgroundAlpha(float alpha)
@@ -275,6 +347,13 @@ public class EnemyUI : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
         if (portraitBackground == null) return;
         Color c = portraitBackground.color;
         c.a = alpha;
+        portraitBackground.color = c;
+    }
+    private void SetBackgroundColor(float color)
+    {
+        if (portraitBackground == null) return;
+        Color c = portraitBackground.color;
+        c.g = color;
         portraitBackground.color = c;
     }
 
