@@ -353,7 +353,7 @@ public class EnemyUI : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
     {
         if (portraitBackground == null) return;
         Color c = portraitBackground.color;
-        c.g = color;
+        c.b = color;
         portraitBackground.color = c;
     }
 

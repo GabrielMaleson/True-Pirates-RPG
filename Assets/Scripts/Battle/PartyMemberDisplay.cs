@@ -46,6 +46,7 @@ public class CharacterUI : MonoBehaviour, IPointerClickHandler, IPointerEnterHan
     private Coroutine damageCoroutine;
 
     private const float DefaultBgAlpha = 0.75f;
+    private const float DefaultBgColor = 0.76f;
 
     // ──────────────────────────────────────────────────────────────────────────
 
@@ -140,6 +141,7 @@ public class CharacterUI : MonoBehaviour, IPointerClickHandler, IPointerEnterHan
         isTargetable    = true;
         onClickCallback = selector.OnTargetSelected;
         SetBackgroundAlpha(1f);
+        SetBackgroundColor(0.89f);
         if (targetIndicator != null) targetIndicator.SetActive(false); // legacy — hidden
     }
 
@@ -149,6 +151,7 @@ public class CharacterUI : MonoBehaviour, IPointerClickHandler, IPointerEnterHan
         onClickCallback = null;
         StopPulse();
         SetBackgroundAlpha(DefaultBgAlpha);
+        SetBackgroundColor(DefaultBgColor);
         if (targetIndicator != null) targetIndicator.SetActive(false);
     }
 
@@ -287,6 +290,13 @@ public class CharacterUI : MonoBehaviour, IPointerClickHandler, IPointerEnterHan
         portraitBackground.color = c;
     }
 
+    private void SetBackgroundColor(float color)
+    {
+        if (portraitBackground == null) return;
+        Color c = portraitBackground.color;
+        c.b = color;
+        portraitBackground.color = c;
+    }
     private static void GrayOutPortrait(Image img)
     {
         if (img == null) return;
