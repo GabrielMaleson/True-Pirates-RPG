@@ -18,20 +18,20 @@ public class PartyMenuManager : MonoBehaviour
 
     [Header("Menu Nav Buttons")]
     public TextMeshProUGUI characterNavText;
-    public Image            characterNavBg;
+    public Image characterNavBg;
     public TextMeshProUGUI attacksNavText;
-    public Image            attacksNavBg;
+    public Image attacksNavBg;
     public TextMeshProUGUI itemsNavText;
-    public Image            itemsNavBg;
+    public Image itemsNavBg;
     public TextMeshProUGUI equipmentNavText;
-    public Image            equipmentNavBg;
+    public Image equipmentNavBg;
 
-    private static readonly Color NavTextSelected   = Color.white;
+    private static readonly Color NavTextSelected = Color.white;
     private static readonly Color NavTextDeselected = Color.gray;
-    private static readonly Color NavBgSelected     = new Color(0.19f, 0.19f, 0.19f); // ~#303030
-    private static readonly Color NavBgDeselected   = new Color(0.12f, 0.12f, 0.12f); // ~#1F1F1F
+    private static readonly Color NavBgSelected = new Color(0.19f, 0.19f, 0.19f); // ~#303030
+    private static readonly Color NavBgDeselected = new Color(0.12f, 0.12f, 0.12f); // ~#1F1F1F
     private TextMeshProUGUI currentNavText;
-    private Image           currentNavBg;
+    private Image currentNavBg;
 
     [Header("Canvas References")]
     public Transform partyMenuCanvas;
@@ -131,6 +131,35 @@ public class PartyMenuManager : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Escape) && partyMenuPanel.activeSelf)
             {
                 CloseMenu();
+            }
+
+            // Toggle Config with Escape (when menu is closed)
+            if (Input.GetKeyDown(KeyCode.Escape) && !partyMenuPanel.activeSelf)
+            {
+                ToggleSettings();
+            }
+
+            // Toggle Inventory with I key
+            if (Input.GetKeyDown(KeyCode.I))
+            {
+                if (!partyMenuPanel.activeSelf)
+                    OpenMenu();
+                ShowItems();
+            }
+
+            // Toggle Party Menu with Tab key (already handled above)
+
+            // Toggle Quests with O key
+            if (Input.GetKeyDown(KeyCode.O))
+            {
+                ToggleObjectives();
+            }
+
+            // Toggle Crafting with C key
+            if (Input.GetKeyDown(KeyCode.C))
+            {
+                // Add your crafting toggle logic here
+                // For now, this is just a placeholder as requested
             }
         }
     }
@@ -268,8 +297,6 @@ public class PartyMenuManager : MonoBehaviour
     {
         currentSelectedMember = member;
 
-
-
         UpdatePartyMemberHighlights();
 
         if (attacksPanel.activeSelf)
@@ -294,11 +321,11 @@ public class PartyMenuManager : MonoBehaviour
     private void SelectNav(TextMeshProUGUI navText, Image navBg)
     {
         if (currentNavText != null) currentNavText.color = NavTextDeselected;
-        if (currentNavBg   != null) currentNavBg.color   = NavBgDeselected;
+        if (currentNavBg != null) currentNavBg.color = NavBgDeselected;
         currentNavText = navText;
-        currentNavBg   = navBg;
+        currentNavBg = navBg;
         if (currentNavText != null) currentNavText.color = NavTextSelected;
-        if (currentNavBg   != null) currentNavBg.color   = NavBgSelected;
+        if (currentNavBg != null) currentNavBg.color = NavBgSelected;
     }
 
     public void ShowCharacter()
@@ -344,8 +371,8 @@ public class PartyMenuManager : MonoBehaviour
     private void HideSubPanels()
     {
         if (characterPanel != null) characterPanel.SetActive(false);
-        if (attacksPanel   != null) attacksPanel.SetActive(false);
-        if (itemsPanel     != null) itemsPanel.SetActive(false);
+        if (attacksPanel != null) attacksPanel.SetActive(false);
+        if (itemsPanel != null) itemsPanel.SetActive(false);
         if (equipmentPanel != null) equipmentPanel.SetActive(false);
     }
 
@@ -389,7 +416,7 @@ public class PartyMenuManager : MonoBehaviour
         if (inventory == null) return;
 
         string goldStr = "Ouro: " + inventory.moedas.ToString();
-        if (goldText  != null) goldText.text  = goldStr;
+        if (goldText != null) goldText.text = goldStr;
         if (goldCount != null) goldCount.text = goldStr;
 
         foreach (Transform child in inventoryGrid)
@@ -473,7 +500,7 @@ public class PartyMenuManager : MonoBehaviour
         CloseObjectivesPanel();
         HideAllPanels();
         if (objectivesButton != null) objectivesButton.SetActive(false);
-        if (settingsButton   != null) settingsButton.SetActive(false);
+        if (settingsButton != null) settingsButton.SetActive(false);
 
         // Hide menu opener via CanvasGroup so it stays in the layout
         if (menuOpenerCanvasGroup != null)
@@ -508,8 +535,8 @@ public class PartyMenuManager : MonoBehaviour
         if (menuContainer != null) menuContainer.SetActive(false);
         currentNavText = null;
         HideAllPanels();
-        if (objectivesButton  != null) objectivesButton.SetActive(true);
-        if (settingsButton    != null) settingsButton.SetActive(true);
+        if (objectivesButton != null) objectivesButton.SetActive(true);
+        if (settingsButton != null) settingsButton.SetActive(true);
 
         // Restore menu opener visibility
         if (menuOpenerCanvasGroup != null)
