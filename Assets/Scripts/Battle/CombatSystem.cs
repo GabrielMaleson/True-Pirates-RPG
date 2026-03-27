@@ -53,6 +53,9 @@ public class CombatSystem : MonoBehaviour
     [Header("Menu de Pausa")]
     public GameObject pauseMenuPanel;
     public GameObject leaveConfirmPanel;
+    public GameObject actionPanel;    // Painel de ações (Ataques, Defender, etc.) — oculto durante pausa
+    public GameObject apBarPanel;     // Barra de AP compartilhada — oculta durante pausa
+    public GameObject topBarPanel;    // Barra superior com retratos dos personagens — oculta durante pausa
 
     [Header("Game Over")]
     public string mainMenuSceneName = "Menu";
@@ -215,28 +218,30 @@ public class CombatSystem : MonoBehaviour
 
         if (encounterData.playerPartyMembers != null)
         {
+            int aliveIndex = 0;
             for (int i = 0; i < encounterData.playerPartyMembers.Count; i++)
             {
                 PartyMemberState memberData = encounterData.playerPartyMembers[i];
                 if (memberData == null) continue;
 
-                if (i >= partySpawnPoints.Count)
-                    Debug.LogWarning($"[CombatSystem] No spawn point for party member {i} ({memberData.CharacterName}). partySpawnPoints.Count={partySpawnPoints.Count}");
-                else if (partySpawnPoints[i] == null)
-                    Debug.LogWarning($"[CombatSystem] partySpawnPoints[{i}] is null for {memberData.CharacterName}");
-                else if (partyMemberVisualPrefab == null)
-                    Debug.LogWarning($"[CombatSystem] partyMemberVisualPrefab is null — cannot spawn visual for {memberData.CharacterName}");
-
-                if (partyMemberVisualPrefab != null)
+                // Não spawnar nem adicionar personagens mortos (ex.: caíram em combate anterior)
+                if (memberData.currentHP <= 0)
                 {
-                    Vector3 spawnPos = GetDefaultPartySpawnPos(i, cam);
-                    Debug.Log($"[CombatSystem] Spawning party visual for {memberData.CharacterName} at {spawnPos}");
+                    Debug.Log($"[CombatSystem] {memberData.CharacterName} está morto (HP={memberData.currentHP}) — ignorado na inicialização.");
+                    continue;
+                }
+
+                if (partyMemberVisualPrefab == null)
+                    Debug.LogWarning($"[CombatSystem] partyMemberVisualPrefab é null — não foi possível spawnar visual para {memberData.CharacterName}");
+                else
+                {
+                    Vector3 spawnPos = GetDefaultPartySpawnPos(aliveIndex, cam);
+                    Debug.Log($"[CombatSystem] Spawnando visual de grupo para {memberData.CharacterName} em {spawnPos}");
                     GameObject memberObj = Instantiate(partyMemberVisualPrefab, spawnPos, Quaternion.identity);
                     SceneManager.MoveGameObjectToScene(memberObj, gameObject.scene);
                     memberObj.name = $"Party_{memberData.CharacterName}";
 
-                    // index 0 = back (low order), higher index = more in front
-                    ApplyDepthOrder(memberObj, i);
+                    ApplyDepthOrder(memberObj, aliveIndex);
 
                     CharacterComponent comp = memberObj.GetComponent<CharacterComponent>();
                     if (comp == null) comp = memberObj.AddComponent<CharacterComponent>();
@@ -246,15 +251,23 @@ public class CombatSystem : MonoBehaviour
                 }
 
                 partyMembers.Add(memberData);
+                aliveIndex++;
             }
         }
 
         if (encounterData.enemyPartyMembers != null)
         {
+            int aliveEnemyIndex = 0;
             for (int i = 0; i < encounterData.enemyPartyMembers.Count; i++)
             {
                 PartyMemberState enemyData = encounterData.enemyPartyMembers[i];
                 if (enemyData == null) continue;
+
+                if (enemyData.currentHP <= 0)
+                {
+                    Debug.LogWarning($"[CombatSystem] Inimigo '{enemyData.CharacterName}' tem HP=0 no EncounterFile — ignorado.");
+                    continue;
+                }
 
                 GameObject prefabToUse = (i < encounterData.enemyPrefabs.Count ? encounterData.enemyPrefabs[i] : null)
                                          ?? enemyVisualPrefab;
@@ -268,14 +281,13 @@ public class CombatSystem : MonoBehaviour
 
                 if (prefabToUse != null)
                 {
-                    Vector3 spawnPos = GetDefaultEnemySpawnPos(i, cam);
-                    Debug.Log($"[CombatSystem] Spawning enemy visual for {enemyData.CharacterName} at {spawnPos}");
+                    Vector3 spawnPos = GetDefaultEnemySpawnPos(aliveEnemyIndex, cam);
+                    Debug.Log($"[CombatSystem] Spawnando visual de inimigo para {enemyData.CharacterName} em {spawnPos}");
                     GameObject enemyObj = Instantiate(prefabToUse, spawnPos, Quaternion.identity);
                     SceneManager.MoveGameObjectToScene(enemyObj, gameObject.scene);
                     enemyObj.name = $"Enemy_{enemyData.CharacterName}";
 
-                    // index 0 = back (low order), higher index = more in front
-                    ApplyDepthOrder(enemyObj, i);
+                    ApplyDepthOrder(enemyObj, aliveEnemyIndex);
 
                     CharacterComponent comp = enemyObj.GetComponent<CharacterComponent>();
                     if (comp == null) comp = enemyObj.AddComponent<CharacterComponent>();
@@ -288,6 +300,7 @@ public class CombatSystem : MonoBehaviour
                 }
 
                 enemies.Add(enemyData);
+                aliveEnemyIndex++;
             }
         }
 
@@ -852,25 +865,40 @@ public class CombatSystem : MonoBehaviour
 
     // ─── Menu de Pausa ────────────────────────────────────────────────────────────
 
+    private void SetCombatUIVisible(bool visible)
+    {
+        if (actionPanel  != null) actionPanel.SetActive(visible);
+        if (apBarPanel   != null) apBarPanel.SetActive(visible);
+        if (topBarPanel  != null) topBarPanel.SetActive(visible);
+    }
+
     public void TogglePauseMenu()
     {
         if (pauseMenuPanel == null) return;
         bool willOpen = !pauseMenuPanel.activeSelf;
         pauseMenuPanel.SetActive(willOpen);
-        if (!willOpen && leaveConfirmPanel != null)
-            leaveConfirmPanel.SetActive(false);
+        SetCombatUIVisible(!willOpen);
+        if (willOpen)
+            SFXManager.Instance?.Play(SFXManager.Instance.uiForward);
+        else
+        {
+            SFXManager.Instance?.Play(SFXManager.Instance.uiBackward);
+            if (leaveConfirmPanel != null) leaveConfirmPanel.SetActive(false);
+        }
     }
 
     public void ShowLeaveConfirmation()
     {
-        if (leaveConfirmPanel != null)
-            leaveConfirmPanel.SetActive(true);
+        if (leaveConfirmPanel != null) leaveConfirmPanel.SetActive(true);
+        if (pauseMenuPanel    != null) pauseMenuPanel.SetActive(false);
+        // Combat UI already hidden — pause menu had disabled it
     }
 
     public void CancelLeave()
     {
-        if (leaveConfirmPanel != null)
-            leaveConfirmPanel.SetActive(false);
+        if (leaveConfirmPanel != null) leaveConfirmPanel.SetActive(false);
+        if (pauseMenuPanel    != null) pauseMenuPanel.SetActive(true);
+        // Combat UI stays hidden while pause menu is still open
     }
 
     public void ConfirmLeave()

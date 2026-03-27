@@ -138,11 +138,12 @@ public class PartyMenuManager : MonoBehaviour
             CanvasGroup objCg = GetObjectiveCanvasGroup();
             if (objCg != null && objCg.alpha > 0.5f)
             {
+                SFXManager.Instance?.Play(SFXManager.Instance.uiBackward);
                 ToggleObjectives();
                 return;
             }
 
-            if (configSceneManager != null && configSceneManager.IsConfigLoaded)
+            if (configPanel != null && configPanel.activeSelf)
             {
                 CloseSettings();
                 return;
@@ -239,6 +240,11 @@ public class PartyMenuManager : MonoBehaviour
         {
             CloseMenu();
             CloseSettings();
+            SFXManager.Instance?.Play(SFXManager.Instance.uiForward);
+        }
+        else
+        {
+            SFXManager.Instance?.Play(SFXManager.Instance.uiBackward);
         }
 
         cg.alpha = willShow ? 1f : 0f;
@@ -262,6 +268,7 @@ public class PartyMenuManager : MonoBehaviour
     {
         if (configPanel != null && configPanel.activeSelf)
         {
+            SFXManager.Instance?.Play(SFXManager.Instance.uiBackward);
             configPanel.SetActive(false);
             SetCanvasGroupVisible(settingsButtonCanvasGroup, true);
         }
@@ -285,6 +292,7 @@ public class PartyMenuManager : MonoBehaviour
         {
             CloseMenu();
             CloseObjectivesPanel();
+            SFXManager.Instance?.Play(SFXManager.Instance.uiForward);
             configPanel.SetActive(true);
             SetCanvasGroupVisible(settingsButtonCanvasGroup, false);
         }
