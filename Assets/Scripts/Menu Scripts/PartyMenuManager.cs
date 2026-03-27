@@ -202,13 +202,7 @@ public class PartyMenuManager : MonoBehaviour
         cg.interactable = willShow;
         cg.blocksRaycasts = willShow;
 
-        // Hide the HUD objectives button while the panel is open (stays in layout — no SetActive)
-        if (objectivesButtonCanvasGroup != null)
-        {
-            objectivesButtonCanvasGroup.alpha = willShow ? 0f : 1f;
-            objectivesButtonCanvasGroup.interactable = !willShow;
-            objectivesButtonCanvasGroup.blocksRaycasts = !willShow;
-        }
+        SetCanvasGroupVisible(objectivesButtonCanvasGroup, !willShow);
 
         if (willShow && ObjectiveManager.Instance != null)
             ObjectiveManager.Instance.RefreshQuestList();
@@ -219,13 +213,7 @@ public class PartyMenuManager : MonoBehaviour
         CanvasGroup cg = GetObjectiveCanvasGroup();
         if (cg != null) cg.alpha = 0f;
 
-        // Restore the HUD objectives button
-        if (objectivesButtonCanvasGroup != null)
-        {
-            objectivesButtonCanvasGroup.alpha = 1f;
-            objectivesButtonCanvasGroup.interactable = true;
-            objectivesButtonCanvasGroup.blocksRaycasts = true;
-        }
+        SetCanvasGroupVisible(objectivesButtonCanvasGroup, true);
     }
 
     public void ToggleSettings()
@@ -240,10 +228,12 @@ public class PartyMenuManager : MonoBehaviour
         {
             SaveLoadManager.Instance?.SaveGame();
             configSceneManager.DeleteConfigScene();
+            SetCanvasGroupVisible(settingsButtonCanvasGroup, true);
         }
         else
         {
             configSceneManager.LoadConfigScene();
+            SetCanvasGroupVisible(settingsButtonCanvasGroup, false);
         }
     }
 
@@ -289,6 +279,12 @@ public class PartyMenuManager : MonoBehaviour
 
         if (equipmentPanel.activeSelf)
             UpdateEquipmentDisplay();
+    }
+
+    private static void SetNavButtonState(TextMeshProUGUI text, Image bg, bool selected)
+    {
+        if (text != null) text.color = selected ? NavTextSelected : NavTextDeselected;
+        if (bg   != null) bg.color   = selected ? NavBgSelected   : NavBgDeselected;
     }
 
     private static void SetCanvasGroupVisible(CanvasGroup cg, bool visible)
@@ -475,8 +471,6 @@ public class PartyMenuManager : MonoBehaviour
 
         CloseObjectivesPanel();
         HideAllPanels();
-        SetCanvasGroupVisible(objectivesButtonCanvasGroup, false);
-        SetCanvasGroupVisible(settingsButtonCanvasGroup, false);
         SetCanvasGroupVisible(menuOpenerCanvasGroup, false);
 
         Debug.Log("OpenMenu: ativando partyMenuPanel");
@@ -494,7 +488,13 @@ public class PartyMenuManager : MonoBehaviour
         CreatePartyMemberDisplays();
         RefreshInventoryDisplay();
 
-        // Default to character/group view
+        // Reset all nav buttons to deselected state before defaulting
+        SetCanvasGroupVisible(objectivesButtonCanvasGroup, true);
+        SetNavButtonState(characterNavText, characterNavBg, false);
+        SetNavButtonState(craftingNavText,  craftingNavBg,  false);
+        SetNavButtonState(itemsNavText,     itemsNavBg,     false);
+        SetNavButtonState(equipmentNavText, equipmentNavBg, false);
+
         currentNavText = null;
         ShowCharacter();
     }
@@ -506,8 +506,6 @@ public class PartyMenuManager : MonoBehaviour
         if (menuContainer != null) menuContainer.SetActive(false);
         currentNavText = null;
         HideAllPanels();
-        SetCanvasGroupVisible(objectivesButtonCanvasGroup, true);
-        SetCanvasGroupVisible(settingsButtonCanvasGroup, true);
         SetCanvasGroupVisible(menuOpenerCanvasGroup, true);
     }
 
