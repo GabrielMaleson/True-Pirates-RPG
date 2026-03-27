@@ -2,6 +2,15 @@
 
 ---
 
+## 2026-03-26 (session 40)
+
+### Refactor: Painel de ataques substituído por painel de crafting no party menu
+**Files:** `Assets/Scripts/Menu Scripts/PartyMenuManager.cs`
+
+`attacksPanel` → `craftingPanel`, `attacksNavText/Bg` → `craftingNavText/Bg`, `ShowAttacks()` → `ShowCrafting()`. Removidos `UpdateAttacksDisplay()`, `attackListParent`, `attackDisplayPrefab` e a chamada em `OnPartyMemberSelected`. Novos campos: `craftingListParent` e `craftingSlotPrefab` para uso futuro. Botão de nav deve chamar `ShowCrafting()`.
+
+---
+
 ## 2026-03-26 (session 39)
 
 ### Feature: Navegação do party menu com botões de texto coloridos

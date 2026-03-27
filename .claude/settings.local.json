@@ -7,7 +7,10 @@
       "Bash(grep -r testeglobal /d/documents/GitHub/True-Pirates-RPG --include=*.cs --include=*.txt --include=*.yaml)",
       "Bash(grep -r add_objective /d/documents/GitHub/True-Pirates-RPG --include=*.yarn --include=*.txt)",
       "Bash(find /d/documents/GitHub/True-Pirates-RPG/Assets -name *.yaml -o -name *.yml)",
-      "Bash(xargs grep:*)"
+      "Bash(xargs grep:*)",
+      "Bash(grep -E \"\\\\.cs$\")",
+      "Bash(grep -E \"\\\\.\\(prefab|meta\\)$\")",
+      "Bash(grep -n \"CraftingSimples\\\\|InterfaceCrafting\\\\|SlotUICrafting\" \"d:/documents/GitHub/True-Pirates-RPG/Assets/Scripts\"/*.cs \"d:/documents/GitHub/True-Pirates-RPG/Assets/Scripts/Menu Scripts\"/*.cs)"
     ]
   }
 }
