@@ -36,9 +36,6 @@ public class PartyMenuManager : MonoBehaviour
     [Header("Canvas References")]
     public Transform partyMenuCanvas;
 
-    [Header("Party Member Selection")]
-    public Transform partyMemberButtonParent;
-    public GameObject partyMemberButtonPrefab;
     private List<PartyMemberButton> partyMemberButtons = new List<PartyMemberButton>();
 
     [Header("Stats Display Area")]
@@ -62,9 +59,10 @@ public class PartyMenuManager : MonoBehaviour
     [Header("HUD Buttons")]
     public GameObject hudButtonsContainer; // Root that holds Group/Objectives/Settings buttons
     public GameObject objectivesButton;
-    public CanvasGroup objectivesButtonCanvasGroup; // CanvasGroup on the objectives button — hides it without breaking the grid layout
+    public CanvasGroup objectivesButtonCanvasGroup;
     public GameObject settingsButton;
-    public CanvasGroup menuOpenerCanvasGroup; // CanvasGroup on the menu opener button — hides without breaking grid layout
+    public CanvasGroup settingsButtonCanvasGroup;
+    public CanvasGroup menuOpenerCanvasGroup;
 
     [Header("Gold Count")]
     public TextMeshProUGUI goldCount; // Always visible, root of Party Menu
@@ -267,18 +265,15 @@ public class PartyMenuManager : MonoBehaviour
         {
             if (member != null)
             {
-                GameObject btnObj = Instantiate(partyMemberButtonPrefab, partyMemberButtonParent);
-                PartyMemberButton btn = btnObj.GetComponent<PartyMemberButton>();
-                btn.Initialize(member, this);
-                partyMemberButtons.Add(btn);
-
-                GameObject displayObj = Instantiate(statsDisplayPrefab, statsDisplayContainer);
-                displayObj.transform.localScale = Vector3.one;
-                PartyMemberStatsDisplay display = displayObj.GetComponent<PartyMemberStatsDisplay>();
-                display.Initialize(member);
-                statsDisplays[member] = display;
-
-                displayObj.SetActive(true);
+                if (statsDisplayPrefab != null && statsDisplayContainer != null)
+                {
+                    GameObject displayObj = Instantiate(statsDisplayPrefab, statsDisplayContainer);
+                    displayObj.transform.localScale = Vector3.one;
+                    PartyMemberStatsDisplay display = displayObj.GetComponent<PartyMemberStatsDisplay>();
+                    display.Initialize(member);
+                    statsDisplays[member] = display;
+                    displayObj.SetActive(true);
+                }
             }
         }
 
@@ -292,21 +287,16 @@ public class PartyMenuManager : MonoBehaviour
     {
         currentSelectedMember = member;
 
-        UpdatePartyMemberHighlights();
-
-
         if (equipmentPanel.activeSelf)
-        {
             UpdateEquipmentDisplay();
-        }
     }
 
-    public void UpdatePartyMemberHighlights()
+    private static void SetCanvasGroupVisible(CanvasGroup cg, bool visible)
     {
-        foreach (var btn in partyMemberButtons)
-        {
-            btn.SetHighlight(btn.GetMemberState() == currentSelectedMember);
-        }
+        if (cg == null) return;
+        cg.alpha          = visible ? 1f : 0f;
+        cg.interactable   = visible;
+        cg.blocksRaycasts = visible;
     }
 
     private void SelectNav(TextMeshProUGUI navText, Image navBg)
@@ -406,7 +396,6 @@ public class PartyMenuManager : MonoBehaviour
             slotUI.partyMenuManager = this;
             slotUI.itemDetailsPrefab = itemDetailsPrefab;
             slotUI.partyMemberSelectorPrefab = partyMemberSelectorPrefab;
-            slotUI.partyMemberButtonPrefab = partyMemberButtonPrefab;
 
             slotUI.ConfigurarSlot(slot);
             inventorySlots.Add(slotUI);
@@ -486,16 +475,9 @@ public class PartyMenuManager : MonoBehaviour
 
         CloseObjectivesPanel();
         HideAllPanels();
-        if (objectivesButton != null) objectivesButton.SetActive(false);
-        if (settingsButton != null) settingsButton.SetActive(false);
-
-        // Hide menu opener via CanvasGroup so it stays in the layout
-        if (menuOpenerCanvasGroup != null)
-        {
-            menuOpenerCanvasGroup.alpha = 0f;
-            menuOpenerCanvasGroup.interactable = false;
-            menuOpenerCanvasGroup.blocksRaycasts = false;
-        }
+        SetCanvasGroupVisible(objectivesButtonCanvasGroup, false);
+        SetCanvasGroupVisible(settingsButtonCanvasGroup, false);
+        SetCanvasGroupVisible(menuOpenerCanvasGroup, false);
 
         Debug.Log("OpenMenu: ativando partyMenuPanel");
         partyMenuPanel.SetActive(true);
@@ -524,16 +506,9 @@ public class PartyMenuManager : MonoBehaviour
         if (menuContainer != null) menuContainer.SetActive(false);
         currentNavText = null;
         HideAllPanels();
-        if (objectivesButton != null) objectivesButton.SetActive(true);
-        if (settingsButton != null) settingsButton.SetActive(true);
-
-        // Restore menu opener visibility
-        if (menuOpenerCanvasGroup != null)
-        {
-            menuOpenerCanvasGroup.alpha = 1f;
-            menuOpenerCanvasGroup.interactable = true;
-            menuOpenerCanvasGroup.blocksRaycasts = true;
-        }
+        SetCanvasGroupVisible(objectivesButtonCanvasGroup, true);
+        SetCanvasGroupVisible(settingsButtonCanvasGroup, true);
+        SetCanvasGroupVisible(menuOpenerCanvasGroup, true);
     }
 
     public void CloseGame()
