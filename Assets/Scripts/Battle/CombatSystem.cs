@@ -148,7 +148,7 @@ public class CombatSystem : MonoBehaviour
     {
         // Diagonal: index 0 = top-right (back), index 2 = bottom-left (front)
         float[] xViewport = { 0.22f, 0.18f, 0.14f };
-        float[] yViewport = { 0.46f, 0.32f, 0.18f };
+        float[] yViewport = { 0.36f, 0.32f, 0.28f };
         float x = index < xViewport.Length ? xViewport[index] : 0.18f;
         float y = index < yViewport.Length ? yViewport[index] : 0.32f;
         Vector3 world = cam.ViewportToWorldPoint(new Vector3(x, y, Mathf.Abs(cam.transform.position.z)));
