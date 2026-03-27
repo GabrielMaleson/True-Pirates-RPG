@@ -26,10 +26,10 @@ public class PartyMenuManager : MonoBehaviour
     public TextMeshProUGUI equipmentNavText;
     public Image equipmentNavBg;
 
-    private static readonly Color NavTextSelected = Color.white;
-    private static readonly Color NavTextDeselected = Color.gray;
-    private static readonly Color NavBgSelected = new Color(0.19f, 0.19f, 0.19f); // ~#303030
-    private static readonly Color NavBgDeselected = new Color(0.12f, 0.12f, 0.12f); // ~#1F1F1F
+    private static readonly Color NavTextSelected = Color.gray;
+    private static readonly Color NavTextDeselected = Color.white;
+    private static readonly Color NavBgSelected = new Color(0.12f, 0.12f, 0.12f, 0.8f); // ~#1F1F1F — active tab dimmed
+    private static readonly Color NavBgDeselected = new Color(0.19f, 0.19f, 0.19f, 0.8f); // ~#303030 — available tabs bright
     private TextMeshProUGUI currentNavText;
     private Image currentNavBg;
 
@@ -105,6 +105,12 @@ public class PartyMenuManager : MonoBehaviour
         // Find ConfigSceneManager if not assigned
         if (configSceneManager == null)
             configSceneManager = FindFirstObjectByType<ConfigSceneManager>();
+
+        // Wire nav button clicks
+        if (characterNavBg != null)  characterNavBg.GetComponent<Button>()?.onClick.AddListener(ShowCharacter);
+        if (craftingNavBg  != null)  craftingNavBg.GetComponent<Button>()?.onClick.AddListener(ShowCrafting);
+        if (itemsNavBg     != null)  itemsNavBg.GetComponent<Button>()?.onClick.AddListener(ShowItems);
+        if (equipmentNavBg != null)  equipmentNavBg.GetComponent<Button>()?.onClick.AddListener(ShowEquipment);
 
         HideAllPanels();
         CreatePartyMemberDisplays();
@@ -198,6 +204,13 @@ public class PartyMenuManager : MonoBehaviour
         CanvasGroup cg = GetObjectiveCanvasGroup();
         if (cg == null) return;
         bool willShow = cg.alpha <= 0.5f;
+
+        if (willShow)
+        {
+            CloseMenu();
+            CloseSettings();
+        }
+
         cg.alpha = willShow ? 1f : 0f;
         cg.interactable = willShow;
         cg.blocksRaycasts = willShow;
@@ -211,9 +224,18 @@ public class PartyMenuManager : MonoBehaviour
     private void CloseObjectivesPanel()
     {
         CanvasGroup cg = GetObjectiveCanvasGroup();
-        if (cg != null) cg.alpha = 0f;
-
+        if (cg != null) { cg.alpha = 0f; cg.interactable = false; cg.blocksRaycasts = false; }
         SetCanvasGroupVisible(objectivesButtonCanvasGroup, true);
+    }
+
+    private void CloseSettings()
+    {
+        if (configSceneManager != null && configSceneManager.IsConfigLoaded)
+        {
+            SaveLoadManager.Instance?.SaveGame();
+            configSceneManager.DeleteConfigScene();
+            SetCanvasGroupVisible(settingsButtonCanvasGroup, true);
+        }
     }
 
     public void ToggleSettings()
@@ -226,12 +248,12 @@ public class PartyMenuManager : MonoBehaviour
 
         if (configSceneManager.IsConfigLoaded)
         {
-            SaveLoadManager.Instance?.SaveGame();
-            configSceneManager.DeleteConfigScene();
-            SetCanvasGroupVisible(settingsButtonCanvasGroup, true);
+            CloseSettings();
         }
         else
         {
+            CloseMenu();
+            CloseObjectivesPanel();
             configSceneManager.LoadConfigScene();
             SetCanvasGroupVisible(settingsButtonCanvasGroup, false);
         }
@@ -470,6 +492,7 @@ public class PartyMenuManager : MonoBehaviour
         SFXManager.Instance?.Play(SFXManager.Instance.uiForward);
 
         CloseObjectivesPanel();
+        CloseSettings();
         HideAllPanels();
         SetCanvasGroupVisible(menuOpenerCanvasGroup, false);
 
