@@ -50,6 +50,10 @@ public class CombatSystem : MonoBehaviour
     [Header("UI")]
     public TextMeshProUGUI attackQueueText;
 
+    [Header("Menu de Pausa")]
+    public GameObject pauseMenuPanel;
+    public GameObject leaveConfirmPanel;
+
     [Header("Game Over")]
     public string mainMenuSceneName = "Menu";
     public string gameOverSceneName  = "GameOver";
@@ -844,6 +848,38 @@ public class CombatSystem : MonoBehaviour
 
         foreach (var member in partyMembers.Where(p => p.currentHP > 0))
             member.GainExperience(encounterData.totalExpReward);
+    }
+
+    // ─── Menu de Pausa ────────────────────────────────────────────────────────────
+
+    public void TogglePauseMenu()
+    {
+        if (pauseMenuPanel == null) return;
+        bool willOpen = !pauseMenuPanel.activeSelf;
+        pauseMenuPanel.SetActive(willOpen);
+        if (!willOpen && leaveConfirmPanel != null)
+            leaveConfirmPanel.SetActive(false);
+    }
+
+    public void ShowLeaveConfirmation()
+    {
+        if (leaveConfirmPanel != null)
+            leaveConfirmPanel.SetActive(true);
+    }
+
+    public void CancelLeave()
+    {
+        if (leaveConfirmPanel != null)
+            leaveConfirmPanel.SetActive(false);
+    }
+
+    public void ConfirmLeave()
+    {
+        EncounterData encounterData = FindFirstObjectByType<EncounterData>();
+        if (encounterData != null && SaveLoadManager.Instance != null)
+            SaveLoadManager.Instance.SaveAndQuitFromBattle(encounterData);
+        else
+            Application.Quit();
     }
 
     // ─── Accessors ────────────────────────────────────────────────────────────────

@@ -2,6 +2,21 @@
 
 ---
 
+## 2026-03-27
+
+### Feature: Menu de pausa em combate + saída com reinício de batalha
+**Files:** `Assets/Scripts/Menu Scripts/PartyMenuManager.cs`, `Assets/Scripts/Battle/CombatSystem.cs`, `Assets/Scripts/EncounterS/PreviousScene.cs`, `Assets/Scripts/Dialogue Scripts/SaveLoadManager.cs`
+
+**PartyMenuManager:** ESC durante batalha agora chama `CombatSystem.TogglePauseMenu()` em vez de abrir configurações. Refatorado bloco de ESC para cobrir todos os casos (em batalha / menu aberto / menu fechado) em um único if.
+
+**CombatSystem:** Adicionado header `Menu de Pausa` com campos `pauseMenuPanel` e `leaveConfirmPanel` (arrastar no Inspector). Novos métodos: `TogglePauseMenu()` (toggle do painel), `ShowLeaveConfirmation()` (exibe popup de confirmação), `CancelLeave()`, `ConfirmLeave()` (salva estado e chama `Application.Quit()`).
+
+**PreviousScene:** Adicionado `public static string LastExplorationScene` — gravado em `UnloadScene()` para que o SaveLoadManager saiba o nome da cena de exploração durante um combate.
+
+**SaveLoadManager:** `SaveData` recebeu `hasPendingBattleRestart` e `pendingEncounterFileName`. `SaveGame()` refatorado para usar `BuildSaveData()`. Novo `SaveAndQuitFromBattle(EncounterData)`: restaura HP pré-batalha via BattleSaveManager, salva com flag de reinício e chama `Application.Quit()`. `LoadGameCoroutine` agora detecta a flag e relança o encontro via `EncounterStarter.StartEncounterFromCutscene()`, limpando a flag antes para evitar loops. `EncounterFile` precisa estar em uma pasta `Resources/` para ser encontrado por `FindEncounterFileByName()`.
+
+---
+
 ## 2026-03-26 (session 40)
 
 ### Refactor: Painel de ataques substituído por painel de crafting no party menu

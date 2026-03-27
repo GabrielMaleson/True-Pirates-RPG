@@ -118,11 +118,39 @@ public class PartyMenuManager : MonoBehaviour
         RefreshInventoryDisplay();
     }
 
-    private void Update() 
-    { 
-        if (Input.GetKeyDown(KeyCode.Escape) && !partyMenuPanel.activeSelf)
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
+            if (isInBattle)
+            {
+                FindFirstObjectByType<CombatSystem>()?.TogglePauseMenu();
+                return;
+            }
+
+            // Fechar qualquer menu aberto primeiro; só abre configurações se nada estava aberto
+            if (partyMenuPanel.activeSelf)
+            {
+                CloseMenu();
+                return;
+            }
+
+            CanvasGroup objCg = GetObjectiveCanvasGroup();
+            if (objCg != null && objCg.alpha > 0.5f)
+            {
+                ToggleObjectives();
+                return;
+            }
+
+            if (configSceneManager != null && configSceneManager.IsConfigLoaded)
+            {
+                CloseSettings();
+                return;
+            }
+
+            // Nada aberto — abre configurações
             ToggleSettings();
+            return;
         }
 
         // Only allow menu opening if not in battle and menu can be opened
@@ -132,14 +160,8 @@ public class PartyMenuManager : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Tab))
                 ToggleMenu();
 
-            // Close with Escape
+            // Close with Tab
             if (Input.GetKeyDown(KeyCode.Tab) && partyMenuPanel.activeSelf)
-            {
-                CloseMenu();
-            }
-
-            // Close with Escape
-            if (Input.GetKeyDown(KeyCode.Escape) && partyMenuPanel.activeSelf)
             {
                 CloseMenu();
             }

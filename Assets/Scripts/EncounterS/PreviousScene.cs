@@ -5,6 +5,9 @@ using UnityEngine.SceneManagement;
 
 public class PreviousScene : MonoBehaviour
 {
+    /// <summary>Nome da cena de exploração armazenada mais recentemente — usado pelo SaveLoadManager para salvar a cena correta ao sair durante uma batalha.</summary>
+    public static string LastExplorationScene { get; private set; }
+
     private Scene originalScene;
     private string originalSceneName;
 
@@ -15,6 +18,7 @@ public class PreviousScene : MonoBehaviour
     {
         originalScene = SceneManager.GetActiveScene();
         originalSceneName = originalScene.name;
+        LastExplorationScene = originalSceneName;
 
         GameObject[] rootObjects = originalScene.GetRootGameObjects();
         EncounterData encounterData = FindFirstObjectByType<EncounterData>();
