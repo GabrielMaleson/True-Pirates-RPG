@@ -18,9 +18,9 @@ public class PartyMenuManager : MonoBehaviour
 
     [Header("Menu Nav Buttons")]
     public TextMeshProUGUI characterNavText;
-    public Image            characterNavBg;
+    public Image characterNavBg;
     public TextMeshProUGUI craftingNavText;
-    public Image            craftingNavBg;
+    public Image craftingNavBg;
     public TextMeshProUGUI itemsNavText;
     public Image itemsNavBg;
     public TextMeshProUGUI equipmentNavText;
@@ -81,6 +81,7 @@ public class PartyMenuManager : MonoBehaviour
     [Header("References")]
     public SistemaInventario inventory;
     public ConfigSceneManager configSceneManager; // Reference to ConfigSceneManager
+    public GameObject configPanel; // Reference to the config panel in the prefab
 
     [Header("Menu State")]
     public bool canOpenMenu = true; // Can be set to false during cutscenes
@@ -107,18 +108,23 @@ public class PartyMenuManager : MonoBehaviour
             configSceneManager = FindFirstObjectByType<ConfigSceneManager>();
 
         // Wire nav button clicks
-        if (characterNavBg != null)  characterNavBg.GetComponent<Button>()?.onClick.AddListener(ShowCharacter);
-        if (craftingNavBg  != null)  craftingNavBg.GetComponent<Button>()?.onClick.AddListener(ShowCrafting);
-        if (itemsNavBg     != null)  itemsNavBg.GetComponent<Button>()?.onClick.AddListener(ShowItems);
-        if (equipmentNavBg != null)  equipmentNavBg.GetComponent<Button>()?.onClick.AddListener(ShowEquipment);
+        if (characterNavBg != null) characterNavBg.GetComponent<Button>()?.onClick.AddListener(ShowCharacter);
+        if (craftingNavBg != null) craftingNavBg.GetComponent<Button>()?.onClick.AddListener(ShowCrafting);
+        if (itemsNavBg != null) itemsNavBg.GetComponent<Button>()?.onClick.AddListener(ShowItems);
+        if (equipmentNavBg != null) equipmentNavBg.GetComponent<Button>()?.onClick.AddListener(ShowEquipment);
 
         HideAllPanels();
         CreatePartyMemberDisplays();
         RefreshInventoryDisplay();
     }
 
-    private void Update()
-    {
+    private void Update() 
+    { 
+        if (Input.GetKeyDown(KeyCode.Escape) && !partyMenuPanel.activeSelf)
+        {
+            ToggleSettings();
+        }
+
         // Only allow menu opening if not in battle and menu can be opened
         if (!isInBattle && canOpenMenu)
         {
@@ -127,15 +133,15 @@ public class PartyMenuManager : MonoBehaviour
                 ToggleMenu();
 
             // Close with Escape
-            if (Input.GetKeyDown(KeyCode.Escape) && partyMenuPanel.activeSelf)
+            if (Input.GetKeyDown(KeyCode.Tab) && partyMenuPanel.activeSelf)
             {
                 CloseMenu();
             }
 
-            // Toggle Config with Escape (when menu is closed)
-            if (Input.GetKeyDown(KeyCode.Escape) && !partyMenuPanel.activeSelf)
+            // Close with Escape
+            if (Input.GetKeyDown(KeyCode.Escape) && partyMenuPanel.activeSelf)
             {
-                ToggleSettings();
+                CloseMenu();
             }
 
             // Toggle Inventory with I key
@@ -146,8 +152,6 @@ public class PartyMenuManager : MonoBehaviour
                 ShowItems();
             }
 
-            // Toggle Party Menu with Tab key (already handled above)
-
             // Toggle Quests with O key
             if (Input.GetKeyDown(KeyCode.O))
             {
@@ -157,8 +161,7 @@ public class PartyMenuManager : MonoBehaviour
             // Toggle Crafting with C key
             if (Input.GetKeyDown(KeyCode.C))
             {
-                // Add your crafting toggle logic here
-                // For now, this is just a placeholder as requested
+                ToggleCrafting();
             }
         }
     }
@@ -201,6 +204,11 @@ public class PartyMenuManager : MonoBehaviour
 
     public void ToggleObjectives()
     {
+        if (isInBattle || !canOpenMenu)
+        {
+            Debug.Log($"OpenMenu bloqueado — isInBattle={isInBattle}, canOpenMenu={canOpenMenu}");
+            return;
+        }
         CanvasGroup cg = GetObjectiveCanvasGroup();
         if (cg == null) return;
         bool willShow = cg.alpha <= 0.5f;
@@ -230,23 +238,24 @@ public class PartyMenuManager : MonoBehaviour
 
     private void CloseSettings()
     {
-        if (configSceneManager != null && configSceneManager.IsConfigLoaded)
+        if (configPanel != null && configPanel.activeSelf)
         {
-            SaveLoadManager.Instance?.SaveGame();
-            configSceneManager.DeleteConfigScene();
+            configPanel.SetActive(false);
             SetCanvasGroupVisible(settingsButtonCanvasGroup, true);
         }
     }
 
     public void ToggleSettings()
     {
-        if (configSceneManager == null)
+        if (configPanel == null)
         {
-            Debug.LogError("ConfigSceneManager não encontrado!");
+            Debug.LogError("Config panel not assigned in PartyMenuManager!");
             return;
         }
 
-        if (configSceneManager.IsConfigLoaded)
+        bool isOpen = configPanel.activeSelf;
+
+        if (isOpen)
         {
             CloseSettings();
         }
@@ -254,8 +263,40 @@ public class PartyMenuManager : MonoBehaviour
         {
             CloseMenu();
             CloseObjectivesPanel();
-            configSceneManager.LoadConfigScene();
+            configPanel.SetActive(true);
             SetCanvasGroupVisible(settingsButtonCanvasGroup, false);
+        }
+    }
+
+    public void ToggleCrafting()
+    {
+        if (craftingPanel == null)
+        {
+            Debug.LogError("Crafting panel not assigned in PartyMenuManager!");
+            return;
+        }
+
+        bool isOpen = craftingPanel.activeSelf;
+
+        if (isOpen)
+        {
+            // If crafting panel is open, close it
+            craftingPanel.SetActive(false);
+            // If party menu is still open, show the last active panel or character panel
+            if (partyMenuPanel.activeSelf)
+            {
+                ShowCharacter();
+            }
+        }
+        else
+        {
+            // If crafting panel is closed, open it
+            // If party menu is closed, open it first
+            if (!partyMenuPanel.activeSelf)
+            {
+                OpenMenu();
+            }
+            ShowCrafting();
         }
     }
 
@@ -306,14 +347,14 @@ public class PartyMenuManager : MonoBehaviour
     private static void SetNavButtonState(TextMeshProUGUI text, Image bg, bool selected)
     {
         if (text != null) text.color = selected ? NavTextSelected : NavTextDeselected;
-        if (bg   != null) bg.color   = selected ? NavBgSelected   : NavBgDeselected;
+        if (bg != null) bg.color = selected ? NavBgSelected : NavBgDeselected;
     }
 
     private static void SetCanvasGroupVisible(CanvasGroup cg, bool visible)
     {
         if (cg == null) return;
-        cg.alpha          = visible ? 1f : 0f;
-        cg.interactable   = visible;
+        cg.alpha = visible ? 1f : 0f;
+        cg.interactable = visible;
         cg.blocksRaycasts = visible;
     }
 
@@ -367,8 +408,8 @@ public class PartyMenuManager : MonoBehaviour
     private void HideSubPanels()
     {
         if (characterPanel != null) characterPanel.SetActive(false);
-        if (craftingPanel   != null) craftingPanel.SetActive(false);
-        if (itemsPanel     != null) itemsPanel.SetActive(false);
+        if (craftingPanel != null) craftingPanel.SetActive(false);
+        if (itemsPanel != null) itemsPanel.SetActive(false);
         if (equipmentPanel != null) equipmentPanel.SetActive(false);
     }
 
@@ -514,8 +555,8 @@ public class PartyMenuManager : MonoBehaviour
         // Reset all nav buttons to deselected state before defaulting
         SetCanvasGroupVisible(objectivesButtonCanvasGroup, true);
         SetNavButtonState(characterNavText, characterNavBg, false);
-        SetNavButtonState(craftingNavText,  craftingNavBg,  false);
-        SetNavButtonState(itemsNavText,     itemsNavBg,     false);
+        SetNavButtonState(craftingNavText, craftingNavBg, false);
+        SetNavButtonState(itemsNavText, itemsNavBg, false);
         SetNavButtonState(equipmentNavText, equipmentNavBg, false);
 
         currentNavText = null;

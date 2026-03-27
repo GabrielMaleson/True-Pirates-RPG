@@ -16,6 +16,7 @@ TagManager:
   - ObjectiveButtwo
   - Ignore
   - Ally
+  - SFX
   layers:
   - Default
   - TransparentFX
