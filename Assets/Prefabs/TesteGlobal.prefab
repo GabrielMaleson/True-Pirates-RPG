@@ -6747,13 +6747,14 @@ MonoBehaviour:
   partyMembers:
   - template: {fileID: 11400000, guid: cf1ac269ae3ec694a853eda9c9ceab7c, type: 2}
     level: 1
-    currentHP: 20
+    currentHP: 21
     currentAP: 10
     currentExperience: 0
     weapon: {fileID: 0}
     armor: {fileID: 0}
     learnedAttacks:
-    - {fileID: 0}
+    - {fileID: 11400000, guid: 4b9e38574020138478177e0b74b40818, type: 2}
+    - {fileID: 11400000, guid: 04868392efa22b04b87df9c56f375525, type: 2}
     activeStatusEffects: []
   inventario: []
   maxInventorySize: 30
