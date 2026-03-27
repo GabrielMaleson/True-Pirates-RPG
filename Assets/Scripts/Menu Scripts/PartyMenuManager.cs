@@ -45,6 +45,7 @@ public class PartyMenuManager : MonoBehaviour
     public GameObject objectivesButton;
     public CanvasGroup objectivesButtonCanvasGroup; // CanvasGroup on the objectives button — hides it without breaking the grid layout
     public GameObject settingsButton;
+    public CanvasGroup menuOpenerCanvasGroup; // CanvasGroup on the menu opener button — hides without breaking grid layout
 
     [Header("Gold Count")]
     public TextMeshProUGUI goldCount; // Always visible, root of Party Menu
@@ -89,7 +90,6 @@ public class PartyMenuManager : MonoBehaviour
             configSceneManager = FindFirstObjectByType<ConfigSceneManager>();
 
         HideAllPanels();
-        MenuOpener.SetActive(true);
         CreatePartyMemberDisplays();
         RefreshInventoryDisplay();
     }
@@ -141,7 +141,6 @@ public class PartyMenuManager : MonoBehaviour
     private void HideAllPanels()
     {
         if (partyMenuPanel != null) partyMenuPanel.SetActive(false);
-        MenuOpener.SetActive(false);
         if (attacksPanel != null) attacksPanel.SetActive(false);
         if (itemsPanel != null) itemsPanel.SetActive(false);
         if (equipmentPanel != null) equipmentPanel.SetActive(false);
@@ -188,41 +187,23 @@ public class PartyMenuManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Loads the configuration scene additively
-    /// </summary>
-    public void LoadConfig()
+    public void ToggleSettings()
     {
         if (configSceneManager == null)
         {
-            Debug.LogError("ConfigSceneManager not found!");
+            Debug.LogError("ConfigSceneManager não encontrado!");
             return;
         }
 
-        // Close the party menu first
-        CloseMenu();
-
-        // Load the config scene
-        configSceneManager.LoadConfigScene();
-        Debug.Log("Loading config scene");
-    }
-
-    /// <summary>
-    /// Deletes/unloads the configuration scene
-    /// </summary>
-    public void DeleteConfig()
-    {
-        if (configSceneManager == null)
+        if (configSceneManager.IsConfigLoaded)
         {
-            Debug.LogError("ConfigSceneManager not found!");
-            return;
+            SaveLoadManager.Instance?.SaveGame();
+            configSceneManager.DeleteConfigScene();
         }
-
-        configSceneManager.DeleteConfigScene();
-        Debug.Log("Config scene deleted");
-
-        // Reopen the party menu after config closes (optional)
-        // OpenMenu();
+        else
+        {
+            configSceneManager.LoadConfigScene();
+        }
     }
 
     private void CreatePartyMemberDisplays()
@@ -453,6 +434,15 @@ public class PartyMenuManager : MonoBehaviour
         HideAllPanels();
         if (objectivesButton != null) objectivesButton.SetActive(false);
         if (settingsButton   != null) settingsButton.SetActive(false);
+
+        // Hide menu opener via CanvasGroup so it stays in the layout
+        if (menuOpenerCanvasGroup != null)
+        {
+            menuOpenerCanvasGroup.alpha = 0f;
+            menuOpenerCanvasGroup.interactable = false;
+            menuOpenerCanvasGroup.blocksRaycasts = false;
+        }
+
         partyMenuPanel.SetActive(true);
 
         CanvasGroup canvasGroup = partyMenuPanel.GetComponent<CanvasGroup>();
@@ -470,9 +460,16 @@ public class PartyMenuManager : MonoBehaviour
     {
         SFXManager.Instance?.Play(SFXManager.Instance.uiBackward);
         HideAllPanels();
-        if (MenuOpener        != null) MenuOpener.SetActive(true);
         if (objectivesButton  != null) objectivesButton.SetActive(true);
         if (settingsButton    != null) settingsButton.SetActive(true);
+
+        // Restore menu opener visibility
+        if (menuOpenerCanvasGroup != null)
+        {
+            menuOpenerCanvasGroup.alpha = 1f;
+            menuOpenerCanvasGroup.interactable = true;
+            menuOpenerCanvasGroup.blocksRaycasts = true;
+        }
     }
 
     public void CloseGame()

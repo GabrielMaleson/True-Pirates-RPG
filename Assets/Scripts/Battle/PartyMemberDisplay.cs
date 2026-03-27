@@ -83,6 +83,12 @@ public class CharacterUI : MonoBehaviour, IPointerClickHandler, IPointerEnterHan
 
         UpdateDisplay();
 
+        // Ensure the root rect catches clicks everywhere (including over child images with Raycast Target off)
+        Image rootHitbox = GetComponent<Image>();
+        if (rootHitbox == null) rootHitbox = gameObject.AddComponent<Image>();
+        rootHitbox.color = Color.clear;
+        rootHitbox.raycastTarget = true;
+
         // Link to the 3D visual's TargetSelector so it can call Show/HideTargetIndicator
         if (characterVisualObject != null)
         {

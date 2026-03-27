@@ -2,6 +2,35 @@
 
 ---
 
+## 2026-03-26 (session 38)
+
+### Fix: Clique no retrato inimigo/aliado não registrava no ícone central
+**Files:** `Assets/Scripts/Battle/EnemyDisplay.cs`, `Assets/Scripts/Battle/PartyMemberDisplay.cs`
+
+Adicionado Image transparente (Color.clear, raycastTarget=true) no root de EnemyUI e CharacterUI em Initialize(). Garante que todo o rect do card captura cliques, mesmo sobre filhos com Raycast Target desativado, propagando o evento até o IPointerClickHandler do root.
+
+---
+
+## 2026-03-26 (session 37)
+
+### Feature: Botão de abrir menu some via CanvasGroup ao abrir o menu
+**Files:** `Assets/Scripts/Menu Scripts/PartyMenuManager.cs`
+
+Adicionado campo `menuOpenerCanvasGroup` (CanvasGroup) no header "HUD Buttons". `OpenMenu` agora oculta o botão via CanvasGroup (alpha=0) em vez de SetActive, mantendo-o no layout. `CloseMenu` restaura (alpha=1). `HideAllPanels` não toca mais no MenuOpener — ele nunca sai do layout. Remova o `MenuOpener.SetActive` de qualquer chamada manual restante.
+
+**Inspector:** Adicionar CanvasGroup no GameObject do botão de abrir menu e atribuir ao campo `Menu Opener Canvas Group`.
+
+---
+
+## 2026-03-26 (session 36)
+
+### Feature: Botão de configurações vira toggle com save ao fechar
+**Files:** `Assets/Scripts/ConfigScene.cs`, `Assets/Scripts/Menu Scripts/PartyMenuManager.cs`
+
+Adicionada propriedade pública `IsConfigLoaded` em `ConfigSceneManager`. `LoadConfig` e `DeleteConfig` em PartyMenuManager substituídos por `ToggleSettings()`: se a cena de config estiver carregada, salva o jogo e descarrega; se não estiver, carrega. Redirecione o botão de settings para chamar `ToggleSettings()`.
+
+---
+
 ## 2026-03-26 (session 35)
 
 ### Feature: Botão de objetivos se oculta quando painel abre

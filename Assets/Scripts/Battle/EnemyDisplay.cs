@@ -77,6 +77,12 @@ public class EnemyUI : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
 
         UpdateDisplay();
 
+        // Ensure the root rect catches clicks everywhere (including over child images with Raycast Target off)
+        Image rootHitbox = GetComponent<Image>();
+        if (rootHitbox == null) rootHitbox = gameObject.AddComponent<Image>();
+        rootHitbox.color = Color.clear;
+        rootHitbox.raycastTarget = true;
+
         if (characterVisualObject != null)
         {
             targetSelector = characterVisualObject.GetComponent<TargetSelector>();
