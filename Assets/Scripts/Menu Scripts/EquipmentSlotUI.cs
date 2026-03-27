@@ -12,6 +12,7 @@ public class EquipmentSlotUI : MonoBehaviour
     public TextMeshProUGUI itemStatsText;
     public Button slotButton;
     public Button unequipButton;
+    public GameObject partyMemberButtonPrefab;
 
     private EquipmentSlot slotType;
     private DadosItem equippedItem;
@@ -173,7 +174,7 @@ public class EquipmentSlotUI : MonoBehaviour
                 }
 
                 // Create party member button
-                GameObject btnObj = Instantiate(menuManager.partyMemberButtonPrefab, buttonContainer);
+                GameObject btnObj = Instantiate(partyMemberButtonPrefab, buttonContainer);
                 PartyMemberButton btn = btnObj.GetComponent<PartyMemberButton>();
 
                 if (btn != null)
@@ -242,7 +243,7 @@ public class EquipmentSlotUI : MonoBehaviour
         // Create buttons for each usable item
         foreach (var item in usableItems)
         {
-            GameObject btnObj = Instantiate(menuManager.partyMemberButtonPrefab, buttonContainer);
+            GameObject btnObj = Instantiate(partyMemberButtonPrefab, buttonContainer);
 
             // Customize button for item
             TextMeshProUGUI nameText = btnObj.GetComponentInChildren<TextMeshProUGUI>();
@@ -318,7 +319,7 @@ public class EquipmentSlotUI : MonoBehaviour
 
     private void CreateCloseButton(Transform parent)
     {
-        GameObject closeBtnObj = Instantiate(menuManager.partyMemberButtonPrefab, parent);
+        GameObject closeBtnObj = Instantiate(partyMemberButtonPrefab, parent);
 
         TextMeshProUGUI nameText = closeBtnObj.GetComponentInChildren<TextMeshProUGUI>();
         if (nameText != null)
@@ -337,7 +338,7 @@ public class EquipmentSlotUI : MonoBehaviour
 
     private void CreateCancelButton(Transform parent)
     {
-        GameObject cancelBtnObj = Instantiate(menuManager.partyMemberButtonPrefab, parent);
+        GameObject cancelBtnObj = Instantiate(partyMemberButtonPrefab, parent);
 
         TextMeshProUGUI nameText = cancelBtnObj.GetComponentInChildren<TextMeshProUGUI>();
         if (nameText != null)
@@ -356,7 +357,7 @@ public class EquipmentSlotUI : MonoBehaviour
 
     private void CreateBackButton(Transform parent, System.Action backAction)
     {
-        GameObject backBtnObj = Instantiate(menuManager.partyMemberButtonPrefab, parent);
+        GameObject backBtnObj = Instantiate(partyMemberButtonPrefab, parent);
 
         TextMeshProUGUI nameText = backBtnObj.GetComponentInChildren<TextMeshProUGUI>();
         if (nameText != null)
