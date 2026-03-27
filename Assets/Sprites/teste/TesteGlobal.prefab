@@ -5016,7 +5016,7 @@ MonoBehaviour:
     m_Bottom: 0
   m_ChildAlignment: 4
   m_StartCorner: 0
-  m_StartAxis: 1
+  m_StartAxis: 0
   m_CellSize: {x: 140, y: 60}
   m_Spacing: {x: 0, y: 10}
   m_Constraint: 1
