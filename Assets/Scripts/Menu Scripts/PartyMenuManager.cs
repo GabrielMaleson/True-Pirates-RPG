@@ -11,7 +11,7 @@ public class PartyMenuManager : MonoBehaviour
     public GameObject partyMenuPanel;
     public GameObject menuContainer;   // Shared background container for all subpanels
     public GameObject characterPanel;  // Default group/character view
-    public GameObject attacksPanel;
+    public GameObject craftingPanel;
     public GameObject itemsPanel;
     public GameObject equipmentPanel;
     public GameObject MenuOpener;
@@ -19,8 +19,8 @@ public class PartyMenuManager : MonoBehaviour
     [Header("Menu Nav Buttons")]
     public TextMeshProUGUI characterNavText;
     public Image            characterNavBg;
-    public TextMeshProUGUI attacksNavText;
-    public Image            attacksNavBg;
+    public TextMeshProUGUI craftingNavText;
+    public Image            craftingNavBg;
     public TextMeshProUGUI itemsNavText;
     public Image            itemsNavBg;
     public TextMeshProUGUI equipmentNavText;
@@ -49,9 +49,9 @@ public class PartyMenuManager : MonoBehaviour
 
     private PartyMemberState currentSelectedMember;
 
-    [Header("Attacks Display")]
-    public Transform attackListParent;
-    public GameObject attackDisplayPrefab;
+    [Header("Crafting Display")]
+    public Transform craftingListParent;
+    public GameObject craftingSlotPrefab;
 
     [Header("Equipment Display")]
     public Transform equipmentSlotParent;
@@ -160,7 +160,7 @@ public class PartyMenuManager : MonoBehaviour
     private void HideAllPanels()
     {
         if (partyMenuPanel != null) partyMenuPanel.SetActive(false);
-        if (attacksPanel != null) attacksPanel.SetActive(false);
+        if (craftingPanel != null) craftingPanel.SetActive(false);
         if (itemsPanel != null) itemsPanel.SetActive(false);
         if (equipmentPanel != null) equipmentPanel.SetActive(false);
     }
@@ -272,10 +272,6 @@ public class PartyMenuManager : MonoBehaviour
 
         UpdatePartyMemberHighlights();
 
-        if (attacksPanel.activeSelf)
-        {
-            UpdateAttacksDisplay();
-        }
 
         if (equipmentPanel.activeSelf)
         {
@@ -309,15 +305,12 @@ public class PartyMenuManager : MonoBehaviour
         SelectNav(characterNavText, characterNavBg);
     }
 
-    public void ShowAttacks()
+    public void ShowCrafting()
     {
-        if (currentNavText == attacksNavText) return;
+        if (currentNavText == craftingNavText) return;
         HideSubPanels();
-        attacksPanel.SetActive(true);
-        SelectNav(attacksNavText, attacksNavBg);
-
-        if (currentSelectedMember != null)
-            UpdateAttacksDisplay();
+        craftingPanel.SetActive(true);
+        SelectNav(craftingNavText, craftingNavBg);
     }
 
     public void ShowItems()
@@ -344,26 +337,11 @@ public class PartyMenuManager : MonoBehaviour
     private void HideSubPanels()
     {
         if (characterPanel != null) characterPanel.SetActive(false);
-        if (attacksPanel   != null) attacksPanel.SetActive(false);
+        if (craftingPanel   != null) craftingPanel.SetActive(false);
         if (itemsPanel     != null) itemsPanel.SetActive(false);
         if (equipmentPanel != null) equipmentPanel.SetActive(false);
     }
 
-    private void UpdateAttacksDisplay()
-    {
-        foreach (Transform child in attackListParent)
-            Destroy(child.gameObject);
-
-        if (currentSelectedMember == null) return;
-
-        foreach (var attack in currentSelectedMember.learnedAttacks)
-        {
-            GameObject attackObj = Instantiate(attackDisplayPrefab, attackListParent);
-            AttackDisplay display = attackObj.GetComponent<AttackDisplay>();
-            if (display != null)
-                display.Initialize(attack);
-        }
-    }
 
     public void UpdateEquipmentDisplay()
     {
