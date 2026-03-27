@@ -18,6 +18,8 @@ public class TitleMenuManager : MonoBehaviour
             CloseSettings();
             return;
         }
+
+        OpenSettings();
     }
 
     public void ToggleSettings()
