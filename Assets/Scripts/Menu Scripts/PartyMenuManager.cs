@@ -118,14 +118,9 @@ public class PartyMenuManager : MonoBehaviour
         // Only allow menu opening if not in battle and menu can be opened
         if (!isInBattle && canOpenMenu)
         {
-            // Open with Tab key
+            // Toggle with Tab key
             if (Input.GetKeyDown(KeyCode.Tab))
-            {
-                if (partyMenuPanel.activeSelf)
-                    CloseMenu();
-                else
-                    OpenMenu();
-            }
+                ToggleMenu();
 
             // Close with Escape
             if (Input.GetKeyDown(KeyCode.Escape) && partyMenuPanel.activeSelf)
@@ -443,9 +438,23 @@ public class PartyMenuManager : MonoBehaviour
         }
     }
 
+    public void ToggleMenu()
+    {
+        bool isOpen = partyMenuPanel != null && partyMenuPanel.activeSelf;
+        Debug.Log($"ToggleMenu chamado — painel estava {(isOpen ? "aberto" : "fechado")}");
+        if (isOpen)
+            CloseMenu();
+        else
+            OpenMenu();
+    }
+
     public void OpenMenu()
     {
-        if (isInBattle || !canOpenMenu) return; // Don't open during battle or cutscenes
+        if (isInBattle || !canOpenMenu)
+        {
+            Debug.Log($"OpenMenu bloqueado — isInBattle={isInBattle}, canOpenMenu={canOpenMenu}");
+            return;
+        }
         SFXManager.Instance?.Play(SFXManager.Instance.uiForward);
 
         CloseObjectivesPanel();
@@ -461,6 +470,7 @@ public class PartyMenuManager : MonoBehaviour
             menuOpenerCanvasGroup.blocksRaycasts = false;
         }
 
+        Debug.Log("OpenMenu: ativando partyMenuPanel");
         partyMenuPanel.SetActive(true);
 
         CanvasGroup canvasGroup = partyMenuPanel.GetComponent<CanvasGroup>();
@@ -482,6 +492,7 @@ public class PartyMenuManager : MonoBehaviour
 
     public void CloseMenu()
     {
+        Debug.Log("CloseMenu chamado");
         SFXManager.Instance?.Play(SFXManager.Instance.uiBackward);
         if (menuContainer != null) menuContainer.SetActive(false);
         currentNavText = null;
