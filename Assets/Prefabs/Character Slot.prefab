@@ -602,6 +602,7 @@ GameObject:
   - component: {fileID: 934638856116699178}
   - component: {fileID: 4759679897184968007}
   - component: {fileID: 1395489415644491751}
+  - component: {fileID: 2218661382789433277}
   m_Layer: 5
   m_Name: Character Slot
   m_TagString: Untagged
@@ -616,7 +617,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3051577271190419146}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -628,9 +629,9 @@ RectTransform:
   - {fileID: 6671277053760766358}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 305.57956, y: -109.43447}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 480, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4759679897184968007
@@ -671,6 +672,34 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 15
+--- !u!114 &2218661382789433277
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3051577271190419146}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77f25c236cabcfe4191bd8784e30eb58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PartyMemberStatsDisplay
+  portraitImage: {fileID: 80143478173651444}
+  nameText: {fileID: 2016006976615663591}
+  levelText: {fileID: 4161620336302359875}
+  hpBarFill: {fileID: 3515007192726406178}
+  hpText: {fileID: 3811778475385504439}
+  apBarFill: {fileID: 8996179454190011400}
+  apText: {fileID: 9067552878830473603}
+  attackText: {fileID: 1116063354815536326}
+  defenseText: {fileID: 5120699058845639977}
+  expBarFill: {fileID: 7784192277366973734}
+  expText: {fileID: 7037779219401277782}
+  weaponText: {fileID: 0}
+  armorText: {fileID: 0}
+  hpColor: {r: 1, g: 0, b: 0, a: 1}
+  apColor: {r: 0, g: 0, b: 1, a: 1}
+  expColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &3185053545173778215
 GameObject:
   m_ObjectHideFlags: 0
@@ -1793,7 +1822,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 378.99997, y: 16.809967}
+  m_AnchoredPosition: {x: 378.99997, y: 16.809937}
   m_SizeDelta: {x: 300, y: 35}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1802523544195819260
