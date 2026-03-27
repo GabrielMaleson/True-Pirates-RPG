@@ -9,10 +9,29 @@ public class PartyMenuManager : MonoBehaviour
 {
     [Header("Main Panels")]
     public GameObject partyMenuPanel;
+    public GameObject menuContainer;   // Shared background container for all subpanels
+    public GameObject characterPanel;  // Default group/character view
     public GameObject attacksPanel;
     public GameObject itemsPanel;
     public GameObject equipmentPanel;
     public GameObject MenuOpener;
+
+    [Header("Menu Nav Buttons")]
+    public TextMeshProUGUI characterNavText;
+    public Image            characterNavBg;
+    public TextMeshProUGUI attacksNavText;
+    public Image            attacksNavBg;
+    public TextMeshProUGUI itemsNavText;
+    public Image            itemsNavBg;
+    public TextMeshProUGUI equipmentNavText;
+    public Image            equipmentNavBg;
+
+    private static readonly Color NavTextSelected   = Color.white;
+    private static readonly Color NavTextDeselected = Color.gray;
+    private static readonly Color NavBgSelected     = new Color(0.19f, 0.19f, 0.19f); // ~#303030
+    private static readonly Color NavBgDeselected   = new Color(0.12f, 0.12f, 0.12f); // ~#1F1F1F
+    private TextMeshProUGUI currentNavText;
+    private Image           currentNavBg;
 
     [Header("Canvas References")]
     public Transform partyMenuCanvas;
@@ -272,40 +291,61 @@ public class PartyMenuManager : MonoBehaviour
         }
     }
 
+    private void SelectNav(TextMeshProUGUI navText, Image navBg)
+    {
+        if (currentNavText != null) currentNavText.color = NavTextDeselected;
+        if (currentNavBg   != null) currentNavBg.color   = NavBgDeselected;
+        currentNavText = navText;
+        currentNavBg   = navBg;
+        if (currentNavText != null) currentNavText.color = NavTextSelected;
+        if (currentNavBg   != null) currentNavBg.color   = NavBgSelected;
+    }
+
+    public void ShowCharacter()
+    {
+        if (currentNavText == characterNavText) return;
+        HideSubPanels();
+        if (characterPanel != null) characterPanel.SetActive(true);
+        SelectNav(characterNavText, characterNavBg);
+    }
+
     public void ShowAttacks()
     {
+        if (currentNavText == attacksNavText) return;
         HideSubPanels();
         attacksPanel.SetActive(true);
+        SelectNav(attacksNavText, attacksNavBg);
 
         if (currentSelectedMember != null)
-        {
             UpdateAttacksDisplay();
-        }
     }
 
     public void ShowItems()
     {
+        if (currentNavText == itemsNavText) return;
         HideSubPanels();
         itemsPanel.SetActive(true);
+        SelectNav(itemsNavText, itemsNavBg);
         RefreshInventoryDisplay();
     }
 
     public void ShowEquipment()
     {
+        if (currentNavText == equipmentNavText) return;
         HideSubPanels();
         equipmentPanel.SetActive(true);
+        SelectNav(equipmentNavText, equipmentNavBg);
 
         if (currentSelectedMember != null)
-        {
             UpdateEquipmentDisplay();
-        }
     }
 
-    // Hides only the content sub-panels, NOT partyMenuPanel or character buttons
+    // Hides only the content sub-panels
     private void HideSubPanels()
     {
-        if (attacksPanel != null) attacksPanel.SetActive(false);
-        if (itemsPanel != null) itemsPanel.SetActive(false);
+        if (characterPanel != null) characterPanel.SetActive(false);
+        if (attacksPanel   != null) attacksPanel.SetActive(false);
+        if (itemsPanel     != null) itemsPanel.SetActive(false);
         if (equipmentPanel != null) equipmentPanel.SetActive(false);
     }
 
@@ -452,13 +492,21 @@ public class PartyMenuManager : MonoBehaviour
             canvasGroup.interactable = true;
         }
 
+        if (menuContainer != null) menuContainer.SetActive(true);
+
         CreatePartyMemberDisplays();
         RefreshInventoryDisplay();
+
+        // Default to character/group view
+        currentNavText = null;
+        ShowCharacter();
     }
 
     public void CloseMenu()
     {
         SFXManager.Instance?.Play(SFXManager.Instance.uiBackward);
+        if (menuContainer != null) menuContainer.SetActive(false);
+        currentNavText = null;
         HideAllPanels();
         if (objectivesButton  != null) objectivesButton.SetActive(true);
         if (settingsButton    != null) settingsButton.SetActive(true);

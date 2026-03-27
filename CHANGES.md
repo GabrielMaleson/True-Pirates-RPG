@@ -2,6 +2,17 @@
 
 ---
 
+## 2026-03-26 (session 39)
+
+### Feature: Navegação do party menu com botões de texto coloridos
+**Files:** `Assets/Scripts/Menu Scripts/PartyMenuManager.cs`
+
+Adicionados campos `menuContainer` (container compartilhado de subpaneis), `characterPanel` (painel padrão grupo/personagem) e quatro referências `TextMeshProUGUI` para os botões de nav (characterNavText, attacksNavText, itemsNavText, equipmentNavText). `SelectNav()` muda o botão atual para branco e o anterior para cinza. Cada `Show*` retorna cedo se já estiver selecionado. `OpenMenu` ativa o menuContainer e chama `ShowCharacter()` como padrão. `CloseMenu` desativa o menuContainer e reseta o nav.
+
+**Inspector:** Atribuir os quatro campos de texto dos botões de nav e o menuContainer/characterPanel.
+
+---
+
 ## 2026-03-26 (session 38)
 
 ### Fix: Clique no retrato inimigo/aliado não registrava no ícone central
