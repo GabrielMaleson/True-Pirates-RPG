@@ -158,7 +158,7 @@ public class SistemaInventario : MonoBehaviour
         TextMeshProUGUI textComponent = notification.GetComponent<TextMeshProUGUI>();
         if (textComponent != null)
         {
-            textComponent.text = $"{characterName} joined the party!";
+            textComponent.text = $"{characterName} entrou na equipe!";
         }
     }
 
