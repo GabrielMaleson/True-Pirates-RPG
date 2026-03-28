@@ -27,6 +27,7 @@ public class SimpleUIInteractable : MonoBehaviour
     private bool playerInRange = false;
     private MovimentacaoExploracao playerMovement;
     private bool isUIOpen = false;
+    public bool QuestDone = true;
     private SistemaInventario inventory;
 
     private void Start()
@@ -68,8 +69,8 @@ public class SimpleUIInteractable : MonoBehaviour
 
     private void Update()
     {
-        // Check for input while player is in range and UI is not open
-        if (playerInRange && !isUIOpen && Input.GetKeyDown(interactKey))
+        // Check for input while player is in range and UI is not open and quest is NOT done
+        if (playerInRange && !isUIOpen && !QuestDone && Input.GetKeyDown(interactKey))
         {
             // Disable player jumping temporarily while UI is open
             if (playerMovement != null)
@@ -95,8 +96,16 @@ public class SimpleUIInteractable : MonoBehaviour
             if (playerMovement == null)
                 playerMovement = collision.GetComponent<MovimentacaoExploracao>();
 
-            ShowPopup();
-            Debug.Log($"Press {interactKey} to interact");
+            // Only show popup if quest is not done
+            if (!QuestDone)
+            {
+                ShowPopup();
+                Debug.Log($"Press {interactKey} to interact");
+            }
+            else
+            {
+                Debug.Log("Quest already completed - interaction disabled");
+            }
         }
     }
 
@@ -167,6 +176,13 @@ public class SimpleUIInteractable : MonoBehaviour
 
     public void OpenUI()
     {
+        // Prevent opening UI if QuestDone is true
+        if (QuestDone)
+        {
+            Debug.Log("Cannot open UI: Quest is already completed!");
+            return;
+        }
+
         if (uiPanel == null)
         {
             Debug.LogError("UI Panel not assigned!");
@@ -195,8 +211,8 @@ public class SimpleUIInteractable : MonoBehaviour
         isUIOpen = false;
         uiPanel.SetActive(false);
 
-        // Show popup again if player is still in range
-        if (playerInRange)
+        // Show popup again if player is still in range and quest is not done
+        if (playerInRange && !QuestDone)
         {
             ShowPopup();
         }
@@ -216,6 +232,13 @@ public class SimpleUIInteractable : MonoBehaviour
             return;
         }
 
+        // Prevent action if quest is already done
+        if (QuestDone)
+        {
+            Debug.Log("Quest already completed - cannot perform action");
+            return;
+        }
+
         Debug.Log($"Action button pressed: {buttonText}");
 
         // Check if player has the required item
@@ -232,13 +255,23 @@ public class SimpleUIInteractable : MonoBehaviour
                 Debug.Log($"Added progress: {progressToAdd}");
             }
 
+            // Set quest as done BEFORE closing UI to prevent reopening
+            QuestDone = true;
+
             // Optional: Close UI after successful action
             CloseUI();
-
         }
         else
         {
             uiTitle = "Você não tem uma poção!";
+
+            // Update title text if assigned
+            if (titleText != null)
+            {
+                titleText.text = uiTitle;
+            }
+
+            ShowFailureNotification();
         }
     }
 
@@ -331,12 +364,42 @@ public class SimpleUIInteractable : MonoBehaviour
         return playerInRange;
     }
 
+    // Check if quest is done
+    public bool IsQuestDone()
+    {
+        return QuestDone;
+    }
+
+    // Method to set quest status from other scripts
+    public void SetQuestDone(bool value)
+    {
+        QuestDone = value;
+
+        // If quest becomes done, close UI if open and hide popup
+        if (QuestDone)
+        {
+            if (isUIOpen)
+                CloseUI();
+
+            HidePopup();
+            Debug.Log("Quest marked as done - interaction disabled");
+        }
+        else
+        {
+            // If quest becomes not done, show popup if player is in range
+            if (playerInRange)
+                ShowPopup();
+        }
+    }
+
     // Yarn command to open UI
     [YarnCommand("open_interact_ui")]
     public void OpenUIYarn()
     {
-        if (playerInRange)
+        if (playerInRange && !QuestDone)
             OpenUI();
+        else if (QuestDone)
+            Debug.LogWarning("Cannot open UI: quest already completed");
         else
             Debug.LogWarning("Cannot open UI: player not in range");
     }
@@ -346,5 +409,12 @@ public class SimpleUIInteractable : MonoBehaviour
     public void CloseUIYarn()
     {
         CloseUI();
+    }
+
+    // Yarn command to set quest status
+    [YarnCommand("set_quest_done")]
+    public void SetQuestDoneYarn(bool value)
+    {
+        SetQuestDone(value);
     }
 }
