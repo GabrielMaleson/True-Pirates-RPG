@@ -863,14 +863,14 @@ public class CombatSystem : MonoBehaviour
 
     public void ShowLeaveConfirmation()
     {
-        if (leaveConfirmPanel != null)
-            leaveConfirmPanel.SetActive(true);
+        if (pauseMenuPanel   != null) pauseMenuPanel.SetActive(false);
+        if (leaveConfirmPanel != null) leaveConfirmPanel.SetActive(true);
     }
 
     public void CancelLeave()
     {
-        if (leaveConfirmPanel != null)
-            leaveConfirmPanel.SetActive(false);
+        if (leaveConfirmPanel != null) leaveConfirmPanel.SetActive(false);
+        if (pauseMenuPanel   != null) pauseMenuPanel.SetActive(true);
     }
 
     public void ConfirmLeave()

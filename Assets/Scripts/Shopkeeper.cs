@@ -146,14 +146,7 @@ public class Shopkeeper : MonoBehaviour
             if (slotName != null)
                 slotName.text = shopItem.item.nomeDoItem;
 
-            // Ícone no slot
-            Image slotIcon = slotObj.GetComponentInChildren<Image>();
-            if (slotIcon != null && shopItem.item.icone != null)
-                slotIcon.sprite = shopItem.item.icone;
-
             bool hasStock = shopItem.isInfinite || shopItem.quantity > 0;
-            if (slotIcon != null)
-                slotIcon.color = hasStock ? Color.white : new Color(0.4f, 0.4f, 0.4f);
 
             // Botão — procura em filhos também, caso não esteja na raiz
             Button btn = slotObj.GetComponentInChildren<Button>();
@@ -182,13 +175,14 @@ public class Shopkeeper : MonoBehaviour
         if (selectedIcon != null)
         {
             selectedIcon.sprite = item.icone;
+            selectedIcon.preserveAspect = true;
             selectedIcon.gameObject.SetActive(item.icone != null);
         }
 
         if (selectedPrice     != null) selectedPrice.text     = $"Preço: {shopItem.price}";
         if (selectedType      != null) selectedType.text      = $"Tipo: {GetItemTypeLabel(item)}";
-        if (selectedShortDesc != null) selectedShortDesc.text = item.descricao;
-        if (selectedLongDesc  != null) selectedLongDesc.text  = item.descricaoNarrativa;
+        if (selectedShortDesc != null) selectedShortDesc.text = item.descricao;           // ex: "Aumenta dano em +1"
+        if (selectedLongDesc  != null) selectedLongDesc.text  = item.descricaoNarrativa; // texto narrativo
 
         bool canBuy = playerInventory != null
                    && playerInventory.moedas >= shopItem.price
