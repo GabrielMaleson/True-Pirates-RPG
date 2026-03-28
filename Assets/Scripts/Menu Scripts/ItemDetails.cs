@@ -5,7 +5,7 @@ public class ItemDetails : MonoBehaviour
 {
     [Header("UI Elements")]
     public TextMeshProUGUI itemNameText;
-    public TextMeshProUGUI itemDescriptionText;
+    public TextMeshProUGUI shortDescText;
     public TextMeshProUGUI itemStatsText;
 
     public void Initialize(DadosItem item)
@@ -15,8 +15,8 @@ public class ItemDetails : MonoBehaviour
         if (itemNameText != null)
             itemNameText.text = item.nomeDoItem;
 
-        if (itemDescriptionText != null)
-            itemDescriptionText.text = item.descricao;
+        if (shortDescText != null)
+            shortDescText.text = item.descricao;
 
         if (itemStatsText != null)
         {

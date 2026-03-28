@@ -94,11 +94,22 @@ public class SaveLoadManager : MonoBehaviour
     /// </summary>
     public void SaveAndQuitFromBattle(EncounterData encounterData)
     {
+        WriteBattleSave(encounterData);
+        Application.Quit();
+    }
+
+    public void SaveAndReturnToTitle(EncounterData encounterData)
+    {
+        WriteBattleSave(encounterData);
+        SceneManager.LoadScene("TitleScreen");
+    }
+
+    private void WriteBattleSave(EncounterData encounterData)
+    {
         SistemaInventario inventory = SistemaInventario.Instance;
         if (inventory == null)
         {
             Debug.LogError("[SaveLoadManager] SistemaInventario não encontrado ao salvar estado de batalha!");
-            Application.Quit();
             return;
         }
 
@@ -115,9 +126,7 @@ public class SaveLoadManager : MonoBehaviour
         data.pendingEncounterFileName = encounterData.encounterFile != null ? encounterData.encounterFile.name : "";
 
         File.WriteAllText(GetSavePath(), JsonUtility.ToJson(data, prettyPrint: true));
-        Debug.Log($"[SaveLoadManager] Estado de batalha salvo — reinício pendente: '{data.pendingEncounterFileName}'");
-
-        Application.Quit();
+        Debug.Log($"[SaveLoadManager] Estado de batalha salvo — retornando ao título. Reinício pendente: '{data.pendingEncounterFileName}'");
     }
 
     private SaveData BuildSaveData(SistemaInventario inventory, string sceneName)

@@ -13,7 +13,6 @@ public class PartyMenuManager : MonoBehaviour
     public GameObject characterPanel;  // Default group/character view
     public GameObject craftingPanel;
     public GameObject itemsPanel;
-    public GameObject equipmentPanel;
     public GameObject MenuOpener;
 
     [Header("Menu Nav Buttons")]
@@ -97,7 +96,8 @@ public class PartyMenuManager : MonoBehaviour
     [Header("References")]
     public SistemaInventario inventory;
     public ConfigSceneManager configSceneManager; // Reference to ConfigSceneManager
-    public GameObject configPanel; // Reference to the config panel in the prefab
+    public GameObject configPanel;        // Settings panel
+    public GameObject leaveConfirmPanel;  // "Tem certeza?" dialog inside configPanel
 
     [Header("Menu State")]
     public bool canOpenMenu = true; // Can be set to false during cutscenes
@@ -223,6 +223,12 @@ public class PartyMenuManager : MonoBehaviour
             hudButtonsContainer.SetActive(!inBattle);
         if (goldContainer != null)
             goldContainer.SetActive(!inBattle);
+
+        // Disable the GraphicRaycaster on this canvas during combat so it
+        // doesn't intercept clicks meant for combat targeting
+        GraphicRaycaster gr = GetComponentInParent<GraphicRaycaster>();
+        if (gr == null) gr = GetComponent<GraphicRaycaster>();
+        if (gr != null) gr.enabled = !inBattle;
     }
 
     // Called by cutscene system
@@ -240,7 +246,6 @@ public class PartyMenuManager : MonoBehaviour
         if (partyMenuPanel != null) partyMenuPanel.SetActive(false);
         if (craftingPanel != null) craftingPanel.SetActive(false);
         if (itemsPanel != null) itemsPanel.SetActive(false);
-        if (equipmentPanel != null) equipmentPanel.SetActive(false);
     }
 
     private CanvasGroup GetObjectiveCanvasGroup()
@@ -397,8 +402,6 @@ public class PartyMenuManager : MonoBehaviour
     {
         currentSelectedMember = member;
 
-        if (equipmentPanel.activeSelf)
-            UpdateEquipmentDisplay();
     }
 
     private void SetInventoryTitle(bool normal)
@@ -637,6 +640,9 @@ public class PartyMenuManager : MonoBehaviour
         foreach (var display in statsDisplays.Values)
             display.SetTargetable(false, null);
 
+        foreach (var card in _equipmentCards)
+            if (card != null) card.SetTargetable(false, null);
+
         if (selectPromptText     != null) selectPromptText.gameObject.SetActive(false);
         if (selectItemPromptText != null) selectItemPromptText.gameObject.SetActive(false);
         if (backButton           != null) backButton.gameObject.SetActive(false);
@@ -696,7 +702,6 @@ public class PartyMenuManager : MonoBehaviour
         if (characterPanel != null) characterPanel.SetActive(false);
         if (craftingPanel  != null) craftingPanel.SetActive(false);
         if (itemsPanel     != null) itemsPanel.SetActive(false);
-        if (equipmentPanel != null) equipmentPanel.SetActive(false);
     }
 
 
@@ -794,18 +799,13 @@ public class PartyMenuManager : MonoBehaviour
     {
         if (_pendingEquipMember == null) return;
 
-        DadosItem currentItem = _pendingEquipSlot == EquipmentSlot.Acessorio
-            ? _pendingEquipMember.accessory
-            : _pendingEquipMember.armor;
+        SlotInventario slot = _pendingEquipSlot == EquipmentSlot.Acessorio
+            ? inventory.FindSlotForItem(_pendingEquipMember.accessory)
+            : inventory.FindSlotForItem(_pendingEquipMember.armor);
 
-        if (currentItem != null)
+        if (slot != null)
         {
-            if (_pendingEquipSlot == EquipmentSlot.Acessorio)
-                _pendingEquipMember.UnequipAccessory();
-            else
-                _pendingEquipMember.UnequipArmor();
-
-            inventory.AdicionarItem(currentItem, 1);
+            inventory.UnequipItemFromSlot(slot);
             SFXManager.Instance?.Play(SFXManager.Instance.uiBackward);
         }
 
@@ -815,25 +815,11 @@ public class PartyMenuManager : MonoBehaviour
 
     public void UnequipItem(DadosItem item, EquipmentSlot slot)
     {
-        if (currentSelectedMember == null) return;
-
-        if (slot == EquipmentSlot.Acessorio)
-        {
-            currentSelectedMember.UnequipAccessory();
-        }
-        else if (slot == EquipmentSlot.Armadura)
-        {
-            currentSelectedMember.UnequipArmor();
-        }
-
-        if (inventory != null)
-        {
-            inventory.AdicionarItem(item, 1);
-            RefreshInventoryDisplay();
-        }
+        SlotInventario invSlot = inventory.FindSlotForItem(item);
+        if (invSlot != null)
+            inventory.UnequipItemFromSlot(invSlot);
 
         UpdateEquipmentDisplay();
-        UpdateCharacterStats(currentSelectedMember);
     }
 
     public PartyMemberState GetCurrentSelectedMember()
@@ -909,21 +895,30 @@ public class PartyMenuManager : MonoBehaviour
         SetCanvasGroupVisible(menuOpenerCanvasGroup, true);
     }
 
-    public void CloseGame()
+    public void ShowLeaveConfirmation()
+    {
+        if (configPanel      != null) configPanel.SetActive(false);
+        if (leaveConfirmPanel != null) leaveConfirmPanel.SetActive(true);
+    }
+
+    public void CancelLeave()
+    {
+        if (leaveConfirmPanel != null) leaveConfirmPanel.SetActive(false);
+        if (configPanel       != null) configPanel.SetActive(true);
+    }
+
+    public void ConfirmLeave()
     {
         SaveLoadManager.Instance?.SaveGame();
-        StartCoroutine(QuitAfterDelay(0.2f));
+        SceneManager.LoadScene("TitleScreen");
     }
+
+    // Legacy — kept in case referenced elsewhere
+    public void CloseGame() => ShowLeaveConfirmation();
 
     public void SaveGame()
     {
         SaveLoadManager.Instance?.SaveGame();
-    }
-
-    private IEnumerator QuitAfterDelay(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        SceneManager.LoadScene("TitleScreen");
     }
 
     private void OnDestroy()

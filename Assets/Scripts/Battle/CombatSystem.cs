@@ -877,9 +877,9 @@ public class CombatSystem : MonoBehaviour
     {
         EncounterData encounterData = FindFirstObjectByType<EncounterData>();
         if (encounterData != null && SaveLoadManager.Instance != null)
-            SaveLoadManager.Instance.SaveAndQuitFromBattle(encounterData);
+            SaveLoadManager.Instance.SaveAndReturnToTitle(encounterData);
         else
-            Application.Quit();
+            SceneManager.LoadScene("TitleScreen");
     }
 
     // ─── Accessors ────────────────────────────────────────────────────────────────
