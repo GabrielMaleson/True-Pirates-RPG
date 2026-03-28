@@ -9,15 +9,20 @@ public class TitleMenuManager : MonoBehaviour
     [Header("Painéis")]
     public GameObject configPanel;
 
+    private void Start()
+    {
+        if (configPanel != null)
+            configPanel.SetActive(false);
+    }
+
     private void Update()
     {
         if (!Input.GetKeyDown(KeyCode.Escape)) return;
 
         if (configPanel != null && configPanel.activeSelf)
-        {
             CloseSettings();
-            return;
-        }
+        else
+            ToggleSettings();
     }
 
     public void ToggleSettings()

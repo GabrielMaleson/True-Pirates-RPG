@@ -43,6 +43,17 @@ public class Shopkeeper : MonoBehaviour
     private bool playerInRange = false;
     private bool isShopOpen    = false;
 
+    private static readonly string[] shopkeeperQuotes =
+    {
+        "Bem-vindo, piratas! Temos tudo que um saqueador de respeito precisa!",
+        "Não vendo fiado. Já perdi um navio assim.",
+        "Qualidade pirata garantida... ou quase isso.",
+        "Se não tiver aqui, não existe. Se existe, está aqui.",
+        "Compre agora, arrependa-se depois — esse é o lema!",
+        "Já cansei de ver pirata bravo comigo por não comprar escudo. Compra o escudo.",
+        "Esse item aí foi parar aqui depois de muita aventura. Tô vendendo barato.",
+    };
+
     private void Start()
     {
         playerInventory = SistemaInventario.Instance ?? FindFirstObjectByType<SistemaInventario>();
@@ -90,7 +101,7 @@ public class Shopkeeper : MonoBehaviour
             playerInventory = SistemaInventario.Instance ?? FindFirstObjectByType<SistemaInventario>();
 
         isShopOpen = true;
-        MovimentacaoExploracao.StopAll();
+        MovimentacaoExploracao.StopForDialogue();
 
         RefreshSlotGrid();
         ClearSelectedInfo();
@@ -106,7 +117,7 @@ public class Shopkeeper : MonoBehaviour
 
         if (shopPanel != null) shopPanel.SetActive(false);
 
-        MovimentacaoExploracao.ResumeAll();
+        MovimentacaoExploracao.ResumeFromDialogue();
 
         if (playerInRange && shopInteractionPopup != null)
             shopInteractionPopup.SetActive(true);
@@ -130,6 +141,12 @@ public class Shopkeeper : MonoBehaviour
 
             GameObject slotObj = Instantiate(slotPrefab, slotGrid);
 
+            // Nome do item no slot (TMP, se houver)
+            TextMeshProUGUI slotName = slotObj.GetComponentInChildren<TextMeshProUGUI>();
+            if (slotName != null)
+                slotName.text = shopItem.item.nomeDoItem;
+
+            // Ícone no slot
             Image slotIcon = slotObj.GetComponentInChildren<Image>();
             if (slotIcon != null && shopItem.item.icone != null)
                 slotIcon.sprite = shopItem.item.icone;
@@ -138,7 +155,8 @@ public class Shopkeeper : MonoBehaviour
             if (slotIcon != null)
                 slotIcon.color = hasStock ? Color.white : new Color(0.4f, 0.4f, 0.4f);
 
-            Button btn = slotObj.GetComponent<Button>();
+            // Botão — procura em filhos também, caso não esteja na raiz
+            Button btn = slotObj.GetComponentInChildren<Button>();
             if (btn == null) btn = slotObj.AddComponent<Button>();
             btn.interactable = hasStock;
 
@@ -181,10 +199,10 @@ public class Shopkeeper : MonoBehaviour
     private void ClearSelectedInfo()
     {
         if (selectedIcon      != null) selectedIcon.gameObject.SetActive(false);
-        if (selectedPrice     != null) selectedPrice.text     = "";
-        if (selectedType      != null) selectedType.text      = "";
-        if (selectedShortDesc != null) selectedShortDesc.text = "";
-        if (selectedLongDesc  != null) selectedLongDesc.text  = "";
+        if (selectedPrice     != null) selectedPrice.text     = "Preço:";
+        if (selectedType      != null) selectedType.text      = "Tipo:";
+        if (selectedShortDesc != null) selectedShortDesc.text = "Informações básicas";
+        if (selectedLongDesc  != null) selectedLongDesc.text  = shopkeeperQuotes[Random.Range(0, shopkeeperQuotes.Length)];
         SetBuyButtonState(false);
     }
 
