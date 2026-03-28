@@ -45,6 +45,7 @@ public class ConfigMenu : MonoBehaviour
     {
         SetupResolutionDropdown();
         LoadSettings();
+        gameObject.SetActive(false);
     }
 
     // ── Resolution ─────────────────────────────────────────────────────────

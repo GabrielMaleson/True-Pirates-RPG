@@ -19,10 +19,7 @@ public class TitleMenuManager : MonoBehaviour
     {
         if (!Input.GetKeyDown(KeyCode.Escape)) return;
 
-        if (configPanel != null && configPanel.activeSelf)
-            CloseSettings();
-        else
-            ToggleSettings();
+        ToggleSettings();
     }
 
     public void ToggleSettings()
@@ -36,10 +33,7 @@ public class TitleMenuManager : MonoBehaviour
     public void CloseSettings()
     {
         if (configPanel != null && configPanel.activeSelf)
-        {
-            SFXManager.Instance?.Play(SFXManager.Instance.uiBackward);
             configPanel.SetActive(false);
-        }
     }
 
     public void StartNewGame()

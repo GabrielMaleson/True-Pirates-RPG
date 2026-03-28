@@ -176,10 +176,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: tentar novamente
+  m_text: Tentar Novamente
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 9c6c64e5bd8a1e54aa7c178c46d3efe9, type: 2}
-  m_sharedMaterial: {fileID: -6458570065300030959, guid: 9c6c64e5bd8a1e54aa7c178c46d3efe9, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: e2d42e4b4815e574faab47007e3805d5, type: 2}
+  m_sharedMaterial: {fileID: 445750318291587377, guid: e2d42e4b4815e574faab47007e3805d5, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -203,8 +203,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 64
-  m_fontSizeBase: 64
+  m_fontSize: 42
+  m_fontSizeBase: 42
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -390,8 +390,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: '"Continue tentando, uma hora vai!"'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: b3c78d7f1c8851141bc5d879f15a981b, type: 2}
-  m_sharedMaterial: {fileID: 8000518817092041273, guid: b3c78d7f1c8851141bc5d879f15a981b, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: e2d42e4b4815e574faab47007e3805d5, type: 2}
+  m_sharedMaterial: {fileID: 445750318291587377, guid: e2d42e4b4815e574faab47007e3805d5, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -653,10 +653,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: desistir
+  m_text: Desistir
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 9c6c64e5bd8a1e54aa7c178c46d3efe9, type: 2}
-  m_sharedMaterial: {fileID: -6458570065300030959, guid: 9c6c64e5bd8a1e54aa7c178c46d3efe9, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: e2d42e4b4815e574faab47007e3805d5, type: 2}
+  m_sharedMaterial: {fileID: 445750318291587377, guid: e2d42e4b4815e574faab47007e3805d5, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -680,8 +680,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 64
-  m_fontSizeBase: 64
+  m_fontSize: 42
+  m_fontSizeBase: 42
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -792,8 +792,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: GAME OVER
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 226a9ffe09f7c2b4d940cd824ffe81a9, type: 2}
-  m_sharedMaterial: {fileID: 5008586065033486741, guid: 226a9ffe09f7c2b4d940cd824ffe81a9, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: e2d42e4b4815e574faab47007e3805d5, type: 2}
+  m_sharedMaterial: {fileID: 445750318291587377, guid: e2d42e4b4815e574faab47007e3805d5, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
