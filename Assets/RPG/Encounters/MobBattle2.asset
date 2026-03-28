@@ -24,7 +24,7 @@ MonoBehaviour:
     additionalAttacks: []
     enemySpecificDrops: []
   - characterData: {fileID: 11400000, guid: fb0c15459443ee54f9ab7db2fb1419b5, type: 2}
-    enemyPrefab: {fileID: 6974297528663458817, guid: 391be075ecde2e44495ced23336f447e, type: 3}
+    enemyPrefab: {fileID: 6974297528663458817, guid: 4e0fc94f43664e44d8794e894d8f2686, type: 3}
     level: 0
     overrideHP: 0
     additionalAttacks: []
