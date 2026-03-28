@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3149aa9faf252a47814cb908b2312b2, type: 3}
   m_Name: JoodieHeavy
   m_EditorClassIdentifier: Assembly-CSharp::AttackFile
-  attackName: Heavy Drone Strike
+  attackName: Sucata Pesada
   description: "Joodie chama um drone-bal\xE3o para soltar uma caixa de sucata em
     cima de seus inimigoe."
-  icon: {fileID: 21300000, guid: 4e8de3d9d4a4db04b85253e560c256c5, type: 3}
+  icon: {fileID: 21300000, guid: a1f82eea2f5d48b44b402706aea5ebae, type: 3}
   partyMemberOnly: 1
   actionPointCost: 8
   effects:

@@ -17,7 +17,7 @@ MonoBehaviour:
   battlePortrait: {fileID: 6787899602028675171, guid: 94502a1b07f15bf45b7c05f0f317d88e, type: 3}
   animatorController: {fileID: 9100000, guid: 0a25d65453e1df34f8369c6f0bee19ae, type: 2}
   baseHP: 20
-  baseAttack: 5
+  baseAttack: 6
   baseDefense: 8
   baseMaxAP: 10
   hpGrowth:
@@ -120,9 +120,9 @@ MonoBehaviour:
   - attack: {fileID: 11400000, guid: 4b9e38574020138478177e0b74b40818, type: 2}
     unlockLevel: 1
   - attack: {fileID: 11400000, guid: 04868392efa22b04b87df9c56f375525, type: 2}
-    unlockLevel: 2
+    unlockLevel: 1
   - attack: {fileID: 11400000, guid: 5652136fa475a5a48bcca8d182e25b40, type: 2}
-    unlockLevel: 3
+    unlockLevel: 2
   - attack: {fileID: 11400000, guid: 6396cf591bac14b4eb74ccabad1bd2ea, type: 2}
-    unlockLevel: 3
+    unlockLevel: 2
   baseExpValue: 50

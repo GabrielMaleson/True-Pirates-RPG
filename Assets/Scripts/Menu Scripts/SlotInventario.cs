@@ -1,10 +1,13 @@
 using UnityEngine;
 
-[System.Serializable] //OBRIGATÓRIO para visualizar no Inspector
+[System.Serializable] //OBRIGATï¿½RIO para visualizar no Inspector
 public class SlotInventario
 {
     public DadosItem dadosDoItem;
     public int quantidade;
+
+    // Runtime only â€” which party member has this item equipped (null = not equipped)
+    [System.NonSerialized] public PartyMemberState equippedTo;
 
     public SlotInventario(DadosItem item, int qtd)
     {

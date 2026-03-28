@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
@@ -9,411 +9,304 @@ public class ShopItem
 {
     public DadosItem item;
     public int price;
-    public int quantity = 1; // -1 for infinite stock
+    public int quantity = 1; // -1 para estoque infinito
     public bool isInfinite => quantity == -1;
 }
 
 public class Shopkeeper : MonoBehaviour
 {
-    [Header("Shop Settings")]
-    public string shopName = "Shop";
+    [Header("Itens à Venda")]
     public List<ShopItem> itemsForSale = new List<ShopItem>();
 
-    [Header("Interaction")]
-    public KeyCode interactKey = KeyCode.Space;
-    public GameObject interactionPopup; // Optional popup to show when player is nearby
-    private bool playerInRange = false;
+    // ── Painel da Loja ────────────────────────────────────────────────────────
 
-    // Reference to player's movement script to prevent jumping
-    private MovimentacaoExploracao playerMovement;
+    [Header("Painel da Loja")]
+    public GameObject shopPanel;           // Root "New Shop"
+    public Transform slotGrid;            // ItemSelectorGrid
+    public GameObject slotPrefab;         // Slot Shop prefab (tem Image para ícone + Button)
+    public Button shopBuyButton;          // Botão "BOTAO COMPRAR"
+    public Button shopCloseButton;        // Botão para fechar a loja
+    public GameObject shopInteractionPopup; // Popup de proximidade
 
-    [Header("UI References")]
-    public GameObject shopPanel;
-    public Transform itemContainer;
-    public GameObject itemButtonPrefab; // This prefab should have a Button and TextMeshProUGUI
-    public TextMeshProUGUI playerGoldText;
-    public TextMeshProUGUI shopNameText;
-    public TextMeshProUGUI itemDetailsNameText;
-    public TextMeshProUGUI itemDetailsDescText;
-    public TextMeshProUGUI itemDetailsPriceText;
-    public Image itemDetailsIcon;
-    public Button buyButton;
-    public Button closeButton;
+    // ── Painel de Info do Item Selecionado ────────────────────────────────────
 
-    [Header("Messages")]
-    public string insufficientGoldMessage = "Ouro insuficiente!";
-    public string outOfStockMessage = "Sem estoque!";
-    public string purchasedMessage = "{0} comprado!";
+    [Header("Info do Item Selecionado (preenchido automaticamente)")]
+    public Image         selectedIcon;        // Ícone central
+    public TextMeshProUGUI selectedPrice;     // "Preço: 9999"
+    public TextMeshProUGUI selectedType;      // "Tipo: arma"
+    public TextMeshProUGUI selectedShortDesc; // Descrição mecânica curta — topo direito
+    public TextMeshProUGUI selectedLongDesc;  // Descrição narrativa — bloco central direito
+
+    // ── Estado Interno ────────────────────────────────────────────────────────
 
     private SistemaInventario playerInventory;
     private ShopItem selectedItem;
-    private Dictionary<ShopItem, Button> itemButtons = new Dictionary<ShopItem, Button>();
-    private bool isShopOpen = false;
+    private bool playerInRange = false;
+    private bool isShopOpen    = false;
+
+    private static bool _anyShopOpen = false;
+    public  static bool IsAnyShopOpen() => _anyShopOpen;
+
+    private static readonly string[] shopkeeperQuotes =
+    {
+        "Bem-vindo, piratas! Temos tudo que um saqueador de respeito precisa!",
+        "Não vendo fiado. Já perdi um navio assim.",
+        "Qualidade pirata garantida... ou quase isso.",
+        "Se não tiver aqui, não existe. Se existe, está aqui.",
+        "Compre agora, arrependa-se depois — esse é o lema!",
+        "Já cansei de ver pirata bravo comigo por não comprar escudo. Compra o escudo.",
+        "Esse item aí foi parar aqui depois de muita aventura. Tô vendendo barato.",
+    };
 
     private void Start()
     {
-        // Find player inventory
-        playerInventory = FindFirstObjectByType<SistemaInventario>();
+        playerInventory = SistemaInventario.Instance ?? FindFirstObjectByType<SistemaInventario>();
 
-        // Set up UI
-        if (shopNameText != null)
-            shopNameText.text = shopName;
+        if (shopBuyButton != null)
+            shopBuyButton.onClick.AddListener(TryBuySelectedItem);
 
-        if (buyButton != null)
-            buyButton.onClick.AddListener(TryBuySelectedItem);
+        if (shopCloseButton != null)
+            shopCloseButton.onClick.AddListener(CloseShop);
 
-        if (closeButton != null)
-            closeButton.onClick.AddListener(CloseShop);
-
-        // Hide shop panel initially
         if (shopPanel != null)
             shopPanel.SetActive(false);
 
-        // Hide item details initially
-        ClearItemDetails();
+        // Check if player is already inside the trigger on load
+        Collider2D col = GetComponent<Collider2D>();
+        if (col != null)
+        {
+            Collider2D player = Physics2D.OverlapPoint(col.bounds.center, LayerMask.GetMask("Player"));
+            if (player == null)
+            {
+                // Fallback: check by tag within bounds
+                Collider2D[] hits = Physics2D.OverlapBoxAll(col.bounds.center, col.bounds.size, 0f);
+                foreach (var h in hits)
+                    if (h.CompareTag("Player")) { player = h; break; }
+            }
+            playerInRange = player != null;
+        }
 
-        // Hide interaction popup initially
-        if (interactionPopup != null)
-            interactionPopup.SetActive(false);
+        if (shopInteractionPopup != null)
+            shopInteractionPopup.SetActive(playerInRange);
 
-        // Validate required references
-        if (itemContainer == null)
-            Debug.LogError("itemContainer is not assigned in the Shopkeeper inspector!", this);
+        // Clip slot grid overflow to the panel bounds
+        if (slotGrid != null)
+        {
+            RectTransform gridParent = slotGrid.parent as RectTransform;
+            if (gridParent != null && gridParent.GetComponent<RectMask2D>() == null)
+                gridParent.gameObject.AddComponent<RectMask2D>();
+        }
 
-        if (itemButtonPrefab == null)
-            Debug.LogError("itemButtonPrefab is not assigned in the Shopkeeper inspector!", this);
+        ClearSelectedInfo();
     }
 
     private void Update()
     {
-        // Check for input while player is in range and shop is not open
-        if (playerInRange && !isShopOpen && Input.GetKeyDown(interactKey))
-        {
-            // Disable player jumping temporarily while shop is open
-            if (playerMovement != null)
-                playerMovement.SetCanJump(false);
-
+        if (playerInRange && !isShopOpen && Input.GetKeyDown(KeyCode.Space))
             OpenShop();
-        }
+
+        if (isShopOpen && Input.GetKeyDown(KeyCode.Escape))
+            CloseShop();
     }
+
+    // ── Trigger ───────────────────────────────────────────────────────────────
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player"))
-        {
-            playerInRange = true;
-
-            // Get reference to player's movement script
-            if (playerMovement == null)
-                playerMovement = collision.GetComponent<MovimentacaoExploracao>();
-
-            ShowPopup();
-            Debug.Log($"Press {interactKey} to open shop");
-        }
+        if (!collision.CompareTag("Player")) return;
+        playerInRange = true;
+        if (shopInteractionPopup != null) shopInteractionPopup.SetActive(true);
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player"))
+        if (!collision.CompareTag("Player")) return;
+        playerInRange = false;
+        if (shopInteractionPopup != null) shopInteractionPopup.SetActive(false);
+        if (isShopOpen) CloseShop();
+    }
+
+    // ── Abrir / Fechar ────────────────────────────────────────────────────────
+
+    public void OpenShop()
+    {
+        if (playerInventory == null)
+            playerInventory = SistemaInventario.Instance ?? FindFirstObjectByType<SistemaInventario>();
+
+        isShopOpen = true;
+        _anyShopOpen = true;
+        MovimentacaoExploracao.StopForDialogue();
+
+        RefreshSlotGrid();
+        ClearSelectedInfo();
+
+        if (shopPanel != null) shopPanel.SetActive(true);
+        if (shopInteractionPopup != null) shopInteractionPopup.SetActive(false);
+    }
+
+    public void CloseShop()
+    {
+        isShopOpen   = false;
+        _anyShopOpen = false;
+        selectedItem = null;
+
+        if (shopPanel != null) shopPanel.SetActive(false);
+
+        MovimentacaoExploracao.ResumeFromDialogue();
+
+        if (playerInRange && shopInteractionPopup != null)
+            shopInteractionPopup.SetActive(true);
+    }
+
+    [YarnCommand("openshop")]
+    public void OpenShopYarn() => OpenShop();
+
+    // ── Grade de Slots ────────────────────────────────────────────────────────
+
+    private void RefreshSlotGrid()
+    {
+        if (slotGrid == null || slotPrefab == null) return;
+
+        foreach (Transform child in slotGrid)
+            Destroy(child.gameObject);
+
+        foreach (var shopItem in itemsForSale)
         {
-            playerInRange = false;
-            HidePopup();
+            if (shopItem.item == null) continue;
 
-            // Close shop before clearing playerMovement so SetCanJump(true) fires
-            if (isShopOpen)
-                CloseShop();
+            GameObject slotObj = Instantiate(slotPrefab, slotGrid);
 
-            playerMovement = null;
+            // Nome do item no slot (TMP, se houver)
+            TextMeshProUGUI slotName = slotObj.GetComponentInChildren<TextMeshProUGUI>();
+            if (slotName != null)
+                slotName.text = shopItem.item.nomeDoItem;
+
+            bool hasStock = shopItem.isInfinite || shopItem.quantity > 0;
+
+            // Botão — procura em filhos também, caso não esteja na raiz
+            Button btn = slotObj.GetComponentInChildren<Button>();
+            if (btn == null) btn = slotObj.AddComponent<Button>();
+            btn.interactable = hasStock;
+
+            ShopItem captured = shopItem;
+            btn.onClick.AddListener(() => SelectItem(captured));
         }
     }
 
-    private void ShowPopup()
+    // ── Seleção ───────────────────────────────────────────────────────────────
+
+    private void SelectItem(ShopItem shopItem)
     {
-        if (interactionPopup == null)
-        {
-            // Try to find popup by tag if not assigned
-            interactionPopup = GameObject.FindWithTag("Notification");
-        }
-
-        if (interactionPopup != null)
-        {
-            interactionPopup.SetActive(true);
-
-            // Optional: Update popup text
-            TextMeshProUGUI popupText = interactionPopup.GetComponentInChildren<TextMeshProUGUI>();
-            if (popupText != null)
-            {
-                popupText.text = $"Press {interactKey} to shop";
-            }
-
-            // Handle SpriteRenderer if that's what you're using
-            SpriteRenderer spriteRend = interactionPopup.GetComponent<SpriteRenderer>();
-            if (spriteRend != null)
-            {
-                Color color = spriteRend.color;
-                color.a = 1f;
-                spriteRend.color = color;
-            }
-        }
+        selectedItem = shopItem;
+        FillSelectedInfo(shopItem);
     }
 
-    private void HidePopup()
+    private void FillSelectedInfo(ShopItem shopItem)
     {
-        if (interactionPopup == null)
+        if (shopItem?.item == null) return;
+
+        DadosItem item = shopItem.item;
+
+        if (selectedIcon != null)
         {
-            interactionPopup = GameObject.FindWithTag("Notification");
+            selectedIcon.sprite = item.icone;
+            selectedIcon.color = Color.white;
+            selectedIcon.preserveAspect = false;
+
+            if (item.icone != null)
+            {
+                RectTransform iconRT = selectedIcon.rectTransform;
+                RectTransform parentRT = iconRT.parent as RectTransform;
+                if (parentRT != null)
+                {
+                    Canvas.ForceUpdateCanvases();
+                    float w = parentRT.rect.width;
+                    if (w > 0f)
+                    {
+                        float aspect = item.icone.rect.width / item.icone.rect.height;
+                        iconRT.anchorMin = new Vector2(0.5f, iconRT.anchorMin.y);
+                        iconRT.anchorMax = new Vector2(0.5f, iconRT.anchorMax.y);
+                        iconRT.pivot     = new Vector2(0.5f, 0.5f);
+                        iconRT.sizeDelta = new Vector2(w, w / aspect);
+                    }
+                }
+            }
+
+            selectedIcon.gameObject.SetActive(item.icone != null);
         }
 
-        if (interactionPopup != null)
-        {
-            // Handle SpriteRenderer if that's what you're using
-            SpriteRenderer spriteRend = interactionPopup.GetComponent<SpriteRenderer>();
-            if (spriteRend != null)
-            {
-                Color color = spriteRend.color;
-                color.a = 0f;
-                spriteRend.color = color;
-            }
-        }
+        if (selectedPrice     != null) selectedPrice.text     = $"Preço: {shopItem.price}";
+        if (selectedType      != null) selectedType.text      = $"Tipo: {GetItemTypeLabel(item)}";
+        if (selectedShortDesc != null) selectedShortDesc.text = item.descricao;           // ex: "Aumenta dano em +1"
+        if (selectedLongDesc  != null) selectedLongDesc.text  = item.descricaoNarrativa; // texto narrativo
+
+        bool canBuy = playerInventory != null
+                   && playerInventory.moedas >= shopItem.price
+                   && (shopItem.isInfinite || shopItem.quantity > 0);
+        SetBuyButtonState(canBuy);
     }
 
-    private void ClearItemDetails()
+    private void ClearSelectedInfo()
     {
-        if (itemDetailsNameText != null)
-            itemDetailsNameText.text = "";
-        if (itemDetailsDescText != null)
-            itemDetailsDescText.text = "";
-        if (itemDetailsPriceText != null)
-            itemDetailsPriceText.text = "";
-        if (itemDetailsIcon != null)
-            itemDetailsIcon.gameObject.SetActive(false);
+        if (selectedIcon      != null) selectedIcon.gameObject.SetActive(false);
+        if (selectedPrice     != null) selectedPrice.text     = "Preço:";
+        if (selectedType      != null) selectedType.text      = "Tipo:";
+        if (selectedShortDesc != null) selectedShortDesc.text = "Informações básicas";
+        if (selectedLongDesc  != null) selectedLongDesc.text  = shopkeeperQuotes[Random.Range(0, shopkeeperQuotes.Length)];
         SetBuyButtonState(false);
     }
 
-    private void SetBuyButtonState(bool active)
+    private void SetBuyButtonState(bool enabled)
     {
-        if (buyButton == null) return;
-        buyButton.interactable = active;
-        CanvasGroup cg = buyButton.GetComponent<CanvasGroup>();
-        if (cg == null) cg = buyButton.gameObject.AddComponent<CanvasGroup>();
-        cg.alpha = active ? 1f : 0.35f;
+        if (shopBuyButton == null) return;
+        shopBuyButton.interactable = enabled;
+        CanvasGroup cg = shopBuyButton.GetComponent<CanvasGroup>();
+        if (cg == null) cg = shopBuyButton.gameObject.AddComponent<CanvasGroup>();
+        cg.alpha = enabled ? 1f : 0.35f;
     }
 
-    private void UpdateItemDetails(ShopItem shopItem)
+    private string GetItemTypeLabel(DadosItem item)
     {
-        if (shopItem == null || shopItem.item == null) return;
-
-        if (itemDetailsNameText != null)
-            itemDetailsNameText.text = shopItem.item.nomeDoItem;
-
-        if (itemDetailsDescText != null)
-            itemDetailsDescText.text = shopItem.item.descricao;
-
-        if (itemDetailsPriceText != null)
-        {
-            itemDetailsPriceText.text = $"{shopItem.price} ouro";
-        }
-
-        if (itemDetailsIcon != null && shopItem.item.icone != null)
-        {
-            itemDetailsIcon.sprite = shopItem.item.icone;
-            itemDetailsIcon.gameObject.SetActive(true);
-        }
-
-        // Check if buy button should be interactable
-        bool canBuy = playerInventory != null &&
-                      playerInventory.moedas >= shopItem.price &&
-                      (shopItem.isInfinite || shopItem.quantity > 0);
-        SetBuyButtonState(canBuy);
+        if (item.ehEquipavel)
+            return item.slotEquipamento == EquipmentSlot.Acessorio ? "acessório" : "armadura";
+        if (item.ehConsumivel)
+            return "consumível";
+        return "item";
     }
+
+    // ── Compra ────────────────────────────────────────────────────────────────
 
     private void TryBuySelectedItem()
     {
         if (selectedItem == null || playerInventory == null) return;
 
-        // Check if in stock
         if (!selectedItem.isInfinite && selectedItem.quantity <= 0)
         {
-            Debug.Log(outOfStockMessage);
+            Debug.Log("[Shopkeeper] Item sem estoque.");
             return;
         }
 
-        // Check if player has enough gold
         if (playerInventory.moedas < selectedItem.price)
         {
-            Debug.Log(insufficientGoldMessage);
+            Debug.Log("[Shopkeeper] Ouro insuficiente.");
             return;
         }
 
-        // Complete the purchase
         playerInventory.ModificadorMoedas(-selectedItem.price);
         playerInventory.AdicionarItem(selectedItem.item, 1);
+        SFXManager.Instance?.Play(SFXManager.Instance.successAcquired);
 
-        // Update quantity if not infinite
         if (!selectedItem.isInfinite)
         {
             selectedItem.quantity--;
-
-            // If out of stock, disable the button
             if (selectedItem.quantity <= 0)
-            {
-                if (itemButtons.ContainsKey(selectedItem) && itemButtons[selectedItem] != null)
-                {
-                    itemButtons[selectedItem].interactable = false;
-
-                    // Find the button's text component
-                    TextMeshProUGUI btnText = itemButtons[selectedItem].GetComponentInChildren<TextMeshProUGUI>();
-                    if (btnText != null)
-                    {
-                        btnText.text = $"{selectedItem.item.nomeDoItem}\n(Esgotado)";
-                    }
-                }
-            }
+                RefreshSlotGrid();
         }
 
-        // Update UI
-        UpdatePlayerGold();
-        UpdateItemDetails(selectedItem); // Refresh price/stock info
-
-        Debug.Log(string.Format(purchasedMessage, selectedItem.item.nomeDoItem));
+        FillSelectedInfo(selectedItem);
+        Debug.Log($"[Shopkeeper] {selectedItem.item.nomeDoItem} comprado.");
     }
 
-    private void UpdatePlayerGold()
-    {
-        if (playerGoldText != null && playerInventory != null)
-        {
-            playerGoldText.text = $"{playerInventory.moedas} ouro";
-        }
-    }
-
-    private void RefreshItemList()
-    {
-        // Safety check
-        if (itemContainer == null)
-        {
-            Debug.LogError("itemContainer is null! Cannot refresh item list.", this);
-            return;
-        }
-
-        if (itemButtonPrefab == null)
-        {
-            Debug.LogError("itemButtonPrefab is null! Cannot refresh item list.", this);
-            return;
-        }
-
-        // Clear existing buttons
-        foreach (Transform child in itemContainer)
-        {
-            Destroy(child.gameObject);
-        }
-        itemButtons.Clear();
-
-        // Create buttons for each item
-        foreach (var shopItem in itemsForSale)
-        {
-            if (shopItem.item == null) continue;
-
-            // Instantiate the button
-            GameObject buttonObj = Instantiate(itemButtonPrefab, itemContainer);
-            Button button = buttonObj.GetComponent<Button>();
-
-            if (button == null)
-            {
-                Debug.LogError($"Item button prefab is missing a Button component!", this);
-                continue;
-            }
-
-            // Find the Text component on the button
-            TextMeshProUGUI buttonText = buttonObj.GetComponentInChildren<TextMeshProUGUI>();
-
-            // Set button text — show only the item name
-            if (buttonText != null)
-            {
-                buttonText.text = shopItem.item.nomeDoItem;
-            }
-
-            // Set button interactable based on stock
-            bool hasStock = shopItem.isInfinite || shopItem.quantity > 0;
-            button.interactable = hasStock;
-
-            // Add listener
-            ShopItem capturedItem = shopItem;
-            button.onClick.AddListener(() => SelectItem(capturedItem));
-
-            // Store reference
-            itemButtons[shopItem] = button;
-        }
-    }
-
-    private void SelectItem(ShopItem shopItem)
-    {
-        selectedItem = shopItem;
-        UpdateItemDetails(shopItem);
-    }
-
-    // Public method to open shop
-    public void OpenShop()
-    {
-        if (playerInventory == null)
-            playerInventory = FindFirstObjectByType<SistemaInventario>();
-
-        if (playerInventory == null)
-        {
-            Debug.LogError("No player inventory found!");
-            return;
-        }
-
-        isShopOpen = true;
-
-        // Refresh UI
-        RefreshItemList();
-        UpdatePlayerGold();
-        ClearItemDetails();
-
-        // Show shop panel
-        if (shopPanel != null)
-            shopPanel.SetActive(true);
-
-        // Hide popup while shop is open
-        HidePopup();
-    }
-
-    // Public method to close shop
-    public void CloseShop()
-    {
-        isShopOpen = false;
-        selectedItem = null;
-
-        if (shopPanel != null)
-            shopPanel.SetActive(false);
-
-        // Show popup again if player is still in range
-        if (playerInRange)
-        {
-            ShowPopup();
-        }
-
-        // Re-enable player jumping when shop closes
-        if (playerMovement != null)
-            playerMovement.SetCanJump(true);
-    }
-
-    // Yarn command to open shop
-    [YarnCommand("openshop")]
-    public void OpenShopYarn()
-    {
-        OpenShop();
-    }
-
-    // Check if shop is open (for other scripts)
-    public bool IsShopOpen()
-    {
-        return isShopOpen;
-    }
-
-    // Check if player is in range (for other scripts)
-    public bool IsPlayerInRange()
-    {
-        return playerInRange;
-    }
+    public bool IsShopOpen()      => isShopOpen;
+    public bool IsPlayerInRange() => playerInRange;
 }

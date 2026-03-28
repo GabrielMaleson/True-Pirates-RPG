@@ -7,6 +7,7 @@ public class ConfigSceneManager : MonoBehaviour
 
     private Scene configScene;
     private bool isConfigLoaded = false;
+    public bool IsConfigLoaded => isConfigLoaded;
 
     /// <summary>
     /// Additively loads the Config scene

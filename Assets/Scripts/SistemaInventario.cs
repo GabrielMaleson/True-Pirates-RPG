@@ -158,7 +158,7 @@ public class SistemaInventario : MonoBehaviour
         TextMeshProUGUI textComponent = notification.GetComponent<TextMeshProUGUI>();
         if (textComponent != null)
         {
-            textComponent.text = $"{characterName} joined the party!";
+            textComponent.text = $"{characterName} entrou na equipe!";
         }
     }
 
@@ -262,66 +262,45 @@ public class SistemaInventario : MonoBehaviour
     // Inventory Methods
     public void AdicionarItem(DadosItem itemParaAdicionar, int quantidade)
     {
-        if (inventario.Count >= maxInventorySize && !ItemExistsInInventory(itemParaAdicionar))
+        if (inventario.Count >= maxInventorySize)
         {
-            Debug.LogWarning("Inventory is full!");
+            Debug.LogWarning("Inventário cheio!");
             return;
         }
 
-        if (itemParaAdicionar.ehEmpilhavel)
+        // Each item always gets its own slot — no stacking
+        for (int i = 0; i < quantidade; i++)
         {
-            for (int i = 0; i < inventario.Count; i++)
-            {
-                if (inventario[i].dadosDoItem == itemParaAdicionar)
-                {
-                    inventario[i].AdicionarQuantidade(quantidade);
-
-                    // Show pickup notification
-                    ShowPickupNotification(itemParaAdicionar, quantidade);
-
-                    onInventarioMudou?.Invoke();
-                    return;
-                }
-            }
+            if (inventario.Count >= maxInventorySize) break;
+            inventario.Add(new SlotInventario(itemParaAdicionar, 1));
         }
 
-        SlotInventario novoSlot = new SlotInventario(itemParaAdicionar, quantidade);
-        inventario.Add(novoSlot);
-
-        // Show pickup notification
         ShowPickupNotification(itemParaAdicionar, quantidade);
-
         onInventarioMudou?.Invoke();
     }
 
-    private bool ItemExistsInInventory(DadosItem item)
+    // Removes one slot whose item matches. Each slot is a single item, so this removes that instance.
+    public void RemoverItem(DadosItem item, int quantidade = 1)
     {
-        foreach (var slot in inventario)
+        for (int removed = 0; removed < quantidade; removed++)
         {
-            if (slot.dadosDoItem == item)
-                return true;
-        }
-        return false;
-    }
-
-    public void RemoverItem(DadosItem item, int quantidade)
-    {
-        for (int i = 0; i < inventario.Count; i++)
-        {
-            SlotInventario slot = inventario[i];
-            if (slot.dadosDoItem == item)
+            for (int i = 0; i < inventario.Count; i++)
             {
-                slot.SubtrairQuantidade(quantidade);
-                onInventarioMudou?.Invoke();
-
-                if (slot.quantidade <= 0)
+                if (inventario[i].dadosDoItem == item)
                 {
                     inventario.RemoveAt(i);
-                    onInventarioMudou?.Invoke();
+                    break;
                 }
-                return;
             }
         }
+        onInventarioMudou?.Invoke();
+    }
+
+    // Removes a specific slot instance (used when the caller already has a reference)
+    public void RemoverSlot(SlotInventario slot)
+    {
+        if (inventario.Remove(slot))
+            onInventarioMudou?.Invoke();
     }
 
     public void ModificadorMoedas(int valor)
@@ -378,77 +357,77 @@ public class SistemaInventario : MonoBehaviour
         onPartyUpdated?.Invoke();
     }
 
-    // Equipment Methods
-    public bool EquipWeapon(int partyIndex, DadosItem weaponItem)
+    // ── Equipment Methods ─────────────────────────────────────────────────────
+
+    // Finds the inventory slot that holds a specific item
+    public SlotInventario FindSlotForItem(DadosItem item)
     {
-        if (partyIndex < 0 || partyIndex >= partyMembers.Count) return false;
-
-        var member = partyMembers[partyIndex];
-        if (member == null) return false;
-
-        if (!TemItem(weaponItem, 1)) return false;
-
-        if (member.weapon != null)
-        {
-            AdicionarItem(member.weapon, 1);
-        }
-
-        if (member.EquipWeapon(weaponItem))
-        {
-            RemoverItem(weaponItem, 1);
-            onPartyUpdated?.Invoke();
-            return true;
-        }
-
-        return false;
+        foreach (var slot in inventario)
+            if (slot.dadosDoItem == item) return slot;
+        return null;
     }
 
-    public bool EquipArmor(int partyIndex, DadosItem armorItem)
+    // Equips an inventory slot to a party member.
+    // Items stay in inventory — equipping only assigns ownership.
+    public void EquipItemToMember(SlotInventario slot, PartyMemberState member)
     {
-        if (partyIndex < 0 || partyIndex >= partyMembers.Count) return false;
+        if (slot?.dadosDoItem == null || member == null || !slot.dadosDoItem.ehEquipavel) return;
 
-        var member = partyMembers[partyIndex];
-        if (member == null) return false;
+        DadosItem item = slot.dadosDoItem;
 
-        if (!TemItem(armorItem, 1)) return false;
-
-        if (member.armor != null)
+        // Unassign from the previous owner if switching characters
+        if (slot.equippedTo != null && slot.equippedTo != member)
         {
-            AdicionarItem(member.armor, 1);
+            PartyMemberState prev = slot.equippedTo;
+            if (item.slotEquipamento == EquipmentSlot.Acessorio) prev.UnequipAccessory();
+            else prev.UnequipArmor();
         }
 
-        if (member.EquipArmor(armorItem))
+        // If the target already has something else in that slot, clear the old slot's assignment
+        DadosItem displaced = item.slotEquipamento == EquipmentSlot.Acessorio ? member.accessory : member.armor;
+        if (displaced != null && displaced != item)
         {
-            RemoverItem(armorItem, 1);
-            onPartyUpdated?.Invoke();
-            return true;
+            SlotInventario oldSlot = FindSlotForItem(displaced);
+            if (oldSlot != null) oldSlot.equippedTo = null;
         }
 
-        return false;
-    }
+        slot.equippedTo = member;
+        if (item.slotEquipamento == EquipmentSlot.Acessorio) member.EquipAccessory(item);
+        else member.EquipArmor(item);
 
-    public void UnequipWeapon(int partyIndex)
-    {
-        if (partyIndex < 0 || partyIndex >= partyMembers.Count) return;
-
-        var member = partyMembers[partyIndex];
-        if (member == null || member.weapon == null) return;
-
-        AdicionarItem(member.weapon, 1);
-        member.UnequipWeapon();
         onPartyUpdated?.Invoke();
     }
 
-    public void UnequipArmor(int partyIndex)
+    // Removes the equipped assignment from a slot without touching inventory
+    public void UnequipItemFromSlot(SlotInventario slot)
     {
-        if (partyIndex < 0 || partyIndex >= partyMembers.Count) return;
+        if (slot == null || slot.equippedTo == null) return;
 
-        var member = partyMembers[partyIndex];
-        if (member == null || member.armor == null) return;
+        PartyMemberState member = slot.equippedTo;
+        if (slot.dadosDoItem.slotEquipamento == EquipmentSlot.Acessorio) member.UnequipAccessory();
+        else member.UnequipArmor();
 
-        AdicionarItem(member.armor, 1);
-        member.UnequipArmor();
+        slot.equippedTo = null;
         onPartyUpdated?.Invoke();
+    }
+
+    // Restores equippedTo references after loading from save
+    public void RestoreEquippedSlots()
+    {
+        foreach (var member in partyMembers)
+        {
+            if (member == null) continue;
+            if (member.accessory != null)
+            {
+                SlotInventario slot = FindSlotForItem(member.accessory);
+                if (slot != null) slot.equippedTo = member;
+            }
+            if (member.armor != null)
+            {
+                SlotInventario slot = FindSlotForItem(member.armor);
+                if (slot != null) slot.equippedTo = member;
+            }
+        }
     }
 
     // Progress Methods

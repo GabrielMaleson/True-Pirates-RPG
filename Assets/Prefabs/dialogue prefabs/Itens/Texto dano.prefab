@@ -68,15 +68,15 @@ MonoBehaviour:
       m_Calls: []
   m_text: 100 dano
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: b3c78d7f1c8851141bc5d879f15a981b, type: 2}
-  m_sharedMaterial: {fileID: 8000518817092041273, guid: b3c78d7f1c8851141bc5d879f15a981b, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: a4ea0ae4d467a78439601a5f4a86d6b7, type: 2}
+  m_sharedMaterial: {fileID: 7991318608361535419, guid: a4ea0ae4d467a78439601a5f4a86d6b7, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278321147
-  m_fontColor: {r: 0.98301524, g: 1, b: 0.0047169924, a: 1}
+    rgba: 4278640639
+  m_fontColor: {r: 1, g: 0.87603724, b: 0.023584902, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -151,5 +151,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemNotif
   velocidadeMovimento: 35
-  velocidadeFade: 1
-  tempoDeVida: 3
+  velocidadeFade: 0.5
+  tempoDeVida: 5

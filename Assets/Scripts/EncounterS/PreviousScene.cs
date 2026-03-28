@@ -5,15 +5,20 @@ using UnityEngine.SceneManagement;
 
 public class PreviousScene : MonoBehaviour
 {
+    /// <summary>Nome da cena de exploração armazenada mais recentemente — usado pelo SaveLoadManager para salvar a cena correta ao sair durante uma batalha.</summary>
+    public static string LastExplorationScene { get; private set; }
+
     private Scene originalScene;
     private string originalSceneName;
 
-    private List<GameObject> sceneObjects = new List<GameObject>();
+    private List<GameObject> sceneObjects         = new List<GameObject>();
+    private List<Camera>     disabledIgnoreCameras = new List<Camera>();
 
     public void UnloadScene()
     {
         originalScene = SceneManager.GetActiveScene();
         originalSceneName = originalScene.name;
+        LastExplorationScene = originalSceneName;
 
         GameObject[] rootObjects = originalScene.GetRootGameObjects();
         EncounterData encounterData = FindFirstObjectByType<EncounterData>();
@@ -34,7 +39,11 @@ public class PreviousScene : MonoBehaviour
             if (obj.CompareTag("Ignore"))
             {
                 Camera ignoreCam = obj.GetComponent<Camera>();
-                if (ignoreCam != null) ignoreCam.enabled = false;
+                if (ignoreCam != null)
+                {
+                    ignoreCam.enabled = false;
+                    disabledIgnoreCameras.Add(ignoreCam);
+                }
                 AudioListener ignoreListener = obj.GetComponent<AudioListener>();
                 if (ignoreListener != null) ignoreListener.enabled = false;
                 Debug.Log($"Ignorando objeto: {obj.name}");
@@ -84,16 +93,14 @@ public class PreviousScene : MonoBehaviour
         FixAudioListeners();
         FixEventSystems();
 
-        // Re-enable exploration cameras LAST — after all sceneObject OnEnables have fired —
-        // to ensure nothing that woke up during restoration accidentally leaves the camera off.
-        foreach (var ignoreObj in GameObject.FindGameObjectsWithTag("Ignore"))
+        // Re-enable exactly the cameras we disabled in UnloadScene — stored by reference so
+        // we don't rely on FindGameObjectsWithTag which searches all loaded scenes (including
+        // the Combat scene that hasn't been unloaded yet) and could miss or clobber the wrong camera.
+        foreach (var cam in disabledIgnoreCameras)
         {
-            Camera ignoreCam = ignoreObj.GetComponent<Camera>();
-            if (ignoreCam != null) ignoreCam.enabled = true;
-
-            AudioListener listener = ignoreObj.GetComponent<AudioListener>();
-            if (listener != null) listener.enabled = false;
+            if (cam != null) cam.enabled = true;
         }
+        disabledIgnoreCameras.Clear();
 
         sceneObjects.Clear();
         Destroy(gameObject);

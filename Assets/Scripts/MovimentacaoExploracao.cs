@@ -50,6 +50,13 @@ public class MovimentacaoExploracao : MonoBehaviour
         this.enabled = true;
     }
 
+    public static void ResumeFromDialogue()
+    {
+        if (_instance == null) return;
+        inDialogue = false;
+        _instance.enabled = true;
+    }
+
     public void SetCanJump(bool can)
     {
         canJump = can;

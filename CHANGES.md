@@ -2,6 +2,271 @@
 
 ---
 
+## 2026-03-28 (session 37)
+
+### Refactor: Itens não são mais empilháveis + redesign de prefabs
+**Files:** `SistemaInventario.cs`, `SlotUI.cs`, `PartyMenuManager.cs`
+
+**Sem empilhamento:** `AdicionarItem` agora sempre cria um novo `SlotInventario` por item (cada cópia tem seu próprio slot). Removida lógica `ehEmpilhavel` e stacking. `RemoverItem` agora remove a primeira instância encontrada; adicionado `RemoverSlot(SlotInventario)` para remover por referência direta. `quantityText` removido de `SlotUI`.
+
+**Prefabs — campos necessários:**
+
+**SlotUI** (`Assets/Scripts/Menu Scripts/SlotUI.cs`):
+- `itemIcon` → Image (ícone do item)
+- `itemNameText` → TextMeshProUGUI (nome)
+- `highlightBorder` → Image (borda amarela, desativada por padrão)
+- `clickButton` → Button (cobre o slot inteiro)
+- `equippedIndicator` → Image (checkmark/X, desativado por padrão)
+- `checkmarkSprite` → Sprite (exibido quando item está equipado)
+- `unequipXSprite` → Sprite (exibido ao passar o mouse em item equipado)
+
+**ItemDetails** (`Assets/Scripts/Menu Scripts/ItemDetails.cs`):
+- `itemIcon` → Image
+- `itemNameText` → TextMeshProUGUI
+- `itemDescriptionText` → TextMeshProUGUI
+- `itemStatsText` → TextMeshProUGUI (oculto automaticamente para não-equipáveis)
+
+---
+
+## 2026-03-28 (session 36)
+
+### Refactor: ItemDetails simplificado para tooltip puro
+**Files:** `Assets/Scripts/Menu Scripts/ItemDetails.cs`, `SlotUI.cs`
+
+`ItemDetails` era um painel completo com botões Usar/Equipar/Largar/Fechar que já eram todos ocultados ao ser usado como tooltip. Removidos todos os botões, listeners, referências a `SistemaInventario`/`PartyMenuManager`/`SlotInventario`, e a lógica de `Start()`. Agora é só `Initialize(DadosItem)` que preenche ícone, nome, descrição e stats de modificadores. `SlotUI.ShowTooltipAfterDelay` simplificado: removido o bloco de ocultação de botões; mantém apenas `Initialize` e o `CanvasGroup.blocksRaycasts = false`.
+
+**Inspector:** Remover os campos `useButton`, `equipButton`, `dropButton`, `closeButton` do prefab ItemDetails no Unity.
+
+---
+
+## 2026-03-28 (session 38)
+
+### Fix: Sair durante combate agora vai para o menu principal
+**Files:** `Assets/Scripts/Battle/CombatSystem.cs`, `Assets/Scripts/Dialogue Scripts/SaveLoadManager.cs`
+
+`ConfirmLeave()` chamava `SaveAndQuitFromBattle()` que terminava com `Application.Quit()` — fecha o jogo em build e não faz nada no editor. Extraída a lógica de escrita do save para `WriteBattleSave()` e adicionado `SaveAndReturnToTitle()` que salva e faz `SceneManager.LoadScene("TitleScreen")`. `ConfirmLeave` agora chama `SaveAndReturnToTitle`. `SaveAndQuitFromBattle` ainda existe e chama `Application.Quit()` para uso futuro.
+
+---
+
+## 2026-03-28 (session 35)
+
+### Fix: Aba Party mostrando cartões de equipamento em vez dos displays de personagem
+**Files:** `Assets/Scripts/Menu Scripts/PartyMenuManager.cs`
+
+`ShowCharacter()` ativava o painel mas não repopulava `statsDisplayContainer` após `UpdateEquipmentDisplay()` ter substituído os displays por cartões de equipamento. Adicionado `RepopulatePartyDisplays()` que destrói os filhos atuais do container e recria os `statsDisplayPrefab` com HP/AP/XP. Chamado em `ShowCharacter()` quando `_equipmentCards.Count > 0` ou `statsDisplays` está vazio.
+
+---
+
+## 2026-03-28 (session 34)
+
+### Refactor: Arma → Acessório + correções do fluxo de equipamento
+**Files:** `DadosItem.cs`, `PartyData.cs`, `SistemaInventario.cs`, `SaveLoadManager.cs`, `PartyMemberStatsDisplay.cs`, `EquipmentCharacterCard.cs`, `EquipmentSlotUI.cs`, `ItemDetails.cs`, `Shopkeeper.cs`, `SlotUI.cs`, `PartyMenuManager.cs`
+
+**Renomeações:** `EquipmentSlot.Arma` → `Acessorio` (mesma posição na enum, assets não quebram). Campo `PartyMemberState.weapon` → `accessory`. Métodos `EquipWeapon/UnequipWeapon` → `EquipAccessory/UnequipAccessory` em `PartyData`, `SistemaInventario`, e todos os chamadores. Strings exibidas atualizadas: "arma" → "acessório", "Weapon" → "Acessório". `SaveLoadManager.SavedPartyMember.weaponID` → `accessoryID`.
+
+**Bug: popup antigo ainda aparecia** — Removido `ShowPartyMemberSelector()` de `SlotUI.OnItemClick()` no modo normal; clicar num equippable fora do fluxo de equipe agora faz nada (fluxo correto é pela aba Equipment).
+
+**Bug: painel não recarregava após equipar** — `OnEquipItemSelectedFromPanel()` chamava `ShowEquipment()` que retornava cedo (guard `currentNavText == equipmentNavText && pendingOp == None`). Substituído por `ReturnToEquipmentView()` privado que chama `UpdateEquipmentDisplay()` diretamente.
+
+**Botão Voltar:** Adicionado campo `public Button backButton` ao `PartyMenuManager`. Ativado em `StartUseItemTargeting` e `StartEquipFromSlot`, desativado em `CancelPendingOperation`. `OnBackClicked()`: UseItem → cancela e vai para Itens; EquipItem → cancela e volta para equipamento.
+
+**Remover Item:** Em modo equip-filter, `RefreshInventoryDisplay()` cria um slot extra "Remover Item" antes dos itens filtrados. Ao clicar, desequipa o slot pendente, devolve o item ao inventário e retorna ao painel de equipamento.
+
+**Inspector:** Atribuir campo `backButton` no `PartyMenuManager`. Atualizar prefab `EquipmentCharacterCard`: renomear `weaponIcon/weaponNameText/weaponSlotButton` → `accessoryIcon/accessoryNameText/accessorySlotButton`, e reatribuir no inspector. Renomear campo `weaponText` → `accessoryText` no prefab `PartyMemberStatsDisplay`.
+
+---
+
+## 2026-03-28 (session 33)
+
+### Feature: Novo fluxo de usar item + painel de equipamento por personagem
+**Files:** `Assets/Scripts/Menu Scripts/PartyMenuManager.cs`, `SlotUI.cs`, `PartyMemberStatsDisplay.cs`, `EquipmentCharacterCard.cs` (novo)
+
+**Usar item:** Clicar num consumível na aba Itens agora fecha o painel de itens, abre o painel de personagens com um texto "Selecione um personagem:", e habilita outline pulsante amarelo (sin(t×4), 2–5px) ao passar o mouse sobre cada personagem. Clicar usa o item e volta ao painel de itens. Troca de aba ou ESC cancela a operação.
+
+**Painel de equipamento:** Substituído o layout antigo (slots do personagem selecionado) por cartões por personagem via `EquipmentCharacterCard`. Cada cartão mostra ícone, nome, slot arma (ícone + nome ou "nenhuma") e slot armadura. Clicar num slot abre o painel de itens filtrado pelo tipo de slot, e clicar num item o equipa no personagem do cartão, retornando ao painel de equipamento.
+
+**Cancelar operações:** `HideSubPanels()` (chamado por todos os ShowX) agora invoca `CancelPendingOperation()`, que desativa targeting em todos os displays e esconde o texto de prompt. Guards dos ShowX atualizados para sempre processar quando há operação pendente.
+
+**State machine:** `PartyMenuManager.PendingOpType { None, UseItem, EquipItem }` + campos `_pendingItemSlot`, `_pendingEquipMember`, `_pendingEquipSlot`. `RefreshInventoryDisplay` filtra por `_pendingEquipSlot` quando `_pendingOp == EquipItem`.
+
+**Inspector:** Atribuir `equipmentCardPrefab` e `selectPromptText` no PartyMenuManager. Criar prefab `EquipmentCharacterCard` com os campos: `characterIcon`, `characterNameText`, `weaponIcon`, `weaponNameText`, `weaponSlotButton`, `armorIcon`, `armorNameText`, `armorSlotButton`.
+
+---
+
+## 2026-03-28 (session 32)
+
+### Fix: Botão Continuar — texto cinza em vez de transparente
+**Files:** `Assets/Scripts/Dialogue Scripts/TitleScreenCleanup.cs`
+
+Substituído `continueButton.interactable = false` + `TMP_Text.color = 50% alpha` por `ColorBlock.disabledColor = new Color(0.5, 0.5, 0.5, 1)`. O texto agora fica cinza sólido (não fantasmagórico) quando não há save.
+
+### Fix: Descrições curta/longa trocadas nos itens da loja
+**Files:** `Assets/RPG/Items/*.asset` (todos os 12 itens)
+
+Todos os itens tinham texto narrativo em `descricao` e `descricaoNarrativa` vazio. Migrado: texto narrativo → `descricaoNarrativa`; gerada nova `descricao` mecânica curta (ex: "Aumenta defesa em +5", "Restaura 15 de HP") derivada dos stats/efeitos de cada item.
+
+### Fix: Loja ESC abrindo configurações ao mesmo tempo
+**Files:** `Assets/Scripts/Shopkeeper.cs`, `Assets/Scripts/Menu Scripts/PartyMenuManager.cs`
+
+Adicionado `static bool _anyShopOpen` e `IsAnyShopOpen()` ao Shopkeeper. `PartyMenuManager.Update()` agora retorna imediatamente ao receber Escape se `Shopkeeper.IsAnyShopOpen()` for true, evitando que configurações abram ao fechar a loja.
+
+### Fix: Overflow dos itens na grade da loja
+**Files:** `Assets/Scripts/Shopkeeper.cs`
+
+Em `Start()`, adiciona `RectMask2D` ao pai do `slotGrid` se não existir, clampando visualmente os itens dentro dos limites do painel.
+
+---
+
+## 2026-03-28 (session 31)
+
+### Fix: Ícone do item na loja não aparecia + campo shopCloseButton + Escape para fechar
+**Files:** `Assets/Scripts/Shopkeeper.cs`
+
+Ícone não aparecia porque `color` nunca era definido e o RectTransform não era dimensionado. Corrigido em `FillSelectedInfo`: define `color = Color.white`, chama `Canvas.ForceUpdateCanvases()`, lê largura do container pai e ajusta `sizeDelta = (w, w/aspect)`, centraliza via `anchorMin/Max.x = 0.5` e `pivot = 0.5`. Adicionado campo `shopCloseButton` (Button) com listener para `CloseShop()` em `Start()`. Adicionado suporte à tecla Escape em `Update()` para fechar a loja.
+
+---
+
+## 2026-03-27 (session 3)
+
+### Feature: Nova UI de loja + sistema de duas descrições
+**Files:** `Assets/Scripts/Shopkeeper.cs`, `Assets/Scripts/DadosItem.cs`
+
+**DadosItem:** Adicionado `descricaoNarrativa` (TextArea) — texto de sabor/narrativo. `descricao` passa a ser a descrição mecânica curta.
+
+**Shopkeeper:** Reescrito para o novo layout — `itemNameText`, `itemShortDescText`, `itemLongDescText`, `itemIcon`, `itemPriceText`, `itemTypeText`. Grade usa `slotShopPrefab` no `ItemSelectorGrid`. Slots ficam cinzas sem estoque. Compra toca `successAcquired`.
+
+---
+
+## 2026-03-27 (session 2)
+
+### Fix: Personagens mortos de combates anteriores não spawnavam visual corretamente no retry
+**Files:** `Assets/Scripts/Battle/CombatSystem.cs`
+
+`InitializeCombatWithData()` spawnava visuals e adicionava à lista `partyMembers` todos os membros do grupo — incluindo os com HP=0 de combates anteriores. `InitializeCombat()` os filtrava da fila de turnos, mas o visual já estava na cena. Corrigido com check `currentHP <= 0` antes de spawnar, usando `aliveIndex` separado para posicionamento (evita lacunas). Mesmo guard adicionado para inimigos. O `InitializeCombat()` ainda filtra como segunda camada de segurança.
+
+---
+
+## 2026-03-27
+
+### Feature: Menu de pausa em combate + saída com reinício de batalha
+**Files:** `Assets/Scripts/Menu Scripts/PartyMenuManager.cs`, `Assets/Scripts/Battle/CombatSystem.cs`, `Assets/Scripts/EncounterS/PreviousScene.cs`, `Assets/Scripts/Dialogue Scripts/SaveLoadManager.cs`
+
+**PartyMenuManager:** ESC durante batalha agora chama `CombatSystem.TogglePauseMenu()` em vez de abrir configurações. Refatorado bloco de ESC para cobrir todos os casos (em batalha / menu aberto / menu fechado) em um único if.
+
+**CombatSystem:** Adicionado header `Menu de Pausa` com campos `pauseMenuPanel` e `leaveConfirmPanel` (arrastar no Inspector). Novos métodos: `TogglePauseMenu()` (toggle do painel), `ShowLeaveConfirmation()` (exibe popup de confirmação), `CancelLeave()`, `ConfirmLeave()` (salva estado e chama `Application.Quit()`).
+
+**PreviousScene:** Adicionado `public static string LastExplorationScene` — gravado em `UnloadScene()` para que o SaveLoadManager saiba o nome da cena de exploração durante um combate.
+
+**SaveLoadManager:** `SaveData` recebeu `hasPendingBattleRestart` e `pendingEncounterFileName`. `SaveGame()` refatorado para usar `BuildSaveData()`. Novo `SaveAndQuitFromBattle(EncounterData)`: restaura HP pré-batalha via BattleSaveManager, salva com flag de reinício e chama `Application.Quit()`. `LoadGameCoroutine` agora detecta a flag e relança o encontro via `EncounterStarter.StartEncounterFromCutscene()`, limpando a flag antes para evitar loops. `EncounterFile` precisa estar em uma pasta `Resources/` para ser encontrado por `FindEncounterFileByName()`.
+
+---
+
+## 2026-03-26 (session 40)
+
+### Refactor: Painel de ataques substituído por painel de crafting no party menu
+**Files:** `Assets/Scripts/Menu Scripts/PartyMenuManager.cs`
+
+`attacksPanel` → `craftingPanel`, `attacksNavText/Bg` → `craftingNavText/Bg`, `ShowAttacks()` → `ShowCrafting()`. Removidos `UpdateAttacksDisplay()`, `attackListParent`, `attackDisplayPrefab` e a chamada em `OnPartyMemberSelected`. Novos campos: `craftingListParent` e `craftingSlotPrefab` para uso futuro. Botão de nav deve chamar `ShowCrafting()`.
+
+---
+
+## 2026-03-26 (session 39)
+
+### Feature: Navegação do party menu com botões de texto coloridos
+**Files:** `Assets/Scripts/Menu Scripts/PartyMenuManager.cs`
+
+Adicionados campos `menuContainer` (container compartilhado de subpaneis), `characterPanel` (painel padrão grupo/personagem) e quatro referências `TextMeshProUGUI` para os botões de nav (characterNavText, attacksNavText, itemsNavText, equipmentNavText). `SelectNav()` muda o botão atual para branco e o anterior para cinza. Cada `Show*` retorna cedo se já estiver selecionado. `OpenMenu` ativa o menuContainer e chama `ShowCharacter()` como padrão. `CloseMenu` desativa o menuContainer e reseta o nav.
+
+**Inspector:** Atribuir os quatro campos de texto dos botões de nav e o menuContainer/characterPanel.
+
+---
+
+## 2026-03-26 (session 38)
+
+### Fix: Clique no retrato inimigo/aliado não registrava no ícone central
+**Files:** `Assets/Scripts/Battle/EnemyDisplay.cs`, `Assets/Scripts/Battle/PartyMemberDisplay.cs`
+
+Adicionado Image transparente (Color.clear, raycastTarget=true) no root de EnemyUI e CharacterUI em Initialize(). Garante que todo o rect do card captura cliques, mesmo sobre filhos com Raycast Target desativado, propagando o evento até o IPointerClickHandler do root.
+
+---
+
+## 2026-03-26 (session 37)
+
+### Feature: Botão de abrir menu some via CanvasGroup ao abrir o menu
+**Files:** `Assets/Scripts/Menu Scripts/PartyMenuManager.cs`
+
+Adicionado campo `menuOpenerCanvasGroup` (CanvasGroup) no header "HUD Buttons". `OpenMenu` agora oculta o botão via CanvasGroup (alpha=0) em vez de SetActive, mantendo-o no layout. `CloseMenu` restaura (alpha=1). `HideAllPanels` não toca mais no MenuOpener — ele nunca sai do layout. Remova o `MenuOpener.SetActive` de qualquer chamada manual restante.
+
+**Inspector:** Adicionar CanvasGroup no GameObject do botão de abrir menu e atribuir ao campo `Menu Opener Canvas Group`.
+
+---
+
+## 2026-03-26 (session 36)
+
+### Feature: Botão de configurações vira toggle com save ao fechar
+**Files:** `Assets/Scripts/ConfigScene.cs`, `Assets/Scripts/Menu Scripts/PartyMenuManager.cs`
+
+Adicionada propriedade pública `IsConfigLoaded` em `ConfigSceneManager`. `LoadConfig` e `DeleteConfig` em PartyMenuManager substituídos por `ToggleSettings()`: se a cena de config estiver carregada, salva o jogo e descarrega; se não estiver, carrega. Redirecione o botão de settings para chamar `ToggleSettings()`.
+
+---
+
+## 2026-03-26 (session 35)
+
+### Feature: Botão de objetivos se oculta quando painel abre
+**Files:** `Assets/Scripts/Menu Scripts/PartyMenuManager.cs`
+
+Adicionado campo `objectivesButtonCanvasGroup` (CanvasGroup) no header "HUD Buttons". `ToggleObjectives` agora oculta o botão de objetivos via CanvasGroup (alpha=0, interactable=false, blocksRaycasts=false) quando o painel abre, e restaura quando fecha. Não usa `SetActive` para não quebrar o Grid Layout. `CloseObjectivesPanel` também restaura o botão. O botão dentro do painel pode chamar `ToggleObjectives` diretamente — mesma lógica.
+
+**Inspector:** Adicionar componente CanvasGroup no GameObject do botão de objetivos e atribuir ao campo `Objectives Button Canvas Group`.
+
+---
+
+## 2026-03-26 (session 34)
+
+### Fix: Ouro desativado separadamente durante combate
+**Files:** `Assets/Scripts/Menu Scripts/PartyMenuManager.cs`
+
+Adicionado campo `goldContainer` (GameObject) no header "Gold Count". Em `SetBattleState(true)`, desativa `goldContainer` separadamente de `hudButtonsContainer` para evitar bug visual onde o texto de ouro aparecia distorcido quando estava dentro do container de HUD. Atribua o GameObject pai do texto de ouro no Inspector.
+
+---
+
+## 2026-03-26 (session 33)
+
+### Feature: Barra de AP compartilhada no combat UI
+**Files:** `Assets/Scripts/Battle/CombatSystem.cs`, `Assets/Scripts/Battle/CombatUIManager.cs`
+
+Adicionado campo `sharedApBar` (Image) + `sharedApText` (TMP) no CombatUIManager (Header "AP Bar"). A barra mostra o AP do personagem ativo na vez do jogador e se atualiza a cada mudança de personagem ou gasto de AP. Zerada/apagada durante a vez do inimigo.
+
+### Feature: Retratos Default/Selected para personagens e inimigos
+**Files:** `Assets/Scripts/Battle/PartyMemberDisplay.cs`, `Assets/Scripts/Battle/EnemyDisplay.cs`, `Assets/Scripts/Battle/CombatSystem.cs`, `Assets/Scripts/Battle/CombatUIManager.cs`
+
+Adicionados campos `defaultContainer` e `selectedContainer` (GameObject) em CharacterUI e EnemyUI. `SetSelected(bool)` troca entre os dois. Personagens do jogador: ativam Selected no início de sua vez, voltam para Default quando outra vez começa. Inimigos: Selected só fica ativo enquanto o inimigo está executando um ataque (`onAttackStarted`/`onAttackFinished` novos eventos no CombatSystem). HP reflete em ambos os estados via `selectedHpText`/`selectedHealthBar`.
+
+### Feature: Retratos clicáveis para targeting + outline de hover
+**Files:** `Assets/Scripts/Battle/PartyMemberDisplay.cs`, `Assets/Scripts/Battle/EnemyDisplay.cs`
+
+Removido sistema de botão separado para selecionar alvo. CharacterUI e EnemyUI implementam `IPointerClickHandler`, `IPointerEnterHandler`, `IPointerExitHandler`. Quando um retrato se torna alvo válido: background sobe para 100% alpha (de 75%). Ao passar o mouse: `targetableOutline` aparece. Ao clicar: seleciona o alvo. Campo `portraitBackground` (Image) controla o alpha; campo `targetableOutline` (GameObject) controlado por hover.
+
+---
+
+## 2026-03-26 (session 32)
+
+### Feature: Fila de ataques exibida em texto durante o combate
+**Files:** `Assets/Scripts/Battle/CombatSystem.cs`
+
+Adicionado campo `attackQueueText` (TextMeshProUGUI) no inspector (Header "UI"). Mostra as ações enfileiradas no formato `Ataque > Ataque > Ataque`. Atualiza ao adicionar ação (`SelectPlayerAction`), desfazer (`UndoLastAction`) e ao iniciar turno (limpa). Durante a execução (`ExecuteActionQueue`), cada ação é removida do texto no momento em que começa a ser executada, usando `GetRange(i, remaining)` para mostrar apenas o que ainda falta.
+
+---
+
+## 2026-03-25 (session 31)
+
+### Fix: Componente Camera desabilitado após luta dos ratos
+**Files:** `Assets/Scripts/EncounterS/PreviousScene.cs`
+
+`LoadScene()` usava `FindGameObjectsWithTag("Ignore")` para reativar câmeras, mas essa busca percorre todas as cenas carregadas — no momento da chamada, a cena de Combate ainda está carregada junto com a de exploração. Isso podia encontrar câmeras erradas ou perder a câmera certa. Fix: câmeras desabilitadas em `UnloadScene()` agora são salvas em `disabledIgnoreCameras` (lista de referências explícitas). `LoadScene()` restaura exatamente essas referências, sem depender de tag search cross-scene.
+
+---
+
 ## 2026-03-25 (session 30)
 
 ### Fix: Formação diagonal no combate + sorting order dos personagens

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -46,9 +47,16 @@ public class CombatSystem : MonoBehaviour
     [Header("Background")]
     public SpriteRenderer backgroundRenderer;
 
+    [Header("UI")]
+    public TextMeshProUGUI attackQueueText;
+
+    [Header("Menu de Pausa")]
+    public GameObject pauseMenuPanel;
+    public GameObject leaveConfirmPanel;
+
     [Header("Game Over")]
     public string mainMenuSceneName = "Menu";
-    public string gameOverSceneName  = "GameOver";
+    public string gameOverSceneName = "GameOver";
 
     [Header("Combat State")]
     public CombatState currentState = CombatState.STARTING;
@@ -58,6 +66,11 @@ public class CombatSystem : MonoBehaviour
     public System.Action<PartyMemberState> onCharacterUpdated;
     public System.Action<PartyMemberState, AttackFile, List<PartyMemberState>> onActionExecuted;
     public System.Action<CombatState> onCombatEnded;
+    // Fired just before / just after each individual attack animation
+    public System.Action<PartyMemberState> onAttackStarted;
+    public System.Action<PartyMemberState> onAttackFinished;
+    // Fired whenever a character takes damage — carries the raw damage dealt
+    public System.Action<PartyMemberState, int> onDamageTaken;
 
     private Queue<PartyMemberState> playerTurnQueue = new Queue<PartyMemberState>();
     private Queue<PartyMemberState> enemyTurnQueue = new Queue<PartyMemberState>();
@@ -110,6 +123,8 @@ public class CombatSystem : MonoBehaviour
         if (menubutton != null) menubutton.SetActive(false);
         if (objbutton2 != null) objbutton2.SetActive(false);
 
+        FindFirstObjectByType<PartyMenuManager>()?.SetBattleState(true);
+
         EncounterData encounterData = FindFirstObjectByType<EncounterData>();
         if (encounterData != null)
             InitializeCombatWithData(encounterData);
@@ -137,7 +152,7 @@ public class CombatSystem : MonoBehaviour
     {
         // Diagonal: index 0 = top-right (back), index 2 = bottom-left (front)
         float[] xViewport = { 0.22f, 0.18f, 0.14f };
-        float[] yViewport = { 0.46f, 0.32f, 0.18f };
+        float[] yViewport = { 0.36f, 0.32f, 0.28f };
         float x = index < xViewport.Length ? xViewport[index] : 0.18f;
         float y = index < yViewport.Length ? yViewport[index] : 0.32f;
         Vector3 world = cam.ViewportToWorldPoint(new Vector3(x, y, Mathf.Abs(cam.transform.position.z)));
@@ -357,6 +372,7 @@ public class CombatSystem : MonoBehaviour
         endTurnRequested = false;
         pendingActions.Clear();
         apSnapshots.Clear();
+        RefreshQueueText(pendingActions);
 
         currentState = CombatState.PLAYER_TURN;
         onTurnStarted?.Invoke(currentCharacter);
@@ -462,11 +478,15 @@ public class CombatSystem : MonoBehaviour
 
     private IEnumerator ExecuteActionQueue(List<QueuedAction> actions)
     {
-        foreach (var action in actions)
+        for (int i = 0; i < actions.Count; i++)
         {
+            var action = actions[i];
             if (action.isItem || action.attack == null) continue;
             if (action.targets == null || action.targets.Count == 0) continue;
             if (CheckBattleEnd()) yield break;
+
+            // Show only the actions still waiting to execute
+            RefreshQueueText(actions.GetRange(i, actions.Count - i));
 
             yield return StartCoroutine(ExecuteAttackWithAnimation(currentCharacter, action.attack, action.targets));
 
@@ -478,6 +498,7 @@ public class CombatSystem : MonoBehaviour
             yield return new WaitForSeconds(0.2f);
         }
 
+        RefreshQueueText(new List<QueuedAction>());
         pendingActions.Clear();
         apSnapshots.Clear();
     }
@@ -485,6 +506,7 @@ public class CombatSystem : MonoBehaviour
     private IEnumerator ExecuteAttackWithAnimation(PartyMemberState user, AttackFile attack, List<PartyMemberState> targets)
     {
         isAnimating = true;
+        onAttackStarted?.Invoke(user);
 
         if (attack.battleAnimation != null)
         {
@@ -496,7 +518,22 @@ public class CombatSystem : MonoBehaviour
             yield return null;
         }
 
+        onAttackFinished?.Invoke(user);
         isAnimating = false;
+    }
+
+    // ─── Attack Queue Display ─────────────────────────────────────────────────────
+
+    private void RefreshQueueText(List<QueuedAction> actions)
+    {
+        if (attackQueueText == null) return;
+
+        var names = actions
+            .Where(a => !a.isItem && a.attack != null)
+            .Select(a => a.attack.attackName)
+            .ToList();
+
+        attackQueueText.text = names.Count > 0 ? string.Join(" > ", names) : "";
     }
 
     // ─── Public API for UI ────────────────────────────────────────────────────────
@@ -524,6 +561,7 @@ public class CombatSystem : MonoBehaviour
         apSnapshots.Push(currentCharacter.currentAP);
         currentCharacter.currentAP -= action.actionPointCost;
         pendingActions.Add(new QueuedAction(action, targets));
+        RefreshQueueText(pendingActions);
         onCharacterUpdated?.Invoke(currentCharacter);
     }
 
@@ -552,6 +590,7 @@ public class CombatSystem : MonoBehaviour
 
         pendingActions.RemoveAt(pendingActions.Count - 1);
         currentCharacter.currentAP = apSnapshots.Pop();
+        RefreshQueueText(pendingActions);
         onCharacterUpdated?.Invoke(currentCharacter);
     }
 
@@ -585,6 +624,7 @@ public class CombatSystem : MonoBehaviour
                         int defense = IsDefending(target) ? target.Defense * 3 : target.Defense;
                         int damage = Mathf.Max(1, effect.value + user.Attack - defense);
                         target.TakeDamage(damage);
+                        onDamageTaken?.Invoke(target, damage);
                         onCharacterUpdated?.Invoke(target);
                         break;
                     }
@@ -593,6 +633,7 @@ public class CombatSystem : MonoBehaviour
                         int defense = IsDefending(target) ? target.Defense * 3 : target.Defense;
                         int damage = Mathf.Max(1, user.Attack + effect.value - defense);
                         target.TakeDamage(damage);
+                        onDamageTaken?.Invoke(target, damage);
                         onCharacterUpdated?.Invoke(target);
                         break;
                     }
@@ -632,15 +673,20 @@ public class CombatSystem : MonoBehaviour
                     break;
 
                 case EffectType.MultiHit:
-                    for (int i = 0; i < effect.hitCount; i++)
                     {
-                        int defense = IsDefending(target) ? target.Defense * 3 : target.Defense;
-                        int damage = Mathf.Max(1, (effect.value + user.Attack - defense) / effect.hitCount);
-                        target.TakeDamage(damage);
-                        if (target.currentHP <= 0) break;
+                        int totalMultiDamage = 0;
+                        for (int i = 0; i < effect.hitCount; i++)
+                        {
+                            int defense = IsDefending(target) ? target.Defense * 3 : target.Defense;
+                            int damage = Mathf.Max(1, (effect.value + user.Attack - defense) / effect.hitCount);
+                            target.TakeDamage(damage);
+                            totalMultiDamage += damage;
+                            if (target.currentHP <= 0) break;
+                        }
+                        onDamageTaken?.Invoke(target, totalMultiDamage);
+                        onCharacterUpdated?.Invoke(target);
+                        break;
                     }
-                    onCharacterUpdated?.Invoke(target);
-                    break;
             }
         }
     }
@@ -787,6 +833,7 @@ public class CombatSystem : MonoBehaviour
             previousScene.LoadScene();
             SceneManager.UnloadSceneAsync("Combat");
             MusicManager.Instance?.ResumeAmbience();
+            FindFirstObjectByType<PartyMenuManager>()?.SetBattleState(false);
         }
     }
 
@@ -801,6 +848,38 @@ public class CombatSystem : MonoBehaviour
 
         foreach (var member in partyMembers.Where(p => p.currentHP > 0))
             member.GainExperience(encounterData.totalExpReward);
+    }
+
+    // ─── Menu de Pausa ────────────────────────────────────────────────────────────
+
+    public void TogglePauseMenu()
+    {
+        if (pauseMenuPanel == null) return;
+        bool willOpen = !pauseMenuPanel.activeSelf;
+        pauseMenuPanel.SetActive(willOpen);
+        if (!willOpen && leaveConfirmPanel != null)
+            leaveConfirmPanel.SetActive(false);
+    }
+
+    public void ShowLeaveConfirmation()
+    {
+        if (pauseMenuPanel   != null) pauseMenuPanel.SetActive(false);
+        if (leaveConfirmPanel != null) leaveConfirmPanel.SetActive(true);
+    }
+
+    public void CancelLeave()
+    {
+        if (leaveConfirmPanel != null) leaveConfirmPanel.SetActive(false);
+        if (pauseMenuPanel   != null) pauseMenuPanel.SetActive(true);
+    }
+
+    public void ConfirmLeave()
+    {
+        EncounterData encounterData = FindFirstObjectByType<EncounterData>();
+        if (encounterData != null && SaveLoadManager.Instance != null)
+            SaveLoadManager.Instance.SaveAndReturnToTitle(encounterData);
+        else
+            SceneManager.LoadScene("TitleScreen");
     }
 
     // ─── Accessors ────────────────────────────────────────────────────────────────

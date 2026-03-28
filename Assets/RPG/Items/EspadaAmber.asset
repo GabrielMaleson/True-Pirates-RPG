@@ -15,7 +15,8 @@ MonoBehaviour:
   nomeDoItem: Espada de Amber
   id: item_espada_amber
   icone: {fileID: 21300000, guid: b4706dabb61a7a141a63e41d5e0b1686, type: 3}
-  descricao: Espada de Amber que sua equipe te deu.
+  descricao: "Aumenta ataque em +2"
+  descricaoNarrativa: Espada de Amber que sua equipe te deu.
   valorEmOuro: 0
   ehEmpilhavel: 0
   ehEquipavel: 1

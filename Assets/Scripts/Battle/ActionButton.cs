@@ -1,25 +1,36 @@
-using UnityEngine;
-using UnityEngine.UI;
+using NUnit.Framework.Interfaces;
 using TMPro;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
-public class ActionButton : MonoBehaviour
+public class ActionButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [Header("UI Elements")]
     public TextMeshProUGUI actionNameText;
     public TextMeshProUGUI apCostText;
     public Button button;
     public Image image;
+
     private AttackFile attack;
     private DadosItem item;
     private System.Action onClick;
+    private System.Action<AttackFile> onHoverEnter;
+    private System.Action onHoverExit;
 
-    public void Initialize(AttackFile attackFile, System.Action callback)
+    // ── Initializers ───────────────────────────────────────────────────────────
+
+    public void Initialize(AttackFile attackFile, System.Action callback,
+        System.Action<AttackFile> hoverEnter = null, System.Action hoverExit = null)
     {
-        attack = attackFile;
-        onClick = callback;
+        attack       = attackFile;
+        onClick      = callback;
+        onHoverEnter = hoverEnter;
+        onHoverExit  = hoverExit;
+        if (image != null) image.sprite = attack.icon;
 
         actionNameText.text = attackFile.attackName;
-        apCostText.text = $"AP: {attackFile.actionPointCost}";
+        apCostText.text     = $"AP: {attackFile.actionPointCost}";
         apCostText.gameObject.SetActive(true);
 
         button.onClick.AddListener(OnClick);
@@ -27,12 +38,12 @@ public class ActionButton : MonoBehaviour
 
     public void Initialize(DadosItem itemData, System.Action callback)
     {
-        item = itemData;
-        image.sprite = itemData.icone;
+        item    = itemData;
         onClick = callback;
 
+        if (image != null) image.sprite = itemData.icone;
         actionNameText.text = itemData.nomeDoItem;
-        apCostText.text = ""; // Items don't use AP
+        apCostText.text     = "";
         apCostText.gameObject.SetActive(false);
 
         button.onClick.AddListener(OnClick);
@@ -40,31 +51,39 @@ public class ActionButton : MonoBehaviour
 
     public void InitializeAsBack(System.Action callback)
     {
-        actionNameText.text = "Back";
-        apCostText.text = "";
+        onClick             = callback;
+        actionNameText.text = "Voltar";
+        apCostText.text     = "";
         apCostText.gameObject.SetActive(false);
-        onClick = callback;
 
         button.onClick.AddListener(OnClick);
     }
 
     public void InitializeAsWait(System.Action callback)
     {
-        actionNameText.text = "Wait";
-        apCostText.text = "";
+        onClick             = callback;
+        actionNameText.text = "Esperar";
+        apCostText.text     = "";
         apCostText.gameObject.SetActive(false);
-        onClick = callback;
 
         button.onClick.AddListener(OnClick);
     }
 
-    private void OnClick()
+    // ── Pointer events ─────────────────────────────────────────────────────────
+
+    public void OnPointerEnter(PointerEventData eventData)
     {
-        onClick?.Invoke();
+        if (attack != null) onHoverEnter?.Invoke(attack);
     }
 
-    private void OnDestroy()
+    public void OnPointerExit(PointerEventData eventData)
     {
-        button.onClick.RemoveAllListeners();
+        if (attack != null) onHoverExit?.Invoke();
     }
+
+    // ── Internal ───────────────────────────────────────────────────────────────
+
+    private void OnClick() => onClick?.Invoke();
+
+    private void OnDestroy() => button.onClick.RemoveAllListeners();
 }

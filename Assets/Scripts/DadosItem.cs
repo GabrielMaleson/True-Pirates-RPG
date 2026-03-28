@@ -4,15 +4,18 @@ using System.Collections.Generic;
 [CreateAssetMenu(fileName = "Novo Item", menuName = "Sistema RPG/Item")]
 public class DadosItem : ScriptableObject
 {
-    [Header("Identificação")]
+    [Header("Identificaï¿½ï¿½o")]
     public string nomeDoItem;
     public string id;
 
     [Header("Visual")]
     public Sprite icone;
 
+    [Header("DescriÃ§Ãµes")]
     [TextArea]
-    public string descricao;
+    public string descricao;          // Curta: o que o item faz mecanicamente (ex: "Aumenta ataque em +2")
+    [TextArea]
+    public string descricaoNarrativa; // Longa: texto narrativo/sabor sobre o item
 
     [Header("Economia e Logistica")]
     public int valorEmOuro;
@@ -31,13 +34,13 @@ public class DadosItem : ScriptableObject
     // Removed classeRequerida as it's not used in current system
 
     // Consumable Properties
-    [Header("Tipo de Consumível (Opcional)")]
+    [Header("Tipo de Consumï¿½vel (Opcional)")]
     public bool ehConsumivel;
     public ConsumableType tipoConsumivel;
     public bool usavelEmBatalha = true;
     public bool usavelNoMapa = true;
 
-    [Header("Efeitos (para Consumíveis)")]
+    [Header("Efeitos (para Consumï¿½veis)")]
     public List<ItemEffectData> efeitos;
 }
 
@@ -63,7 +66,7 @@ public class ItemEffectData
 // Simplified Equipment Slots - Only what we use
 public enum EquipmentSlot
 {
-    Arma,      // Weapon slot
+    Acessorio, // Accessory slot
     Armadura   // Armor slot
 }
 

@@ -27,6 +27,9 @@ public class SaveLoadManager : MonoBehaviour
         public List<string> savedGameProgress = new List<string>();
         public List<SavedItem> savedItems       = new List<SavedItem>();
         public List<SavedPartyMember> savedPartyMembers = new List<SavedPartyMember>();
+        // Reinício de batalha pendente (salvo ao sair durante um combate)
+        public bool   hasPendingBattleRestart;
+        public string pendingEncounterFileName;
     }
 
     [System.Serializable]
@@ -44,7 +47,7 @@ public class SaveLoadManager : MonoBehaviour
         public int    currentHP;
         public int    currentAP;
         public int    currentExperience;
-        public string weaponID;
+        public string accessoryID;
         public string armorID;
     }
 
@@ -80,10 +83,58 @@ public class SaveLoadManager : MonoBehaviour
             return;
         }
 
+        SaveData data = BuildSaveData(inventory, SceneManager.GetActiveScene().name);
+        File.WriteAllText(GetSavePath(), JsonUtility.ToJson(data, prettyPrint: true));
+        Debug.Log($"[SaveLoadManager] Jogo salvo em: {GetSavePath()}");
+    }
+
+    /// <summary>
+    /// Salva o estado pré-batalha e fecha o jogo. Na próxima carga, o combate será reiniciado.
+    /// Chame este método ao confirmar saída durante um combate.
+    /// </summary>
+    public void SaveAndQuitFromBattle(EncounterData encounterData)
+    {
+        WriteBattleSave(encounterData);
+        Application.Quit();
+    }
+
+    public void SaveAndReturnToTitle(EncounterData encounterData)
+    {
+        WriteBattleSave(encounterData);
+        SceneManager.LoadScene("TitleScreen");
+    }
+
+    private void WriteBattleSave(EncounterData encounterData)
+    {
+        SistemaInventario inventory = SistemaInventario.Instance;
+        if (inventory == null)
+        {
+            Debug.LogError("[SaveLoadManager] SistemaInventario não encontrado ao salvar estado de batalha!");
+            return;
+        }
+
+        // Restaurar HP/AP do grupo para o estado pré-batalha antes de salvar
+        BattleSaveManager.Instance?.RestoreSnapshot(encounterData.playerPartyMembers);
+
+        // Salvar usando a cena de exploração (não "Combat")
+        string explorationScene = string.IsNullOrEmpty(PreviousScene.LastExplorationScene)
+            ? SceneManager.GetActiveScene().name
+            : PreviousScene.LastExplorationScene;
+
+        SaveData data = BuildSaveData(inventory, explorationScene);
+        data.hasPendingBattleRestart = true;
+        data.pendingEncounterFileName = encounterData.encounterFile != null ? encounterData.encounterFile.name : "";
+
+        File.WriteAllText(GetSavePath(), JsonUtility.ToJson(data, prettyPrint: true));
+        Debug.Log($"[SaveLoadManager] Estado de batalha salvo — retornando ao título. Reinício pendente: '{data.pendingEncounterFileName}'");
+    }
+
+    private SaveData BuildSaveData(SistemaInventario inventory, string sceneName)
+    {
         SaveData data = new SaveData
         {
-            savedSceneName  = SceneManager.GetActiveScene().name,
-            savedGold       = inventory.moedas,
+            savedSceneName    = sceneName,
+            savedGold         = inventory.moedas,
             savedGameProgress = new List<string>(inventory.GetGameProgress())
         };
 
@@ -98,19 +149,17 @@ public class SaveLoadManager : MonoBehaviour
             if (member == null) continue;
             data.savedPartyMembers.Add(new SavedPartyMember
             {
-                characterName   = member.CharacterName,
-                level           = member.level,
-                currentHP       = member.currentHP,
-                currentAP       = member.currentAP,
+                characterName     = member.CharacterName,
+                level             = member.level,
+                currentHP         = member.currentHP,
+                currentAP         = member.currentAP,
                 currentExperience = member.currentExperience,
-                weaponID        = member.weapon != null ? member.weapon.id : "",
-                armorID         = member.armor  != null ? member.armor.id  : ""
+                accessoryID       = member.accessory != null ? member.accessory.id : "",
+                armorID           = member.armor  != null ? member.armor.id  : ""
             });
         }
 
-        string json = JsonUtility.ToJson(data, prettyPrint: true);
-        File.WriteAllText(GetSavePath(), json);
-        Debug.Log($"[SaveLoadManager] Jogo salvo em: {GetSavePath()}");
+        return data;
     }
 
     public void LoadGame()
@@ -176,10 +225,10 @@ public class SaveLoadManager : MonoBehaviour
             member.currentAP          = saved.currentAP;
             member.currentExperience  = saved.currentExperience;
 
-            if (!string.IsNullOrEmpty(saved.weaponID))
+            if (!string.IsNullOrEmpty(saved.accessoryID))
             {
-                DadosItem weapon = FindItemByID(saved.weaponID);
-                if (weapon != null) member.EquipWeapon(weapon);
+                DadosItem accessory = FindItemByID(saved.accessoryID);
+                if (accessory != null) member.EquipAccessory(accessory);
             }
             if (!string.IsNullOrEmpty(saved.armorID))
             {
@@ -196,10 +245,44 @@ public class SaveLoadManager : MonoBehaviour
         foreach (string tag in data.savedGameProgress)
             inventory.AddProgress(tag);
 
+        // Restaura referências equippedTo nos slots de inventário
+        inventory.RestoreEquippedSlots();
+
         Debug.Log($"[SaveLoadManager] Jogo carregado da cena '{data.savedSceneName}'.");
+
+        // Reinício de batalha pendente — relançar o combate como se fosse uma nova tentativa
+        if (data.hasPendingBattleRestart && !string.IsNullOrEmpty(data.pendingEncounterFileName))
+        {
+            string encounterFileName = data.pendingEncounterFileName;
+
+            // Limpar a flag para não entrar em loop nas próximas cargas
+            data.hasPendingBattleRestart = false;
+            data.pendingEncounterFileName = "";
+            File.WriteAllText(GetSavePath(), JsonUtility.ToJson(data, prettyPrint: true));
+
+            yield return null; // aguardar um frame para a cena inicializar
+
+            EncounterFile encounterFile = FindEncounterFileByName(encounterFileName);
+            if (encounterFile != null)
+            {
+                Debug.Log($"[SaveLoadManager] Reiniciando batalha pendente: '{encounterFileName}'");
+                EncounterStarter.StartEncounterFromCutscene(encounterFile, inventory);
+            }
+            else
+            {
+                Debug.LogWarning($"[SaveLoadManager] EncounterFile '{encounterFileName}' não encontrado — reinício de batalha cancelado. Certifique-se de que o asset está em uma pasta Resources.");
+            }
+        }
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
+
+    private EncounterFile FindEncounterFileByName(string name)
+    {
+        foreach (var f in Resources.LoadAll<EncounterFile>(""))
+            if (f.name == name) return f;
+        return null;
+    }
 
     private DadosItem FindItemByID(string id)
     {
