@@ -31,16 +31,19 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     private Coroutine tooltipCoroutine;
     private bool isPointerOver = false;
 
-    private void Start()
+    private void Awake()
     {
-        if (clickButton != null)
-            clickButton.onClick.AddListener(OnItemClick);
-
         if (highlightBorder != null)
             highlightBorder.gameObject.SetActive(false);
 
         if (equippedIndicator != null)
             equippedIndicator.SetActive(false);
+    }
+
+    private void Start()
+    {
+        if (clickButton != null)
+            clickButton.onClick.AddListener(OnItemClick);
     }
 
     public void ConfigurarSlot(SlotInventario slot)

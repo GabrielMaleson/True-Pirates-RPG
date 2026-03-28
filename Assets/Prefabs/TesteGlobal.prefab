@@ -8095,7 +8095,7 @@ MonoBehaviour:
   goldCount: {fileID: 2011772985267411442}
   goldContainer: {fileID: 6644288441485299148}
   inventoryGrid: {fileID: 2079989029885209790}
-  itemSlotPrefab: {fileID: 159576471053939692, guid: d047e5f734bdc8646bbea9cca78834f7, type: 3}
+  itemSlotPrefab: {fileID: 2131603360029861491, guid: d034b3efa5e6a0242a2f3cf7f25038d2, type: 3}
   goldText: {fileID: 0}
   itemDetailsPrefab: {fileID: 994343552366640898, guid: 960f7c831a312f94b9b89b1d2bb3e8af, type: 3}
   partyMemberSelectorPrefab: {fileID: 6544876395421401408, guid: afae1ee2801ea2148be3199a3c572e3a, type: 3}

@@ -92,7 +92,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemDetails
   itemNameText: {fileID: 3645562079669791279}
-  itemDescriptionText: {fileID: 6476254701546320974}
+  shortDescText: {fileID: 0}
   itemStatsText: {fileID: 2858927743064123509}
 --- !u!1 &5722918838392463640
 GameObject:
@@ -128,8 +128,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.000050545, y: -49.999996}
-  m_SizeDelta: {x: 225, y: 25}
+  m_AnchoredPosition: {x: -0.000050545, y: -9.322}
+  m_SizeDelta: {x: 225, y: 43.644}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4691622237521377551
 CanvasRenderer:
@@ -159,7 +159,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: stats stats
+  m_text: "stats \nstats"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e2d42e4b4815e574faab47007e3805d5, type: 2}
   m_sharedMaterial: {fileID: 445750318291587377, guid: e2d42e4b4815e574faab47007e3805d5, type: 2}
@@ -194,7 +194,7 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_HorizontalAlignment: 2
-  m_VerticalAlignment: 1024
+  m_VerticalAlignment: 4096
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_characterHorizontalScale: 1
@@ -265,8 +265,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.000050545, y: -12.5}
-  m_SizeDelta: {x: 225, y: 50}
+  m_AnchoredPosition: {x: -0.000024319, y: -46.82199}
+  m_SizeDelta: {x: 225, y: 31.356}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6849942427078063866
 CanvasRenderer:
@@ -296,7 +296,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "descri\xE7\xE3o curta porem longa pra testar\n"
+  m_text: "descri\xE7\xE3o curta porem longa \n"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e2d42e4b4815e574faab47007e3805d5, type: 2}
   m_sharedMaterial: {fileID: 445750318291587377, guid: e2d42e4b4815e574faab47007e3805d5, type: 2}
@@ -402,7 +402,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.000050545, y: 33.9}
+  m_AnchoredPosition: {x: -0.000050545, y: 37.500008}
   m_SizeDelta: {x: 225, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5722212169688184196

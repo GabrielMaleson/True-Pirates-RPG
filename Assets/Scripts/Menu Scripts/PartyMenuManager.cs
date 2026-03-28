@@ -586,29 +586,16 @@ public class PartyMenuManager : MonoBehaviour
         _pendingOp       = PendingOpType.EquipItemFromInventory;
         _pendingItemSlot = slot;
 
-        // Show character panel with equipment cards so the player sees current loadout
+        // Show character panel with stat displays (same as UseItem flow) — just pick a character
         if (itemsPanel     != null) itemsPanel.SetActive(false);
         if (characterPanel != null) characterPanel.SetActive(true);
 
-        // Rebuild container with equipment cards
-        if (statsDisplayContainer != null)
-            foreach (Transform child in statsDisplayContainer)
-                Destroy(child.gameObject);
-        statsDisplays.Clear();
-        _equipmentCards.Clear();
+        // Ensure stat displays are populated (not equipment cards)
+        if (_equipmentCards.Count > 0 || statsDisplays.Count == 0)
+            RepopulatePartyDisplays();
 
-        foreach (var member in inventory.partyMembers)
-        {
-            if (member == null || equipmentCardPrefab == null) continue;
-            GameObject cardObj = Instantiate(equipmentCardPrefab, statsDisplayContainer);
-            EquipmentCharacterCard card = cardObj.GetComponent<EquipmentCharacterCard>();
-            if (card != null)
-            {
-                card.Initialize(member, this);
-                card.SetTargetable(true, OnEquipItemToMemberFromInventory);
-                _equipmentCards.Add(card);
-            }
-        }
+        foreach (var display in statsDisplays.Values)
+            display.SetTargetable(true, OnEquipItemToMemberFromInventory);
 
         if (selectPromptText != null)
         {
@@ -749,9 +736,11 @@ public class PartyMenuManager : MonoBehaviour
             GameObject removeSlotObj = Instantiate(itemSlotPrefab, inventoryGrid);
             SlotUI removeSlotUI = removeSlotObj.GetComponent<SlotUI>();
             removeSlotUI.partyMenuManager = this;
-            // Leave slotData null so OnItemClick early-returns; wire our own handler
-            if (removeSlotUI.itemIcon != null) removeSlotUI.itemIcon.gameObject.SetActive(false);
-            if (removeSlotUI.clickButton  != null)
+            if (removeSlotUI.itemIcon           != null) removeSlotUI.itemIcon.gameObject.SetActive(false);
+            if (removeSlotUI.equippedIndicator  != null) removeSlotUI.equippedIndicator.SetActive(true);
+            if (removeSlotUI.unequipXObject     != null) removeSlotUI.unequipXObject.SetActive(true);
+            if (removeSlotUI.checkmarkObject    != null) removeSlotUI.checkmarkObject.SetActive(false);
+            if (removeSlotUI.clickButton        != null)
                 removeSlotUI.clickButton.onClick.AddListener(OnUnequipFromPendingSlot);
         }
 
