@@ -2,6 +2,17 @@
 
 ---
 
+## 2026-03-27 (session 3)
+
+### Feature: Nova UI de loja + sistema de duas descrições
+**Files:** `Assets/Scripts/Shopkeeper.cs`, `Assets/Scripts/DadosItem.cs`
+
+**DadosItem:** Adicionado `descricaoNarrativa` (TextArea) — texto de sabor/narrativo. `descricao` passa a ser a descrição mecânica curta.
+
+**Shopkeeper:** Reescrito para o novo layout — `itemNameText`, `itemShortDescText`, `itemLongDescText`, `itemIcon`, `itemPriceText`, `itemTypeText`. Grade usa `slotShopPrefab` no `ItemSelectorGrid`. Slots ficam cinzas sem estoque. Compra toca `successAcquired`.
+
+---
+
 ## 2026-03-27 (session 2)
 
 ### Fix: Personagens mortos de combates anteriores não spawnavam visual corretamente no retry
