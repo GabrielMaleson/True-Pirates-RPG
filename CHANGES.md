@@ -2,6 +2,95 @@
 
 ---
 
+## 2026-03-28 (session 36)
+
+### Refactor: ItemDetails simplificado para tooltip puro
+**Files:** `Assets/Scripts/Menu Scripts/ItemDetails.cs`, `SlotUI.cs`
+
+`ItemDetails` era um painel completo com botões Usar/Equipar/Largar/Fechar que já eram todos ocultados ao ser usado como tooltip. Removidos todos os botões, listeners, referências a `SistemaInventario`/`PartyMenuManager`/`SlotInventario`, e a lógica de `Start()`. Agora é só `Initialize(DadosItem)` que preenche ícone, nome, descrição e stats de modificadores. `SlotUI.ShowTooltipAfterDelay` simplificado: removido o bloco de ocultação de botões; mantém apenas `Initialize` e o `CanvasGroup.blocksRaycasts = false`.
+
+**Inspector:** Remover os campos `useButton`, `equipButton`, `dropButton`, `closeButton` do prefab ItemDetails no Unity.
+
+---
+
+## 2026-03-28 (session 35)
+
+### Fix: Aba Party mostrando cartões de equipamento em vez dos displays de personagem
+**Files:** `Assets/Scripts/Menu Scripts/PartyMenuManager.cs`
+
+`ShowCharacter()` ativava o painel mas não repopulava `statsDisplayContainer` após `UpdateEquipmentDisplay()` ter substituído os displays por cartões de equipamento. Adicionado `RepopulatePartyDisplays()` que destrói os filhos atuais do container e recria os `statsDisplayPrefab` com HP/AP/XP. Chamado em `ShowCharacter()` quando `_equipmentCards.Count > 0` ou `statsDisplays` está vazio.
+
+---
+
+## 2026-03-28 (session 34)
+
+### Refactor: Arma → Acessório + correções do fluxo de equipamento
+**Files:** `DadosItem.cs`, `PartyData.cs`, `SistemaInventario.cs`, `SaveLoadManager.cs`, `PartyMemberStatsDisplay.cs`, `EquipmentCharacterCard.cs`, `EquipmentSlotUI.cs`, `ItemDetails.cs`, `Shopkeeper.cs`, `SlotUI.cs`, `PartyMenuManager.cs`
+
+**Renomeações:** `EquipmentSlot.Arma` → `Acessorio` (mesma posição na enum, assets não quebram). Campo `PartyMemberState.weapon` → `accessory`. Métodos `EquipWeapon/UnequipWeapon` → `EquipAccessory/UnequipAccessory` em `PartyData`, `SistemaInventario`, e todos os chamadores. Strings exibidas atualizadas: "arma" → "acessório", "Weapon" → "Acessório". `SaveLoadManager.SavedPartyMember.weaponID` → `accessoryID`.
+
+**Bug: popup antigo ainda aparecia** — Removido `ShowPartyMemberSelector()` de `SlotUI.OnItemClick()` no modo normal; clicar num equippable fora do fluxo de equipe agora faz nada (fluxo correto é pela aba Equipment).
+
+**Bug: painel não recarregava após equipar** — `OnEquipItemSelectedFromPanel()` chamava `ShowEquipment()` que retornava cedo (guard `currentNavText == equipmentNavText && pendingOp == None`). Substituído por `ReturnToEquipmentView()` privado que chama `UpdateEquipmentDisplay()` diretamente.
+
+**Botão Voltar:** Adicionado campo `public Button backButton` ao `PartyMenuManager`. Ativado em `StartUseItemTargeting` e `StartEquipFromSlot`, desativado em `CancelPendingOperation`. `OnBackClicked()`: UseItem → cancela e vai para Itens; EquipItem → cancela e volta para equipamento.
+
+**Remover Item:** Em modo equip-filter, `RefreshInventoryDisplay()` cria um slot extra "Remover Item" antes dos itens filtrados. Ao clicar, desequipa o slot pendente, devolve o item ao inventário e retorna ao painel de equipamento.
+
+**Inspector:** Atribuir campo `backButton` no `PartyMenuManager`. Atualizar prefab `EquipmentCharacterCard`: renomear `weaponIcon/weaponNameText/weaponSlotButton` → `accessoryIcon/accessoryNameText/accessorySlotButton`, e reatribuir no inspector. Renomear campo `weaponText` → `accessoryText` no prefab `PartyMemberStatsDisplay`.
+
+---
+
+## 2026-03-28 (session 33)
+
+### Feature: Novo fluxo de usar item + painel de equipamento por personagem
+**Files:** `Assets/Scripts/Menu Scripts/PartyMenuManager.cs`, `SlotUI.cs`, `PartyMemberStatsDisplay.cs`, `EquipmentCharacterCard.cs` (novo)
+
+**Usar item:** Clicar num consumível na aba Itens agora fecha o painel de itens, abre o painel de personagens com um texto "Selecione um personagem:", e habilita outline pulsante amarelo (sin(t×4), 2–5px) ao passar o mouse sobre cada personagem. Clicar usa o item e volta ao painel de itens. Troca de aba ou ESC cancela a operação.
+
+**Painel de equipamento:** Substituído o layout antigo (slots do personagem selecionado) por cartões por personagem via `EquipmentCharacterCard`. Cada cartão mostra ícone, nome, slot arma (ícone + nome ou "nenhuma") e slot armadura. Clicar num slot abre o painel de itens filtrado pelo tipo de slot, e clicar num item o equipa no personagem do cartão, retornando ao painel de equipamento.
+
+**Cancelar operações:** `HideSubPanels()` (chamado por todos os ShowX) agora invoca `CancelPendingOperation()`, que desativa targeting em todos os displays e esconde o texto de prompt. Guards dos ShowX atualizados para sempre processar quando há operação pendente.
+
+**State machine:** `PartyMenuManager.PendingOpType { None, UseItem, EquipItem }` + campos `_pendingItemSlot`, `_pendingEquipMember`, `_pendingEquipSlot`. `RefreshInventoryDisplay` filtra por `_pendingEquipSlot` quando `_pendingOp == EquipItem`.
+
+**Inspector:** Atribuir `equipmentCardPrefab` e `selectPromptText` no PartyMenuManager. Criar prefab `EquipmentCharacterCard` com os campos: `characterIcon`, `characterNameText`, `weaponIcon`, `weaponNameText`, `weaponSlotButton`, `armorIcon`, `armorNameText`, `armorSlotButton`.
+
+---
+
+## 2026-03-28 (session 32)
+
+### Fix: Botão Continuar — texto cinza em vez de transparente
+**Files:** `Assets/Scripts/Dialogue Scripts/TitleScreenCleanup.cs`
+
+Substituído `continueButton.interactable = false` + `TMP_Text.color = 50% alpha` por `ColorBlock.disabledColor = new Color(0.5, 0.5, 0.5, 1)`. O texto agora fica cinza sólido (não fantasmagórico) quando não há save.
+
+### Fix: Descrições curta/longa trocadas nos itens da loja
+**Files:** `Assets/RPG/Items/*.asset` (todos os 12 itens)
+
+Todos os itens tinham texto narrativo em `descricao` e `descricaoNarrativa` vazio. Migrado: texto narrativo → `descricaoNarrativa`; gerada nova `descricao` mecânica curta (ex: "Aumenta defesa em +5", "Restaura 15 de HP") derivada dos stats/efeitos de cada item.
+
+### Fix: Loja ESC abrindo configurações ao mesmo tempo
+**Files:** `Assets/Scripts/Shopkeeper.cs`, `Assets/Scripts/Menu Scripts/PartyMenuManager.cs`
+
+Adicionado `static bool _anyShopOpen` e `IsAnyShopOpen()` ao Shopkeeper. `PartyMenuManager.Update()` agora retorna imediatamente ao receber Escape se `Shopkeeper.IsAnyShopOpen()` for true, evitando que configurações abram ao fechar a loja.
+
+### Fix: Overflow dos itens na grade da loja
+**Files:** `Assets/Scripts/Shopkeeper.cs`
+
+Em `Start()`, adiciona `RectMask2D` ao pai do `slotGrid` se não existir, clampando visualmente os itens dentro dos limites do painel.
+
+---
+
+## 2026-03-28 (session 31)
+
+### Fix: Ícone do item na loja não aparecia + campo shopCloseButton + Escape para fechar
+**Files:** `Assets/Scripts/Shopkeeper.cs`
+
+Ícone não aparecia porque `color` nunca era definido e o RectTransform não era dimensionado. Corrigido em `FillSelectedInfo`: define `color = Color.white`, chama `Canvas.ForceUpdateCanvases()`, lê largura do container pai e ajusta `sizeDelta = (w, w/aspect)`, centraliza via `anchorMin/Max.x = 0.5` e `pivot = 0.5`. Adicionado campo `shopCloseButton` (Button) com listener para `CloseShop()` em `Start()`. Adicionado suporte à tecla Escape em `Update()` para fechar a loja.
+
+---
+
 ## 2026-03-27 (session 3)
 
 ### Feature: Nova UI de loja + sistema de duas descrições

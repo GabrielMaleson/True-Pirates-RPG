@@ -15,7 +15,8 @@ MonoBehaviour:
   nomeDoItem: Armadura de Couro
   id: item_escudo_vida
   icone: {fileID: -1538838846985801459, guid: 0fdab72ea694a974ea505f53cb644062, type: 3}
-  descricao: Protege bem mais do que parece.
+  descricao: "Aumenta defesa em +5"
+  descricaoNarrativa: Protege bem mais do que parece.
   valorEmOuro: 2
   ehEmpilhavel: 0
   ehEquipavel: 1

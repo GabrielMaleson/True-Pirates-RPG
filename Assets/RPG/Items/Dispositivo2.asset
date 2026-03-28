@@ -15,7 +15,8 @@ MonoBehaviour:
   nomeDoItem: "Pe\xE7a do Dispositivo"
   id: piece2item
   icone: {fileID: 3898695570210575425, guid: b5e2e8faeea8c5f4793bf5b02595e28b, type: 3}
-  descricao: "Uma pe\xE7a do dispositivo de navega\xE7\xE3o."
+  descricao: "Peca de missao"
+  descricaoNarrativa: "Uma pe\xE7a do dispositivo de navega\xE7\xE3o."
   valorEmOuro: 10
   ehEmpilhavel: 1
   ehEquipavel: 0

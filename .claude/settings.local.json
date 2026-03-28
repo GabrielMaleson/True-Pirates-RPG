@@ -10,7 +10,23 @@
       "Bash(xargs grep:*)",
       "Bash(grep -E \"\\\\.cs$\")",
       "Bash(grep -E \"\\\\.\\(prefab|meta\\)$\")",
-      "Bash(grep -n \"CraftingSimples\\\\|InterfaceCrafting\\\\|SlotUICrafting\" \"d:/documents/GitHub/True-Pirates-RPG/Assets/Scripts\"/*.cs \"d:/documents/GitHub/True-Pirates-RPG/Assets/Scripts/Menu Scripts\"/*.cs)"
+      "Bash(grep -n \"CraftingSimples\\\\|InterfaceCrafting\\\\|SlotUICrafting\" \"d:/documents/GitHub/True-Pirates-RPG/Assets/Scripts\"/*.cs \"d:/documents/GitHub/True-Pirates-RPG/Assets/Scripts/Menu Scripts\"/*.cs)",
+      "Bash(git --version)",
+      "Bash(where git:*)",
+      "Bash(powershell -Command \"[System.Environment]::GetEnvironmentVariable\\(''''Path'''',''''Machine''''\\)\")",
+      "Bash(tr ';' '\\\\n')",
+      "Bash(for f:*)",
+      "Bash(do echo:*)",
+      "Read(//c/Users/gipoggi/Documents/GitHub/True-Pirates-RPG/**)",
+      "Bash(done)",
+      "Bash(python3 -c \":*)",
+      "Bash(where node:*)",
+      "Bash(where python3:*)",
+      "Bash(where py:*)",
+      "Bash(where pwsh:*)",
+      "Bash(where powershell:*)",
+      "Bash(powershell.exe -NoProfile -Command \"Write-Host ''test''\")",
+      "Bash(powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"c:/Users/gipoggi/Documents/GitHub/True-Pirates-RPG/fix_items.ps1\")"
     ]
   }
 }

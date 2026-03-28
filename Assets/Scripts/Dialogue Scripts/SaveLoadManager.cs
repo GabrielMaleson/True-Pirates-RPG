@@ -47,7 +47,7 @@ public class SaveLoadManager : MonoBehaviour
         public int    currentHP;
         public int    currentAP;
         public int    currentExperience;
-        public string weaponID;
+        public string accessoryID;
         public string armorID;
     }
 
@@ -145,7 +145,7 @@ public class SaveLoadManager : MonoBehaviour
                 currentHP         = member.currentHP,
                 currentAP         = member.currentAP,
                 currentExperience = member.currentExperience,
-                weaponID          = member.weapon != null ? member.weapon.id : "",
+                accessoryID       = member.accessory != null ? member.accessory.id : "",
                 armorID           = member.armor  != null ? member.armor.id  : ""
             });
         }
@@ -216,10 +216,10 @@ public class SaveLoadManager : MonoBehaviour
             member.currentAP          = saved.currentAP;
             member.currentExperience  = saved.currentExperience;
 
-            if (!string.IsNullOrEmpty(saved.weaponID))
+            if (!string.IsNullOrEmpty(saved.accessoryID))
             {
-                DadosItem weapon = FindItemByID(saved.weaponID);
-                if (weapon != null) member.EquipWeapon(weapon);
+                DadosItem accessory = FindItemByID(saved.accessoryID);
+                if (accessory != null) member.EquipAccessory(accessory);
             }
             if (!string.IsNullOrEmpty(saved.armorID))
             {

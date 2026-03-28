@@ -15,7 +15,8 @@ MonoBehaviour:
   nomeDoItem: Escudo de Madeira
   id: item_escudo_caveira
   icone: {fileID: -5340753752277835666, guid: ebd15948ccc6a264abb110ab19ecd5a8, type: 3}
-  descricao: "Uma pe\xE7a de arte plena que MACHUCA. E defende bem, tamb\xE9m!"
+  descricao: "Aumenta defesa em +2 e ataque em +2"
+  descricaoNarrativa: "Uma pe\xE7a de arte plena que MACHUCA. E defende bem, tamb\xE9m!"
   valorEmOuro: 2
   ehEmpilhavel: 0
   ehEquipavel: 1

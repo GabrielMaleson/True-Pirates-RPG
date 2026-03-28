@@ -52,9 +52,24 @@ public class PartyMenuManager : MonoBehaviour
 
     [Header("Equipment Display")]
     public Transform equipmentSlotParent;
-    public GameObject equipmentSlotPrefab;
-    private Dictionary<EquipmentSlot, EquipmentSlotUI> equipmentSlots =
-        new Dictionary<EquipmentSlot, EquipmentSlotUI>();
+    public GameObject equipmentSlotPrefab;        // kept for backwards-compat; unused in new flow
+    public GameObject equipmentCardPrefab;         // new per-character card prefab
+    private List<EquipmentCharacterCard> _equipmentCards = new List<EquipmentCharacterCard>();
+
+    [Header("Item Targeting")]
+    public TextMeshProUGUI selectPromptText;     // "Selecione um personagem:" — inside characterPanel
+    public TextMeshProUGUI selectItemPromptText; // "Selecione o item:" — inside itemsPanel
+    public Button backButton;                    // Undo button — enabled only during active flows
+
+    // ── Pending operation state ──────────────────────────────────────────────
+    public enum PendingOpType { None, UseItem, EquipItem }
+    private PendingOpType _pendingOp     = PendingOpType.None;
+    private SlotInventario _pendingItemSlot;
+    private PartyMemberState _pendingEquipMember;
+    private EquipmentSlot    _pendingEquipSlot;
+
+    public PendingOpType GetPendingOp()       => _pendingOp;
+    public EquipmentSlot GetPendingEquipSlot() => _pendingEquipSlot;
 
     [Header("HUD Buttons")]
     public GameObject hudButtonsContainer; // Root that holds Group/Objectives/Settings buttons
@@ -113,6 +128,12 @@ public class PartyMenuManager : MonoBehaviour
         if (itemsNavBg != null) itemsNavBg.GetComponent<Button>()?.onClick.AddListener(ShowItems);
         if (equipmentNavBg != null) equipmentNavBg.GetComponent<Button>()?.onClick.AddListener(ShowEquipment);
 
+        if (backButton != null)
+        {
+            backButton.onClick.AddListener(OnBackClicked);
+            backButton.gameObject.SetActive(false);
+        }
+
         HideAllPanels();
         CreatePartyMemberDisplays();
         RefreshInventoryDisplay();
@@ -122,6 +143,8 @@ public class PartyMenuManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
+            if (Shopkeeper.IsAnyShopOpen()) return;
+
             if (isInBattle)
             {
                 FindFirstObjectByType<CombatSystem>()?.TogglePauseMenu();
@@ -338,11 +361,14 @@ public class PartyMenuManager : MonoBehaviour
         }
         partyMemberButtons.Clear();
 
+        // Clear both display types — they share statsDisplayContainer
         foreach (var display in statsDisplays.Values)
-        {
             if (display != null) Destroy(display.gameObject);
-        }
         statsDisplays.Clear();
+
+        foreach (var card in _equipmentCards)
+            if (card != null) Destroy(card.gameObject);
+        _equipmentCards.Clear();
 
         foreach (var member in inventory.partyMembers)
         {
@@ -400,15 +426,46 @@ public class PartyMenuManager : MonoBehaviour
 
     public void ShowCharacter()
     {
-        if (currentNavText == characterNavText) return;
+        if (currentNavText == characterNavText && _pendingOp == PendingOpType.None) return;
+        CancelPendingOperation();
         HideSubPanels();
         if (characterPanel != null) characterPanel.SetActive(true);
         SelectNav(characterNavText, characterNavBg);
+        // Repopulate stat displays if equipment cards replaced them
+        if (_equipmentCards.Count > 0 || statsDisplays.Count == 0)
+            RepopulatePartyDisplays();
+    }
+
+    // Rebuilds statsDisplayContainer with stat display prefabs (party view).
+    // Called when switching back from equipment view.
+    private void RepopulatePartyDisplays()
+    {
+        if (statsDisplayContainer != null)
+            foreach (Transform child in statsDisplayContainer)
+                Destroy(child.gameObject);
+
+        statsDisplays.Clear();
+        _equipmentCards.Clear();
+
+        foreach (var member in inventory.partyMembers)
+        {
+            if (member == null || statsDisplayPrefab == null || statsDisplayContainer == null) continue;
+            GameObject displayObj = Instantiate(statsDisplayPrefab, statsDisplayContainer);
+            displayObj.transform.localScale = Vector3.one;
+            PartyMemberStatsDisplay display = displayObj.GetComponent<PartyMemberStatsDisplay>();
+            display.Initialize(member);
+            statsDisplays[member] = display;
+            displayObj.SetActive(true);
+        }
+
+        if (inventory.partyMembers.Count > 0 && inventory.partyMembers[0] != null)
+            OnPartyMemberSelected(inventory.partyMembers[0]);
     }
 
     public void ShowCrafting()
     {
-        if (currentNavText == craftingNavText) return;
+        if (currentNavText == craftingNavText && _pendingOp == PendingOpType.None) return;
+        CancelPendingOperation();
         HideSubPanels();
         craftingPanel.SetActive(true);
         SelectNav(craftingNavText, craftingNavBg);
@@ -416,7 +473,8 @@ public class PartyMenuManager : MonoBehaviour
 
     public void ShowItems()
     {
-        if (currentNavText == itemsNavText) return;
+        if (currentNavText == itemsNavText && _pendingOp == PendingOpType.None) return;
+        CancelPendingOperation();
         HideSubPanels();
         itemsPanel.SetActive(true);
         SelectNav(itemsNavText, itemsNavBg);
@@ -425,42 +483,170 @@ public class PartyMenuManager : MonoBehaviour
 
     public void ShowEquipment()
     {
-        if (currentNavText == equipmentNavText) return;
+        if (currentNavText == equipmentNavText && _pendingOp == PendingOpType.None) return;
+        CancelPendingOperation();
         HideSubPanels();
-        equipmentPanel.SetActive(true);
+        if (characterPanel != null) characterPanel.SetActive(true); // reusa o mesmo painel do grupo
         SelectNav(equipmentNavText, equipmentNavBg);
-
-        if (currentSelectedMember != null)
-            UpdateEquipmentDisplay();
+        UpdateEquipmentDisplay();
     }
 
-    // Hides only the content sub-panels
+    // ── Pending-operation API ─────────────────────────────────────────────────
+
+    // Called by SlotUI when a consumable is clicked
+    public void StartUseItemTargeting(SlotInventario slot)
+    {
+        _pendingOp       = PendingOpType.UseItem;
+        _pendingItemSlot = slot;
+
+        // Switch to character panel without going through HideSubPanels
+        if (itemsPanel   != null) itemsPanel.SetActive(false);
+        if (characterPanel != null) characterPanel.SetActive(true);
+        SelectNav(characterNavText, characterNavBg);
+
+        if (selectPromptText != null)
+        {
+            selectPromptText.text = "Selecione um personagem:";
+            selectPromptText.gameObject.SetActive(true);
+        }
+
+        foreach (var display in statsDisplays.Values)
+            display.SetTargetable(true, OnUseItemOnCharacter);
+
+        if (backButton != null) backButton.gameObject.SetActive(true);
+    }
+
+    // Callback from PartyMemberStatsDisplay when clicked during item targeting
+    private void OnUseItemOnCharacter(PartyMemberState member)
+    {
+        if (_pendingItemSlot?.dadosDoItem == null) return;
+
+        bool used = member.UseConsumable(_pendingItemSlot.dadosDoItem);
+        if (used)
+        {
+            SFXManager.Instance?.Play(SFXManager.Instance.uiForward);
+            inventory.RemoverItem(_pendingItemSlot.dadosDoItem, 1);
+            UpdateCharacterStats(member);
+        }
+
+        CancelPendingOperation();
+        ShowItems();
+    }
+
+    // Called by EquipmentCharacterCard when a slot button is clicked
+    public void StartEquipFromSlot(PartyMemberState member, EquipmentSlot slot)
+    {
+        _pendingOp          = PendingOpType.EquipItem;
+        _pendingEquipMember = member;
+        _pendingEquipSlot   = slot;
+
+        // Show items panel without changing the active nav (we're still in the equip flow)
+        if (characterPanel != null) characterPanel.SetActive(false);
+        if (itemsPanel     != null) itemsPanel.SetActive(true);
+
+        if (selectItemPromptText != null)
+        {
+            string slotLabel = slot == EquipmentSlot.Acessorio ? "acessório" : "armadura";
+            selectItemPromptText.text = $"Selecione um(a) {slotLabel} para {member.CharacterName}:";
+            selectItemPromptText.gameObject.SetActive(true);
+        }
+
+        if (backButton != null) backButton.gameObject.SetActive(true);
+
+        RefreshInventoryDisplay();
+    }
+
+    // Called by SlotUI when an equippable item is clicked while in equip-filter mode
+    public void OnEquipItemSelectedFromPanel(DadosItem item)
+    {
+        if (_pendingEquipMember == null || item == null) return;
+
+        bool equipped = _pendingEquipSlot == EquipmentSlot.Acessorio
+            ? _pendingEquipMember.EquipAccessory(item)
+            : _pendingEquipMember.EquipArmor(item);
+
+        if (equipped)
+        {
+            SFXManager.Instance?.Play(SFXManager.Instance.uiForward);
+            inventory.RemoverItem(item, 1);
+        }
+
+        CancelPendingOperation();
+        ReturnToEquipmentView();
+    }
+
+    // Resets all pending state and disables targeting visuals
+    public void CancelPendingOperation()
+    {
+        _pendingOp          = PendingOpType.None;
+        _pendingItemSlot    = null;
+        _pendingEquipMember = null;
+
+        foreach (var display in statsDisplays.Values)
+            display.SetTargetable(false, null);
+
+        if (selectPromptText     != null) selectPromptText.gameObject.SetActive(false);
+        if (selectItemPromptText != null) selectItemPromptText.gameObject.SetActive(false);
+        if (backButton           != null) backButton.gameObject.SetActive(false);
+    }
+
+    // Returns to the equipment card view after an equip/unequip action, bypassing ShowEquipment's guard
+    private void ReturnToEquipmentView()
+    {
+        if (itemsPanel     != null) itemsPanel.SetActive(false);
+        if (characterPanel != null) characterPanel.SetActive(true);
+        SelectNav(equipmentNavText, equipmentNavBg);
+        UpdateEquipmentDisplay();
+    }
+
+    private void OnBackClicked()
+    {
+        if (_pendingOp == PendingOpType.UseItem)
+        {
+            CancelPendingOperation();
+            ShowItems();
+        }
+        else if (_pendingOp == PendingOpType.EquipItem)
+        {
+            CancelPendingOperation();
+            ReturnToEquipmentView();
+        }
+    }
+
+    // ── Sub-panel navigation ──────────────────────────────────────────────────
+
+    // Hides only the content sub-panels — does NOT cancel pending ops (callers do that)
     private void HideSubPanels()
     {
         if (characterPanel != null) characterPanel.SetActive(false);
-        if (craftingPanel != null) craftingPanel.SetActive(false);
-        if (itemsPanel != null) itemsPanel.SetActive(false);
+        if (craftingPanel  != null) craftingPanel.SetActive(false);
+        if (itemsPanel     != null) itemsPanel.SetActive(false);
         if (equipmentPanel != null) equipmentPanel.SetActive(false);
     }
 
 
     public void UpdateEquipmentDisplay()
     {
-        foreach (Transform child in equipmentSlotParent)
-            Destroy(child.gameObject);
-        equipmentSlots.Clear();
+        // Shares statsDisplayContainer with the character view — clear everything first
+        if (statsDisplayContainer != null)
+            foreach (Transform child in statsDisplayContainer)
+                Destroy(child.gameObject);
+        statsDisplays.Clear();
+        _equipmentCards.Clear();
 
-        if (currentSelectedMember == null) return;
+        if (equipmentCardPrefab == null || inventory == null) return;
 
-        GameObject weaponSlot = Instantiate(equipmentSlotPrefab, equipmentSlotParent);
-        EquipmentSlotUI weaponUI = weaponSlot.GetComponent<EquipmentSlotUI>();
-        weaponUI.Initialize(EquipmentSlot.Arma, currentSelectedMember.weapon, this);
-        equipmentSlots[EquipmentSlot.Arma] = weaponUI;
-
-        GameObject armorSlot = Instantiate(equipmentSlotPrefab, equipmentSlotParent);
-        EquipmentSlotUI armorUI = armorSlot.GetComponent<EquipmentSlotUI>();
-        armorUI.Initialize(EquipmentSlot.Armadura, currentSelectedMember.armor, this);
-        equipmentSlots[EquipmentSlot.Armadura] = armorUI;
+        foreach (var member in inventory.partyMembers)
+        {
+            if (member == null) continue;
+            GameObject cardObj = Instantiate(equipmentCardPrefab, statsDisplayContainer);
+            EquipmentCharacterCard card = cardObj.GetComponent<EquipmentCharacterCard>();
+            if (card != null)
+            {
+                card.Initialize(member, this);
+                _equipmentCards.Add(card);
+            }
+        }
     }
 
     public void RefreshInventoryDisplay()
@@ -477,14 +663,37 @@ public class PartyMenuManager : MonoBehaviour
         }
         inventorySlots.Clear();
 
+        // In equip mode: add a "Remover Item" slot first
+        if (_pendingOp == PendingOpType.EquipItem)
+        {
+            GameObject removeSlotObj = Instantiate(itemSlotPrefab, inventoryGrid);
+            SlotUI removeSlotUI = removeSlotObj.GetComponent<SlotUI>();
+            removeSlotUI.partyMenuManager = this;
+            // Leave slotData null so OnItemClick early-returns; wire our own handler
+            if (removeSlotUI.itemNameText != null) removeSlotUI.itemNameText.text = "Remover Item";
+            if (removeSlotUI.itemIcon     != null) removeSlotUI.itemIcon.gameObject.SetActive(false);
+            if (removeSlotUI.quantityText != null) removeSlotUI.quantityText.text = "";
+            if (removeSlotUI.clickButton  != null)
+                removeSlotUI.clickButton.onClick.AddListener(OnUnequipFromPendingSlot);
+        }
+
         foreach (SlotInventario slot in inventory.inventario)
         {
+            // When picking equipment for a slot, show only items of the matching type
+            if (_pendingOp == PendingOpType.EquipItem)
+            {
+                if (slot.dadosDoItem == null ||
+                    !slot.dadosDoItem.ehEquipavel ||
+                    slot.dadosDoItem.slotEquipamento != _pendingEquipSlot)
+                    continue;
+            }
+
             GameObject newSlot = Instantiate(itemSlotPrefab, inventoryGrid);
             SlotUI slotUI = newSlot.GetComponent<SlotUI>();
 
-            slotUI.partyMenuManager = this;
-            slotUI.itemDetailsPrefab = itemDetailsPrefab;
-            slotUI.partyMemberSelectorPrefab = partyMemberSelectorPrefab;
+            slotUI.partyMenuManager             = this;
+            slotUI.itemDetailsPrefab            = itemDetailsPrefab;
+            slotUI.partyMemberSelectorPrefab    = partyMemberSelectorPrefab;
 
             slotUI.ConfigurarSlot(slot);
             inventorySlots.Add(slotUI);
@@ -507,13 +716,37 @@ public class PartyMenuManager : MonoBehaviour
         }
     }
 
+    // Called by "Remover Item" slot in equip filter mode
+    private void OnUnequipFromPendingSlot()
+    {
+        if (_pendingEquipMember == null) return;
+
+        DadosItem currentItem = _pendingEquipSlot == EquipmentSlot.Acessorio
+            ? _pendingEquipMember.accessory
+            : _pendingEquipMember.armor;
+
+        if (currentItem != null)
+        {
+            if (_pendingEquipSlot == EquipmentSlot.Acessorio)
+                _pendingEquipMember.UnequipAccessory();
+            else
+                _pendingEquipMember.UnequipArmor();
+
+            inventory.AdicionarItem(currentItem, 1);
+            SFXManager.Instance?.Play(SFXManager.Instance.uiBackward);
+        }
+
+        CancelPendingOperation();
+        ReturnToEquipmentView();
+    }
+
     public void UnequipItem(DadosItem item, EquipmentSlot slot)
     {
         if (currentSelectedMember == null) return;
 
-        if (slot == EquipmentSlot.Arma)
+        if (slot == EquipmentSlot.Acessorio)
         {
-            currentSelectedMember.UnequipWeapon();
+            currentSelectedMember.UnequipAccessory();
         }
         else if (slot == EquipmentSlot.Armadura)
         {

@@ -172,42 +172,15 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             }
         }
 
-        // Make it look like a tooltip
+        // Populate tooltip content
         ItemDetails details = activeTooltip.GetComponent<ItemDetails>();
         if (details != null)
-        {
-            // Hide buttons for tooltip mode
-            if (details.useButton != null) details.useButton.gameObject.SetActive(false);
-            if (details.equipButton != null) details.equipButton.gameObject.SetActive(false);
-            if (details.dropButton != null) details.dropButton.gameObject.SetActive(false);
-            if (details.closeButton != null) details.closeButton.gameObject.SetActive(false);
+            details.Initialize(slotData.dadosDoItem);
 
-            // Make background semi-transparent
-            Image bg = activeTooltip.GetComponent<Image>();
-            if (bg != null)
-            {
-                Color c = bg.color;
-                c.a = 0.9f;
-                bg.color = c;
-            }
-
-            // Make it smaller for tooltip
-            RectTransform rt = activeTooltip.GetComponent<RectTransform>();
-            if (rt != null)
-            {
-                rt.localScale = new Vector3(0.8f, 0.8f, 1f);
-            }
-
-            // Make sure tooltip doesn't block raycasts
-            CanvasGroup cg = activeTooltip.GetComponent<CanvasGroup>();
-            if (cg == null)
-                cg = activeTooltip.AddComponent<CanvasGroup>();
-            cg.blocksRaycasts = false;
-
-            // Initialize with item data
-            PartyMemberState currentCharacter = partyMenuManager?.GetCurrentSelectedMember();
-            details.Initialize(slotData.dadosDoItem, slotData, currentCharacter);
-        }
+        // Tooltip must not block raycasts
+        CanvasGroup cg = activeTooltip.GetComponent<CanvasGroup>();
+        if (cg == null) cg = activeTooltip.AddComponent<CanvasGroup>();
+        cg.blocksRaycasts = false;
 
         tooltipCoroutine = null;
     }
@@ -216,33 +189,31 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         if (slotData == null || slotData.dadosDoItem == null) return;
 
-        // Only allow click if item is consumable or equippable
-        if (!slotData.dadosDoItem.ehConsumivel && !slotData.dadosDoItem.ehEquipavel)
+        // Dismiss tooltip
+        if (tooltipCoroutine != null) { StopCoroutine(tooltipCoroutine); tooltipCoroutine = null; }
+        if (activeTooltip != null)    { Destroy(activeTooltip); activeTooltip = null; }
+
+        DadosItem item = slotData.dadosDoItem;
+
+        // ── Equip-filter mode: items panel opened from an equipment slot ─────
+        if (partyMenuManager != null &&
+            partyMenuManager.GetPendingOp() == PartyMenuManager.PendingOpType.EquipItem)
         {
-            Debug.Log($"Item {slotData.dadosDoItem.nomeDoItem} cannot be used or equipped.");
+            if (item.ehEquipavel && item.slotEquipamento == partyMenuManager.GetPendingEquipSlot())
+                partyMenuManager.OnEquipItemSelectedFromPanel(item);
             return;
         }
 
-        // Cancel any pending tooltip
-        if (tooltipCoroutine != null)
-        {
-            StopCoroutine(tooltipCoroutine);
-            tooltipCoroutine = null;
-        }
+        // ── Normal mode ──────────────────────────────────────────────────────
+        if (!item.ehConsumivel) return;
 
-        // Destroy tooltip if showing
-        if (activeTooltip != null)
-        {
-            Destroy(activeTooltip);
-            activeTooltip = null;
-        }
+        if (partyMenuManager != null) partyMenuManager.HighlightSlot(this);
 
-        if (partyMenuManager != null)
+        if (item.ehConsumivel && item.usavelNoMapa)
         {
-            partyMenuManager.HighlightSlot(this);
+            // Switch to character panel for target selection
+            partyMenuManager?.StartUseItemTargeting(slotData);
         }
-
-        ShowPartyMemberSelector();
     }
 
     private void ShowPartyMemberSelector()
@@ -383,9 +354,9 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         else if (item.ehEquipavel)
         {
             bool equipped = false;
-            if (item.slotEquipamento == EquipmentSlot.Arma)
+            if (item.slotEquipamento == EquipmentSlot.Acessorio)
             {
-                equipped = selectedCharacter.EquipWeapon(item);
+                equipped = selectedCharacter.EquipAccessory(item);
             }
             else if (item.slotEquipamento == EquipmentSlot.Armadura)
             {

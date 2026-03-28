@@ -15,6 +15,7 @@ MonoBehaviour:
   nomeDoItem: "Po\xE7\xE3o de Morte"
   id: item_pocao_morte
   icone: {fileID: 21300000, guid: 4fe0fff6b624c5b44bc92602ed8c9c4d, type: 3}
-  descricao: "Po\xE7\xE3o m\xE1gica que d\xE1 50 pontos de dano para o inimigo."
+  descricao: "Causa 50 de dano ao inimigo"
+  descricaoNarrativa: "Po\xE7\xE3o m\xE1gica que d\xE1 50 pontos de dano para o inimigo."
   valorEmOuro: 5
   ehEmpilhavel: 1

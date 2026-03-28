@@ -15,7 +15,8 @@ MonoBehaviour:
   nomeDoItem: Espada da Morte
   id: item_espada_morte
   icone: {fileID: 21300000, guid: 2ee65cd0dfa503249815ddcc1402380c, type: 3}
-  descricao: "Espada com a ess\xEAncia de um tubar\xE3o. "
+  descricao: "Arma especial"
+  descricaoNarrativa: "Espada com a ess\xEAncia de um tubar\xE3o. "
   valorEmOuro: 0
   ehEmpilhavel: 0
   ehEquipavel: 0

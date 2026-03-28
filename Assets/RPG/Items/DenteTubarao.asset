@@ -15,6 +15,7 @@ MonoBehaviour:
   nomeDoItem: "Dente de Tubar\xE3o"
   id: item_tubarao_dente
   icone: {fileID: 6658270426124323479, guid: a1dfb11679c144945bc33a24bfad5efb, type: 3}
-  descricao: "Dente de tubar\xE3o. Forte o suficiente para quebrar uma pessoa."
+  descricao: "Item especial"
+  descricaoNarrativa: "Dente de tubar\xE3o. Forte o suficiente para quebrar uma pessoa."
   valorEmOuro: 1
   ehEmpilhavel: 1

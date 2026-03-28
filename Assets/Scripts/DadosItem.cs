@@ -66,7 +66,7 @@ public class ItemEffectData
 // Simplified Equipment Slots - Only what we use
 public enum EquipmentSlot
 {
-    Arma,      // Weapon slot
+    Acessorio, // Accessory slot
     Armadura   // Armor slot
 }
 

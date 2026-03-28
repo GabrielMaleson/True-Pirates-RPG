@@ -379,23 +379,23 @@ public class SistemaInventario : MonoBehaviour
     }
 
     // Equipment Methods
-    public bool EquipWeapon(int partyIndex, DadosItem weaponItem)
+    public bool EquipAccessory(int partyIndex, DadosItem accessoryItem)
     {
         if (partyIndex < 0 || partyIndex >= partyMembers.Count) return false;
 
         var member = partyMembers[partyIndex];
         if (member == null) return false;
 
-        if (!TemItem(weaponItem, 1)) return false;
+        if (!TemItem(accessoryItem, 1)) return false;
 
-        if (member.weapon != null)
+        if (member.accessory != null)
         {
-            AdicionarItem(member.weapon, 1);
+            AdicionarItem(member.accessory, 1);
         }
 
-        if (member.EquipWeapon(weaponItem))
+        if (member.EquipAccessory(accessoryItem))
         {
-            RemoverItem(weaponItem, 1);
+            RemoverItem(accessoryItem, 1);
             onPartyUpdated?.Invoke();
             return true;
         }
@@ -427,15 +427,15 @@ public class SistemaInventario : MonoBehaviour
         return false;
     }
 
-    public void UnequipWeapon(int partyIndex)
+    public void UnequipAccessory(int partyIndex)
     {
         if (partyIndex < 0 || partyIndex >= partyMembers.Count) return;
 
         var member = partyMembers[partyIndex];
-        if (member == null || member.weapon == null) return;
+        if (member == null || member.accessory == null) return;
 
-        AdicionarItem(member.weapon, 1);
-        member.UnequipWeapon();
+        AdicionarItem(member.accessory, 1);
+        member.UnequipAccessory();
         onPartyUpdated?.Invoke();
     }
 

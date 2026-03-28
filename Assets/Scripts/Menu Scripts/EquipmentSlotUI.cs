@@ -83,10 +83,10 @@ public class EquipmentSlotUI : MonoBehaviour
     {
         switch (slot)
         {
-            case EquipmentSlot.Arma:
-                return "Weapon";
+            case EquipmentSlot.Acessorio:
+                return "Acessório";
             case EquipmentSlot.Armadura:
-                return "Armor";
+                return "Armadura";
             default:
                 return slot.ToString();
         }
@@ -281,9 +281,9 @@ public class EquipmentSlotUI : MonoBehaviour
         // Equip the item to the selected member
         bool equipped = false;
 
-        if (slotType == EquipmentSlot.Arma)
+        if (slotType == EquipmentSlot.Acessorio)
         {
-            equipped = member.EquipWeapon(item);
+            equipped = member.EquipAccessory(item);
         }
         else if (slotType == EquipmentSlot.Armadura)
         {

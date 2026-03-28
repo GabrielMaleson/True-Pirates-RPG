@@ -15,7 +15,8 @@ MonoBehaviour:
   nomeDoItem: "Dispositivo de Navega\xE7\xE3o"
   id: navigationitem
   icone: {fileID: 3329365968046815578, guid: 721fa40b51653514e9cff2efb8a04df8, type: 3}
-  descricao: "O dispositivo de navega\xE7\xE3o que ajuda a patrulha toda! O comandante
+  descricao: "Item de miss\xE3o"
+  descricaoNarrativa: "O dispositivo de navega\xE7\xE3o que ajuda a patrulha toda! O comandante
     vai querer saber..."
   valorEmOuro: 10
   ehEmpilhavel: 1

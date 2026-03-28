@@ -15,7 +15,7 @@ public class PartyMemberState
     public int currentExperience;
 
     [Header("Equipment")]
-    public DadosItem weapon;
+    public DadosItem accessory;
     public DadosItem armor;
 
     [Header("Learned Attacks")]
@@ -33,9 +33,9 @@ public class PartyMemberState
         get
         {
             int baseHP = template != null ? template.GetHPForLevel(level) : 1;
-            int weaponBonus = GetEquipmentStatBonus(weapon, StatType.HP);
+            int accessoryBonus = GetEquipmentStatBonus(accessory, StatType.HP);
             int armorBonus = GetEquipmentStatBonus(armor, StatType.HP);
-            return baseHP + weaponBonus + armorBonus;
+            return baseHP + accessoryBonus + armorBonus;
         }
     }
 
@@ -44,9 +44,9 @@ public class PartyMemberState
         get
         {
             int baseAttack = template != null ? template.GetAttackForLevel(level) : 1;
-            int weaponBonus = GetEquipmentStatBonus(weapon, StatType.Attack);
+            int accessoryBonus = GetEquipmentStatBonus(accessory, StatType.Attack);
             int armorBonus = GetEquipmentStatBonus(armor, StatType.Attack);
-            return baseAttack + weaponBonus + armorBonus;
+            return baseAttack + accessoryBonus + armorBonus;
         }
     }
    
@@ -66,9 +66,9 @@ public class PartyMemberState
                 return _temporaryDefense;
 
             int baseDefense = template != null ? template.GetDefenseForLevel(level) : 1;
-            int weaponBonus = GetEquipmentStatBonus(weapon, StatType.Defense);
+            int accessoryBonus = GetEquipmentStatBonus(accessory, StatType.Defense);
             int armorBonus = GetEquipmentStatBonus(armor, StatType.Defense);
-            return baseDefense + weaponBonus + armorBonus;
+            return baseDefense + accessoryBonus + armorBonus;
         }
     }
 
@@ -208,21 +208,15 @@ public class PartyMemberState
     }
 
     // Equipment methods
-    public bool EquipWeapon(DadosItem weaponItem)
+    public bool EquipAccessory(DadosItem accessoryItem)
     {
-        if (weaponItem == null || !weaponItem.ehEquipavel || weaponItem.slotEquipamento != EquipmentSlot.Arma)
+        if (accessoryItem == null || !accessoryItem.ehEquipavel || accessoryItem.slotEquipamento != EquipmentSlot.Acessorio)
             return false;
 
-        if (weaponItem.nivelRequerido > level)
+        if (accessoryItem.nivelRequerido > level)
             return false;
 
-        // Unequip current weapon and add to inventory
-        if (weapon != null)
-        {
-            // Add back to inventory logic will be handled by calling method
-        }
-
-        weapon = weaponItem;
+        accessory = accessoryItem;
         return true;
     }
 
@@ -243,9 +237,9 @@ public class PartyMemberState
         return true;
     }
 
-    public void UnequipWeapon()
+    public void UnequipAccessory()
     {
-        weapon = null;
+        accessory = null;
     }
 
     public void UnequipArmor()

@@ -46,41 +46,30 @@ public class TitleScreenCleanup : MonoBehaviour
 
     public void CheckAndEnableContinueButton()
     {
-        if (continueObject != null)
+        if (continueObject == null)
         {
-            // Check if save data exists
-            bool saveExists = SaveExists();
+            Debug.Log("Nenhum objeto 'Continuar' encontrado na cena");
+            return;
+        }
 
-            // Get the Button component
-            Button continueButton = continueObject.GetComponent<Button>();
+        bool saveExists = SaveExists();
 
-            if (continueButton != null)
-            {
-                // Enable the button if save data exists
-                continueButton.interactable = saveExists;
-            }
-            else
-            {
-                Debug.LogWarning("Continue GameObject found but no Button component attached");
-            }
+        Button continueButton = continueObject.GetComponent<Button>();
+        if (continueButton != null)
+        {
+            continueButton.interactable = saveExists;
 
-            // Get the TMP_Text component
-            TMP_Text continueImage = continueObject.GetComponent<TMP_Text>();
-            if (continueImage != null)
-            {
-                continueImage.color = saveExists ? Color.white : new Color(1f, 1f, 1f, 0.5f);
-            }
-            else
-            {
-                Debug.LogWarning("Continue GameObject found but no TMP_Text component attached");
-            }
-
-            Debug.Log($"Continue button {(saveExists ? "enabled" : "disabled")} - Save exists: {saveExists}");
+            // Quando sem save, apenas o texto fica cinza — sem alterar transparência
+            ColorBlock cb = continueButton.colors;
+            cb.disabledColor = new Color(0.5f, 0.5f, 0.5f, 1f);
+            continueButton.colors = cb;
         }
         else
         {
-            Debug.Log("No GameObject with 'Continue' tag found in this scene");
+            Debug.LogWarning("Objeto 'Continuar' encontrado mas sem componente Button");
         }
+
+        Debug.Log($"Botão Continuar {(saveExists ? "ativado" : "desativado")} — save existe: {saveExists}");
     }
 
     public void CleanupNonTitleScreenObjects()

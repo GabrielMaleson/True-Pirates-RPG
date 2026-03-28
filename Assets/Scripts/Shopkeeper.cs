@@ -25,6 +25,7 @@ public class Shopkeeper : MonoBehaviour
     public Transform slotGrid;            // ItemSelectorGrid
     public GameObject slotPrefab;         // Slot Shop prefab (tem Image para ícone + Button)
     public Button shopBuyButton;          // Botão "BOTAO COMPRAR"
+    public Button shopCloseButton;        // Botão para fechar a loja
     public GameObject shopInteractionPopup; // Popup de proximidade
 
     // ── Painel de Info do Item Selecionado ────────────────────────────────────
@@ -42,6 +43,9 @@ public class Shopkeeper : MonoBehaviour
     private ShopItem selectedItem;
     private bool playerInRange = false;
     private bool isShopOpen    = false;
+
+    private static bool _anyShopOpen = false;
+    public  static bool IsAnyShopOpen() => _anyShopOpen;
 
     private static readonly string[] shopkeeperQuotes =
     {
@@ -61,11 +65,22 @@ public class Shopkeeper : MonoBehaviour
         if (shopBuyButton != null)
             shopBuyButton.onClick.AddListener(TryBuySelectedItem);
 
+        if (shopCloseButton != null)
+            shopCloseButton.onClick.AddListener(CloseShop);
+
         if (shopPanel != null)
             shopPanel.SetActive(false);
 
         if (shopInteractionPopup != null)
             shopInteractionPopup.SetActive(false);
+
+        // Clip slot grid overflow to the panel bounds
+        if (slotGrid != null)
+        {
+            RectTransform gridParent = slotGrid.parent as RectTransform;
+            if (gridParent != null && gridParent.GetComponent<RectMask2D>() == null)
+                gridParent.gameObject.AddComponent<RectMask2D>();
+        }
 
         ClearSelectedInfo();
     }
@@ -74,6 +89,9 @@ public class Shopkeeper : MonoBehaviour
     {
         if (playerInRange && !isShopOpen && Input.GetKeyDown(KeyCode.Space))
             OpenShop();
+
+        if (isShopOpen && Input.GetKeyDown(KeyCode.Escape))
+            CloseShop();
     }
 
     // ── Trigger ───────────────────────────────────────────────────────────────
@@ -101,6 +119,7 @@ public class Shopkeeper : MonoBehaviour
             playerInventory = SistemaInventario.Instance ?? FindFirstObjectByType<SistemaInventario>();
 
         isShopOpen = true;
+        _anyShopOpen = true;
         MovimentacaoExploracao.StopForDialogue();
 
         RefreshSlotGrid();
@@ -112,7 +131,8 @@ public class Shopkeeper : MonoBehaviour
 
     public void CloseShop()
     {
-        isShopOpen  = false;
+        isShopOpen   = false;
+        _anyShopOpen = false;
         selectedItem = null;
 
         if (shopPanel != null) shopPanel.SetActive(false);
@@ -175,7 +195,28 @@ public class Shopkeeper : MonoBehaviour
         if (selectedIcon != null)
         {
             selectedIcon.sprite = item.icone;
-            selectedIcon.preserveAspect = true;
+            selectedIcon.color = Color.white;
+            selectedIcon.preserveAspect = false;
+
+            if (item.icone != null)
+            {
+                RectTransform iconRT = selectedIcon.rectTransform;
+                RectTransform parentRT = iconRT.parent as RectTransform;
+                if (parentRT != null)
+                {
+                    Canvas.ForceUpdateCanvases();
+                    float w = parentRT.rect.width;
+                    if (w > 0f)
+                    {
+                        float aspect = item.icone.rect.width / item.icone.rect.height;
+                        iconRT.anchorMin = new Vector2(0.5f, iconRT.anchorMin.y);
+                        iconRT.anchorMax = new Vector2(0.5f, iconRT.anchorMax.y);
+                        iconRT.pivot     = new Vector2(0.5f, 0.5f);
+                        iconRT.sizeDelta = new Vector2(w, w / aspect);
+                    }
+                }
+            }
+
             selectedIcon.gameObject.SetActive(item.icone != null);
         }
 
@@ -212,7 +253,7 @@ public class Shopkeeper : MonoBehaviour
     private string GetItemTypeLabel(DadosItem item)
     {
         if (item.ehEquipavel)
-            return item.slotEquipamento == EquipmentSlot.Arma ? "arma" : "armadura";
+            return item.slotEquipamento == EquipmentSlot.Acessorio ? "acessório" : "armadura";
         if (item.ehConsumivel)
             return "consumível";
         return "item";
