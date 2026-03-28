@@ -2,6 +2,32 @@
 
 ---
 
+## 2026-03-28 (session 37)
+
+### Refactor: Itens não são mais empilháveis + redesign de prefabs
+**Files:** `SistemaInventario.cs`, `SlotUI.cs`, `PartyMenuManager.cs`
+
+**Sem empilhamento:** `AdicionarItem` agora sempre cria um novo `SlotInventario` por item (cada cópia tem seu próprio slot). Removida lógica `ehEmpilhavel` e stacking. `RemoverItem` agora remove a primeira instância encontrada; adicionado `RemoverSlot(SlotInventario)` para remover por referência direta. `quantityText` removido de `SlotUI`.
+
+**Prefabs — campos necessários:**
+
+**SlotUI** (`Assets/Scripts/Menu Scripts/SlotUI.cs`):
+- `itemIcon` → Image (ícone do item)
+- `itemNameText` → TextMeshProUGUI (nome)
+- `highlightBorder` → Image (borda amarela, desativada por padrão)
+- `clickButton` → Button (cobre o slot inteiro)
+- `equippedIndicator` → Image (checkmark/X, desativado por padrão)
+- `checkmarkSprite` → Sprite (exibido quando item está equipado)
+- `unequipXSprite` → Sprite (exibido ao passar o mouse em item equipado)
+
+**ItemDetails** (`Assets/Scripts/Menu Scripts/ItemDetails.cs`):
+- `itemIcon` → Image
+- `itemNameText` → TextMeshProUGUI
+- `itemDescriptionText` → TextMeshProUGUI
+- `itemStatsText` → TextMeshProUGUI (oculto automaticamente para não-equipáveis)
+
+---
+
 ## 2026-03-28 (session 36)
 
 ### Refactor: ItemDetails simplificado para tooltip puro

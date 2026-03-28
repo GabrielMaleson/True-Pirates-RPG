@@ -1,11 +1,9 @@
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 
 public class ItemDetails : MonoBehaviour
 {
     [Header("UI Elements")]
-    public Image itemIcon;
     public TextMeshProUGUI itemNameText;
     public TextMeshProUGUI itemDescriptionText;
     public TextMeshProUGUI itemStatsText;
@@ -13,12 +11,6 @@ public class ItemDetails : MonoBehaviour
     public void Initialize(DadosItem item)
     {
         if (item == null) return;
-
-        if (itemIcon != null)
-        {
-            itemIcon.sprite = item.icone;
-            itemIcon.gameObject.SetActive(item.icone != null);
-        }
 
         if (itemNameText != null)
             itemNameText.text = item.nomeDoItem;

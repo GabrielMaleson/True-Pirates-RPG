@@ -58,17 +58,18 @@ public class PartyMenuManager : MonoBehaviour
 
     [Header("Item Targeting")]
     public TextMeshProUGUI selectPromptText;     // "Selecione um personagem:" — inside characterPanel
-    public TextMeshProUGUI selectItemPromptText; // "Selecione o item:" — inside itemsPanel
+    public TextMeshProUGUI inventoryTitleText;   // Normal title — "Inventário"
+    public TextMeshProUGUI selectItemPromptText; // Equip-mode title — "Selecione um item:"
     public Button backButton;                    // Undo button — enabled only during active flows
 
     // ── Pending operation state ──────────────────────────────────────────────
-    public enum PendingOpType { None, UseItem, EquipItem }
-    private PendingOpType _pendingOp     = PendingOpType.None;
-    private SlotInventario _pendingItemSlot;
+    public enum PendingOpType { None, UseItem, EquipItem, EquipItemFromInventory }
+    private PendingOpType    _pendingOp          = PendingOpType.None;
+    private SlotInventario   _pendingItemSlot;
     private PartyMemberState _pendingEquipMember;
     private EquipmentSlot    _pendingEquipSlot;
 
-    public PendingOpType GetPendingOp()       => _pendingOp;
+    public PendingOpType GetPendingOp()        => _pendingOp;
     public EquipmentSlot GetPendingEquipSlot() => _pendingEquipSlot;
 
     [Header("HUD Buttons")]
@@ -400,6 +401,12 @@ public class PartyMenuManager : MonoBehaviour
             UpdateEquipmentDisplay();
     }
 
+    private void SetInventoryTitle(bool normal)
+    {
+        if (inventoryTitleText   != null) inventoryTitleText.gameObject.SetActive(normal);
+        if (selectItemPromptText != null && normal) selectItemPromptText.gameObject.SetActive(false);
+    }
+
     private static void SetNavButtonState(TextMeshProUGUI text, Image bg, bool selected)
     {
         if (text != null) text.color = selected ? NavTextSelected : NavTextDeselected;
@@ -478,6 +485,7 @@ public class PartyMenuManager : MonoBehaviour
         HideSubPanels();
         itemsPanel.SetActive(true);
         SelectNav(itemsNavText, itemsNavBg);
+        SetInventoryTitle(normal: true);
         RefreshInventoryDisplay();
     }
 
@@ -544,6 +552,7 @@ public class PartyMenuManager : MonoBehaviour
         if (characterPanel != null) characterPanel.SetActive(false);
         if (itemsPanel     != null) itemsPanel.SetActive(true);
 
+        SetInventoryTitle(normal: false);
         if (selectItemPromptText != null)
         {
             string slotLabel = slot == EquipmentSlot.Acessorio ? "acessório" : "armadura";
@@ -556,23 +565,66 @@ public class PartyMenuManager : MonoBehaviour
         RefreshInventoryDisplay();
     }
 
-    // Called by SlotUI when an equippable item is clicked while in equip-filter mode
-    public void OnEquipItemSelectedFromPanel(DadosItem item)
+    // Called by SlotUI when an equippable item is clicked while in equip-filter mode (Equipment tab flow)
+    public void OnEquipItemSelectedFromPanel(SlotInventario slot)
     {
-        if (_pendingEquipMember == null || item == null) return;
+        if (_pendingEquipMember == null || slot == null) return;
 
-        bool equipped = _pendingEquipSlot == EquipmentSlot.Acessorio
-            ? _pendingEquipMember.EquipAccessory(item)
-            : _pendingEquipMember.EquipArmor(item);
-
-        if (equipped)
-        {
-            SFXManager.Instance?.Play(SFXManager.Instance.uiForward);
-            inventory.RemoverItem(item, 1);
-        }
+        inventory.EquipItemToMember(slot, _pendingEquipMember);
+        SFXManager.Instance?.Play(SFXManager.Instance.uiForward);
 
         CancelPendingOperation();
         ReturnToEquipmentView();
+    }
+
+    // Called by SlotUI when clicking an equippable from the Items tab (item→character flow)
+    public void StartEquipItemFromInventory(SlotInventario slot)
+    {
+        _pendingOp       = PendingOpType.EquipItemFromInventory;
+        _pendingItemSlot = slot;
+
+        // Show character panel with equipment cards so the player sees current loadout
+        if (itemsPanel     != null) itemsPanel.SetActive(false);
+        if (characterPanel != null) characterPanel.SetActive(true);
+
+        // Rebuild container with equipment cards
+        if (statsDisplayContainer != null)
+            foreach (Transform child in statsDisplayContainer)
+                Destroy(child.gameObject);
+        statsDisplays.Clear();
+        _equipmentCards.Clear();
+
+        foreach (var member in inventory.partyMembers)
+        {
+            if (member == null || equipmentCardPrefab == null) continue;
+            GameObject cardObj = Instantiate(equipmentCardPrefab, statsDisplayContainer);
+            EquipmentCharacterCard card = cardObj.GetComponent<EquipmentCharacterCard>();
+            if (card != null)
+            {
+                card.Initialize(member, this);
+                card.SetTargetable(true, OnEquipItemToMemberFromInventory);
+                _equipmentCards.Add(card);
+            }
+        }
+
+        if (selectPromptText != null)
+        {
+            selectPromptText.text = $"Equipar {slot.dadosDoItem.nomeDoItem} em:";
+            selectPromptText.gameObject.SetActive(true);
+        }
+
+        if (backButton != null) backButton.gameObject.SetActive(true);
+    }
+
+    private void OnEquipItemToMemberFromInventory(PartyMemberState member)
+    {
+        if (_pendingItemSlot == null) return;
+
+        inventory.EquipItemToMember(_pendingItemSlot, member);
+        SFXManager.Instance?.Play(SFXManager.Instance.uiForward);
+
+        CancelPendingOperation();
+        ReturnToItemsView();
     }
 
     // Resets all pending state and disables targeting visuals
@@ -588,6 +640,7 @@ public class PartyMenuManager : MonoBehaviour
         if (selectPromptText     != null) selectPromptText.gameObject.SetActive(false);
         if (selectItemPromptText != null) selectItemPromptText.gameObject.SetActive(false);
         if (backButton           != null) backButton.gameObject.SetActive(false);
+        SetInventoryTitle(normal: true);
     }
 
     // Returns to the equipment card view after an equip/unequip action, bypassing ShowEquipment's guard
@@ -597,6 +650,23 @@ public class PartyMenuManager : MonoBehaviour
         if (characterPanel != null) characterPanel.SetActive(true);
         SelectNav(equipmentNavText, equipmentNavBg);
         UpdateEquipmentDisplay();
+    }
+
+    // Returns to items panel, bypassing the ShowItems guard
+    private void ReturnToItemsView()
+    {
+        HideSubPanels();
+        if (itemsPanel != null) itemsPanel.SetActive(true);
+        SelectNav(itemsNavText, itemsNavBg);
+        SetInventoryTitle(normal: true);
+        RefreshInventoryDisplay();
+    }
+
+    // Refreshes equipment cards in place without destroying stat displays
+    public void RefreshEquipmentCards()
+    {
+        foreach (var card in _equipmentCards)
+            if (card != null) card.Refresh();
     }
 
     private void OnBackClicked()
@@ -610,6 +680,11 @@ public class PartyMenuManager : MonoBehaviour
         {
             CancelPendingOperation();
             ReturnToEquipmentView();
+        }
+        else if (_pendingOp == PendingOpType.EquipItemFromInventory)
+        {
+            CancelPendingOperation();
+            ReturnToItemsView();
         }
     }
 
@@ -670,9 +745,7 @@ public class PartyMenuManager : MonoBehaviour
             SlotUI removeSlotUI = removeSlotObj.GetComponent<SlotUI>();
             removeSlotUI.partyMenuManager = this;
             // Leave slotData null so OnItemClick early-returns; wire our own handler
-            if (removeSlotUI.itemNameText != null) removeSlotUI.itemNameText.text = "Remover Item";
-            if (removeSlotUI.itemIcon     != null) removeSlotUI.itemIcon.gameObject.SetActive(false);
-            if (removeSlotUI.quantityText != null) removeSlotUI.quantityText.text = "";
+            if (removeSlotUI.itemIcon != null) removeSlotUI.itemIcon.gameObject.SetActive(false);
             if (removeSlotUI.clickButton  != null)
                 removeSlotUI.clickButton.onClick.AddListener(OnUnequipFromPendingSlot);
         }

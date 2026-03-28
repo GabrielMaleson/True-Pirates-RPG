@@ -8,25 +8,25 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [Header("UI Elements")]
     public Image itemIcon;
-    public TextMeshProUGUI itemNameText;
-    public TextMeshProUGUI quantityText;
     public Image highlightBorder;
     public Button clickButton;
+
+    [Header("Equipped Indicator")]
+    public GameObject equippedIndicator; // Parent object — active when item is equipped
+    public GameObject checkmarkObject;   // Child shown at rest
+    public GameObject unequipXObject;    // Child shown on hover
 
     [Header("Prefabs (set by PartyMenuManager)")]
     [HideInInspector] public GameObject itemDetailsPrefab;
     [HideInInspector] public GameObject partyMemberSelectorPrefab;
-    [HideInInspector] public GameObject partyMemberButtonPrefab;
 
     [Header("References")]
     [HideInInspector] public PartyMenuManager partyMenuManager;
 
     [Header("Tooltip Settings")]
     public float tooltipDelay = 0.5f;
-    public Vector2 tooltipOffset = new Vector2(10, -10);
 
     private GameObject activeTooltip;
-    private GameObject activeSelector;
     private SlotInventario slotData;
     private Coroutine tooltipCoroutine;
     private bool isPointerOver = false;
@@ -36,9 +36,11 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         if (clickButton != null)
             clickButton.onClick.AddListener(OnItemClick);
 
-        // Initially not highlighted
         if (highlightBorder != null)
             highlightBorder.gameObject.SetActive(false);
+
+        if (equippedIndicator != null)
+            equippedIndicator.SetActive(false);
     }
 
     public void ConfigurarSlot(SlotInventario slot)
@@ -52,43 +54,38 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
                 itemIcon.gameObject.SetActive(true);
                 itemIcon.sprite = slot.dadosDoItem.icone;
 
-                // Setup highlight border to match icon size + 0.1f
                 if (highlightBorder != null)
                 {
-                    // Make highlight border a copy of the icon sprite
                     highlightBorder.sprite = slot.dadosDoItem.icone;
-                    highlightBorder.color = Color.yellow; // Yellow highlight
-
-                    // Make it 10% larger than the icon
+                    highlightBorder.color = Color.yellow;
                     RectTransform iconRect = itemIcon.GetComponent<RectTransform>();
                     RectTransform borderRect = highlightBorder.GetComponent<RectTransform>();
-
                     if (iconRect != null && borderRect != null)
-                    {
                         borderRect.sizeDelta = iconRect.sizeDelta * 1.1f;
-                    }
                 }
             }
 
-            if (itemNameText != null)
-                itemNameText.text = slot.dadosDoItem.nomeDoItem;
-
-            if (quantityText != null)
-                quantityText.text = $"x{slot.quantidade}";
+            RefreshEquippedIndicator();
         }
         else
         {
-            if (itemIcon != null)
-                itemIcon.gameObject.SetActive(false);
+            if (itemIcon != null) itemIcon.gameObject.SetActive(false);
+            if (highlightBorder != null) highlightBorder.gameObject.SetActive(false);
+            if (equippedIndicator != null) equippedIndicator.SetActive(false);
+            if (equippedIndicator != null) equippedIndicator.gameObject.SetActive(false);
+        }
+    }
 
-            if (itemNameText != null)
-                itemNameText.text = "Empty";
+    private void RefreshEquippedIndicator()
+    {
+        if (equippedIndicator == null || slotData == null) return;
 
-            if (quantityText != null)
-                quantityText.text = "";
-
-            if (highlightBorder != null)
-                highlightBorder.gameObject.SetActive(false);
+        bool isEquipped = slotData.equippedTo != null;
+        equippedIndicator.SetActive(isEquipped);
+        if (isEquipped)
+        {
+            if (checkmarkObject != null) checkmarkObject.SetActive(true);
+            if (unequipXObject  != null) unequipXObject.SetActive(false);
         }
     }
 
@@ -96,12 +93,16 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         isPointerOver = true;
 
+        // Switch indicator to X if equipped
+        if (equippedIndicator != null && slotData?.equippedTo != null)
+        {
+            if (checkmarkObject != null) checkmarkObject.SetActive(false);
+            if (unequipXObject  != null) unequipXObject.SetActive(true);
+        }
+
         if (slotData != null && slotData.dadosDoItem != null && itemDetailsPrefab != null && partyMenuManager != null)
         {
-            // Start coroutine to show tooltip after delay
-            if (tooltipCoroutine != null)
-                StopCoroutine(tooltipCoroutine);
-
+            if (tooltipCoroutine != null) StopCoroutine(tooltipCoroutine);
             tooltipCoroutine = StartCoroutine(ShowTooltipAfterDelay());
         }
     }
@@ -110,74 +111,44 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         isPointerOver = false;
 
-        // Cancel tooltip coroutine
-        if (tooltipCoroutine != null)
+        // Restore checkmark indicator
+        if (equippedIndicator != null && slotData?.equippedTo != null)
         {
-            StopCoroutine(tooltipCoroutine);
-            tooltipCoroutine = null;
+            if (checkmarkObject != null) checkmarkObject.SetActive(true);
+            if (unequipXObject  != null) unequipXObject.SetActive(false);
         }
 
-        // Destroy tooltip immediately
-        if (activeTooltip != null)
-        {
-            Destroy(activeTooltip);
-            activeTooltip = null;
-        }
+        if (tooltipCoroutine != null) { StopCoroutine(tooltipCoroutine); tooltipCoroutine = null; }
+        if (activeTooltip != null) { Destroy(activeTooltip); activeTooltip = null; }
     }
 
     private IEnumerator ShowTooltipAfterDelay()
     {
         yield return new WaitForSeconds(tooltipDelay);
+        if (!isPointerOver || activeTooltip != null) yield break;
 
-        // Only show if pointer is still over this slot
-        if (!isPointerOver || activeTooltip != null)
-            yield break;
-
-        // Use PartyMenuManager's canvas as parent
         Transform parentCanvas = partyMenuManager.partyMenuCanvas;
         activeTooltip = Instantiate(itemDetailsPrefab, parentCanvas);
         activeTooltip.transform.SetAsLastSibling();
+        activeTooltip.transform.position = Input.mousePosition;
 
-        // Position tooltip away from mouse to avoid overlap
-        Vector2 mousePos = Input.mousePosition;
-        activeTooltip.transform.position = mousePos;
-
-        // Ensure tooltip stays within screen bounds
         RectTransform tooltipRect = activeTooltip.GetComponent<RectTransform>();
         if (tooltipRect != null)
         {
             Vector3[] corners = new Vector3[4];
             tooltipRect.GetWorldCorners(corners);
-            float width = corners[2].x - corners[0].x;
+            float width  = corners[2].x - corners[0].x;
             float height = corners[2].y - corners[0].y;
 
-            // Check right edge
             if (corners[2].x > Screen.width)
-            {
-                activeTooltip.transform.position = new Vector3(
-                    Screen.width - width - 10,
-                    activeTooltip.transform.position.y,
-                    activeTooltip.transform.position.z
-                );
-            }
-
-            // Check bottom edge
+                activeTooltip.transform.position = new Vector3(Screen.width - width - 10, activeTooltip.transform.position.y, 0);
             if (corners[0].y < 0)
-            {
-                activeTooltip.transform.position = new Vector3(
-                    activeTooltip.transform.position.x,
-                    height + 10,
-                    activeTooltip.transform.position.z
-                );
-            }
+                activeTooltip.transform.position = new Vector3(activeTooltip.transform.position.x, height + 10, 0);
         }
 
-        // Populate tooltip content
         ItemDetails details = activeTooltip.GetComponent<ItemDetails>();
-        if (details != null)
-            details.Initialize(slotData.dadosDoItem);
+        if (details != null) details.Initialize(slotData.dadosDoItem);
 
-        // Tooltip must not block raycasts
         CanvasGroup cg = activeTooltip.GetComponent<CanvasGroup>();
         if (cg == null) cg = activeTooltip.AddComponent<CanvasGroup>();
         cg.blocksRaycasts = false;
@@ -187,193 +158,44 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     private void OnItemClick()
     {
-        if (slotData == null || slotData.dadosDoItem == null) return;
-
-        // Dismiss tooltip
         if (tooltipCoroutine != null) { StopCoroutine(tooltipCoroutine); tooltipCoroutine = null; }
         if (activeTooltip != null)    { Destroy(activeTooltip); activeTooltip = null; }
 
+        // "Remover Item" slot has no slotData but has a listener added externally
+        if (slotData == null) return;
+        if (slotData.dadosDoItem == null) return;
+
         DadosItem item = slotData.dadosDoItem;
 
-        // ── Equip-filter mode: items panel opened from an equipment slot ─────
+        // ── Equip-filter mode (Equipment tab: character → slot → item) ────────
         if (partyMenuManager != null &&
             partyMenuManager.GetPendingOp() == PartyMenuManager.PendingOpType.EquipItem)
         {
             if (item.ehEquipavel && item.slotEquipamento == partyMenuManager.GetPendingEquipSlot())
-                partyMenuManager.OnEquipItemSelectedFromPanel(item);
+                partyMenuManager.OnEquipItemSelectedFromPanel(slotData);
             return;
         }
 
-        // ── Normal mode ──────────────────────────────────────────────────────
-        if (!item.ehConsumivel) return;
+        // ── Equipped item: clicking the X unequips directly ───────────────────
+        if (slotData.equippedTo != null && partyMenuManager.GetPendingOp() == PartyMenuManager.PendingOpType.None)
+        {
+            partyMenuManager.inventory.UnequipItemFromSlot(slotData);
+            partyMenuManager.RefreshInventoryDisplay();
+            partyMenuManager.RefreshEquipmentCards();
+            return;
+        }
 
+        // ── Normal mode ───────────────────────────────────────────────────────
         if (partyMenuManager != null) partyMenuManager.HighlightSlot(this);
 
         if (item.ehConsumivel && item.usavelNoMapa)
         {
-            // Switch to character panel for target selection
             partyMenuManager?.StartUseItemTargeting(slotData);
-        }
-    }
-
-    private void ShowPartyMemberSelector()
-    {
-        if (partyMemberSelectorPrefab == null || partyMenuManager == null) return;
-
-        if (activeSelector != null)
-            Destroy(activeSelector);
-
-        // Use PartyMenuManager's canvas as parent
-        Transform parentCanvas = partyMenuManager.partyMenuCanvas;
-        activeSelector = Instantiate(partyMemberSelectorPrefab, parentCanvas);
-        activeSelector.transform.SetAsLastSibling();
-        activeSelector.transform.position = Input.mousePosition;
-
-        // Find the button container
-        Transform buttonContainer = activeSelector.transform.Find("ButtonContainer");
-        if (buttonContainer == null)
-        {
-            Debug.LogError("PartyMemberSelector prefab must have a child named 'ButtonContainer'");
-            return;
-        }
-
-        // Add title text - find or create it
-        TextMeshProUGUI titleText = activeSelector.GetComponentInChildren<TextMeshProUGUI>();
-        if (titleText != null)
-        {
-            if (slotData.dadosDoItem.ehConsumivel)
-                titleText.text = "Use on which party member?";
-            else if (slotData.dadosDoItem.ehEquipavel)
-                titleText.text = "Equip to which party member?";
-            else
-                titleText.text = "Select party member:";
-        }
-
-        // Create party member buttons
-        foreach (var member in partyMenuManager.inventory.partyMembers)
-        {
-            if (member != null)
-            {
-                GameObject btnObj = Instantiate(partyMemberButtonPrefab, buttonContainer);
-                PartyMemberButton btn = btnObj.GetComponent<PartyMemberButton>();
-
-                if (btn != null)
-                {
-                    PartyMemberState memberState = member;
-                    btn.Initialize(memberState, partyMenuManager);
-
-                    // Check if character can use this item
-                    bool canUse = CanUseOnCharacter(memberState);
-
-                    Button uiButton = btnObj.GetComponent<Button>();
-                    if (uiButton != null)
-                    {
-                        uiButton.onClick.RemoveAllListeners();
-
-                        if (canUse)
-                        {
-                            uiButton.onClick.AddListener(() => OnPartyMemberSelected(memberState));
-
-                            // Reset any visual changes
-                            TextMeshProUGUI nameText = btnObj.GetComponentInChildren<TextMeshProUGUI>();
-                            if (nameText != null)
-                                nameText.text = memberState.CharacterName;
-                        }
-                        else
-                        {
-                            // Disable button if can't use
-                            uiButton.interactable = false;
-
-                            // Add level requirement text
-                            TextMeshProUGUI nameText = btnObj.GetComponentInChildren<TextMeshProUGUI>();
-                            if (nameText != null)
-                            {
-                                if (slotData.dadosDoItem.ehEquipavel)
-                                    nameText.text = $"{memberState.CharacterName} (Lv {slotData.dadosDoItem.nivelRequerido} req)";
-                                else
-                                    nameText.text = memberState.CharacterName;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // Add cancel button
-        CreateCancelButton(buttonContainer);
-    }
-
-    private void CreateCancelButton(Transform parent)
-    {
-        GameObject cancelBtnObj = Instantiate(partyMemberButtonPrefab, parent);
-
-        // Override the text
-        TextMeshProUGUI nameText = cancelBtnObj.GetComponentInChildren<TextMeshProUGUI>();
-        if (nameText != null)
-            nameText.text = "Cancel";
-
-        Button uiButton = cancelBtnObj.GetComponent<Button>();
-        if (uiButton != null)
-        {
-            uiButton.onClick.RemoveAllListeners();
-            uiButton.onClick.AddListener(() => {
-                if (activeSelector != null)
-                    Destroy(activeSelector);
-            });
-        }
-    }
-
-    private bool CanUseOnCharacter(PartyMemberState character)
-    {
-        if (slotData.dadosDoItem.ehConsumivel)
-        {
-            return true;
-        }
-        else if (slotData.dadosDoItem.ehEquipavel)
-        {
-            return character.level >= slotData.dadosDoItem.nivelRequerido;
-        }
-        return false;
-    }
-
-    private void OnPartyMemberSelected(PartyMemberState selectedCharacter)
-    {
-        DadosItem item = slotData.dadosDoItem;
-
-        if (item.ehConsumivel)
-        {
-            bool used = selectedCharacter.UseConsumable(item);
-
-            if (used)
-            {
-                partyMenuManager.inventory.RemoverItem(item, 1);
-                partyMenuManager.RefreshInventoryDisplay();
-                partyMenuManager.UpdateCharacterStats(selectedCharacter);
-            }
         }
         else if (item.ehEquipavel)
         {
-            bool equipped = false;
-            if (item.slotEquipamento == EquipmentSlot.Acessorio)
-            {
-                equipped = selectedCharacter.EquipAccessory(item);
-            }
-            else if (item.slotEquipamento == EquipmentSlot.Armadura)
-            {
-                equipped = selectedCharacter.EquipArmor(item);
-            }
-
-            if (equipped)
-            {
-                partyMenuManager.inventory.RemoverItem(item, 1);
-                partyMenuManager.RefreshInventoryDisplay();
-                partyMenuManager.UpdateEquipmentDisplay();
-                partyMenuManager.UpdateCharacterStats(selectedCharacter);
-            }
+            partyMenuManager?.StartEquipItemFromInventory(slotData);
         }
-
-        if (activeSelector != null)
-            Destroy(activeSelector);
     }
 
     public void SetHighlight(bool highlighted)
@@ -381,29 +203,17 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         if (highlightBorder != null)
         {
             highlightBorder.gameObject.SetActive(highlighted);
-
-            // Ensure border stays behind the icon
             if (highlighted && itemIcon != null)
-            {
                 highlightBorder.transform.SetSiblingIndex(itemIcon.transform.GetSiblingIndex());
-            }
         }
     }
 
-    public SlotInventario GetSlotData()
-    {
-        return slotData;
-    }
+    public SlotInventario GetSlotData() => slotData;
 
     private void OnDestroy()
     {
-        if (clickButton != null)
-            clickButton.onClick.RemoveListener(OnItemClick);
-        if (activeTooltip != null)
-            Destroy(activeTooltip);
-        if (activeSelector != null)
-            Destroy(activeSelector);
-        if (tooltipCoroutine != null)
-            StopCoroutine(tooltipCoroutine);
+        if (clickButton != null) clickButton.onClick.RemoveListener(OnItemClick);
+        if (activeTooltip != null) Destroy(activeTooltip);
+        if (tooltipCoroutine != null) StopCoroutine(tooltipCoroutine);
     }
 }

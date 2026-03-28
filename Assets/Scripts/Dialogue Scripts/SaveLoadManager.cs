@@ -236,6 +236,9 @@ public class SaveLoadManager : MonoBehaviour
         foreach (string tag in data.savedGameProgress)
             inventory.AddProgress(tag);
 
+        // Restaura referências equippedTo nos slots de inventário
+        inventory.RestoreEquippedSlots();
+
         Debug.Log($"[SaveLoadManager] Jogo carregado da cena '{data.savedSceneName}'.");
 
         // Reinício de batalha pendente — relançar o combate como se fosse uma nova tentativa
