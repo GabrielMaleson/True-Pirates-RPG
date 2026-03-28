@@ -67,8 +67,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: AP
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: a4ea0ae4d467a78439601a5f4a86d6b7, type: 2}
-  m_sharedMaterial: {fileID: 7991318608361535419, guid: a4ea0ae4d467a78439601a5f4a86d6b7, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -400,8 +400,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 14.3, y: -12.1}
-  m_SizeDelta: {x: -28.852, y: -21.416}
+  m_AnchoredPosition: {x: -0.06296539, y: -12.099998}
+  m_SizeDelta: {x: -0.12598, y: -21.416}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7660539557977279556
 CanvasRenderer:
@@ -433,8 +433,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: (Ataque sem Nome)
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: a4ea0ae4d467a78439601a5f4a86d6b7, type: 2}
-  m_sharedMaterial: {fileID: 7991318608361535419, guid: a4ea0ae4d467a78439601a5f4a86d6b7, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -458,13 +458,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 10
-  m_fontSizeBase: 10
+  m_fontSize: 8
+  m_fontSizeBase: 8
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
   m_fontSizeMax: 0
-  m_fontStyle: 32
+  m_fontStyle: 33
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 1024
   m_textAlignment: 65535
@@ -497,7 +497,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: -24.054718, y: 0, z: 0, w: 0}
+  m_margin: {x: 0.4670868, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
