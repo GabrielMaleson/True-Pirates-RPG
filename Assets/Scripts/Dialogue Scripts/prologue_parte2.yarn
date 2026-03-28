@@ -138,7 +138,7 @@ title: sidequest2_vela
 	<<removesprite icon>>
 	Timon: É, realmente, não importa muito.
 	Timon: Pivete, me faz um favor?
-	Timon: Tenho um baú por aqui... não lembro onde, mas eu preciso do objeto dentro delete.
+	Timon: Tenho um baú por aqui... não lembro onde, mas eu preciso do objeto dentro dele.
 	Timon: Vai pegar ele e traz pra mim. Não me decepcione.
 	<<removesprite icon>>
 	<<add_objective "O Tesouro Do Timon">>
@@ -196,7 +196,7 @@ title: sidequest3_ratcomplete
 	<<progress piece3>>
 	<<progress ratkilled>>
 	<<additem "piece3item">>
-	Narração: Você obteu mais uma peça do dispositivo. Mas como juntá-las...?
+	Narração: Você obteve mais uma peça do dispositivo. Mas como juntá-las...?
 	<<brighten>>
 ===
 
