@@ -26,7 +26,8 @@
       "Bash(where pwsh:*)",
       "Bash(where powershell:*)",
       "Bash(powershell.exe -NoProfile -Command \"Write-Host ''test''\")",
-      "Bash(powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"c:/Users/gipoggi/Documents/GitHub/True-Pirates-RPG/fix_items.ps1\")"
+      "Bash(powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"c:/Users/gipoggi/Documents/GitHub/True-Pirates-RPG/fix_items.ps1\")",
+      "Bash(find /c/Users/gipoggi/Documents/GitHub/True-Pirates-RPG/Assets -type f \\\\\\(-name *Pause* -o -name *pause* \\\\\\))"
     ]
   }
 }

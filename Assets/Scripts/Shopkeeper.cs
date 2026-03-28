@@ -71,8 +71,23 @@ public class Shopkeeper : MonoBehaviour
         if (shopPanel != null)
             shopPanel.SetActive(false);
 
+        // Check if player is already inside the trigger on load
+        Collider2D col = GetComponent<Collider2D>();
+        if (col != null)
+        {
+            Collider2D player = Physics2D.OverlapPoint(col.bounds.center, LayerMask.GetMask("Player"));
+            if (player == null)
+            {
+                // Fallback: check by tag within bounds
+                Collider2D[] hits = Physics2D.OverlapBoxAll(col.bounds.center, col.bounds.size, 0f);
+                foreach (var h in hits)
+                    if (h.CompareTag("Player")) { player = h; break; }
+            }
+            playerInRange = player != null;
+        }
+
         if (shopInteractionPopup != null)
-            shopInteractionPopup.SetActive(false);
+            shopInteractionPopup.SetActive(playerInRange);
 
         // Clip slot grid overflow to the panel bounds
         if (slotGrid != null)

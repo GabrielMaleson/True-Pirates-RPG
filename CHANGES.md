@@ -39,6 +39,15 @@
 
 ---
 
+## 2026-03-28 (session 38)
+
+### Fix: Sair durante combate agora vai para o menu principal
+**Files:** `Assets/Scripts/Battle/CombatSystem.cs`, `Assets/Scripts/Dialogue Scripts/SaveLoadManager.cs`
+
+`ConfirmLeave()` chamava `SaveAndQuitFromBattle()` que terminava com `Application.Quit()` — fecha o jogo em build e não faz nada no editor. Extraída a lógica de escrita do save para `WriteBattleSave()` e adicionado `SaveAndReturnToTitle()` que salva e faz `SceneManager.LoadScene("TitleScreen")`. `ConfirmLeave` agora chama `SaveAndReturnToTitle`. `SaveAndQuitFromBattle` ainda existe e chama `Application.Quit()` para uso futuro.
+
+---
+
 ## 2026-03-28 (session 35)
 
 ### Fix: Aba Party mostrando cartões de equipamento em vez dos displays de personagem

@@ -31,16 +31,19 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     private Coroutine tooltipCoroutine;
     private bool isPointerOver = false;
 
-    private void Start()
+    private void Awake()
     {
-        if (clickButton != null)
-            clickButton.onClick.AddListener(OnItemClick);
-
         if (highlightBorder != null)
             highlightBorder.gameObject.SetActive(false);
 
         if (equippedIndicator != null)
             equippedIndicator.SetActive(false);
+    }
+
+    private void Start()
+    {
+        if (clickButton != null)
+            clickButton.onClick.AddListener(OnItemClick);
     }
 
     public void ConfigurarSlot(SlotInventario slot)
@@ -130,20 +133,37 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         Transform parentCanvas = partyMenuManager.partyMenuCanvas;
         activeTooltip = Instantiate(itemDetailsPrefab, parentCanvas);
         activeTooltip.transform.SetAsLastSibling();
-        activeTooltip.transform.position = Input.mousePosition;
 
+        // Position centered below this slot
+        RectTransform slotRect    = GetComponent<RectTransform>();
         RectTransform tooltipRect = activeTooltip.GetComponent<RectTransform>();
-        if (tooltipRect != null)
+        if (slotRect != null && tooltipRect != null)
         {
-            Vector3[] corners = new Vector3[4];
-            tooltipRect.GetWorldCorners(corners);
-            float width  = corners[2].x - corners[0].x;
-            float height = corners[2].y - corners[0].y;
+            // Get the four world corners of this slot (0=BL, 1=TL, 2=TR, 3=BR)
+            Vector3[] slotCorners = new Vector3[4];
+            slotRect.GetWorldCorners(slotCorners);
 
-            if (corners[2].x > Screen.width)
-                activeTooltip.transform.position = new Vector3(Screen.width - width - 10, activeTooltip.transform.position.y, 0);
-            if (corners[0].y < 0)
-                activeTooltip.transform.position = new Vector3(activeTooltip.transform.position.x, height + 10, 0);
+            // Center X of the slot, just below the bottom edge
+            float centerX  = (slotCorners[0].x + slotCorners[3].x) * 0.5f;
+            float bottomY  = slotCorners[0].y;
+
+            activeTooltip.transform.position = new Vector3(centerX, bottomY, 0f);
+
+            // After placing, clamp so it stays on screen
+            Canvas.ForceUpdateCanvases();
+            Vector3[] tipCorners = new Vector3[4];
+            tooltipRect.GetWorldCorners(tipCorners);
+            float tipWidth  = tipCorners[2].x - tipCorners[0].x;
+            float tipHeight = tipCorners[2].y - tipCorners[0].y;
+
+            float x = activeTooltip.transform.position.x;
+            float y = activeTooltip.transform.position.y;
+
+            if (x - tipWidth * 0.5f < 0)            x = tipWidth * 0.5f;
+            if (x + tipWidth * 0.5f > Screen.width)  x = Screen.width - tipWidth * 0.5f;
+            if (y - tipHeight < 0)                    y = tipHeight;
+
+            activeTooltip.transform.position = new Vector3(x, y, 0f);
         }
 
         ItemDetails details = activeTooltip.GetComponent<ItemDetails>();
