@@ -1682,7 +1682,7 @@ GameObject:
   - component: {fileID: 4973412003481169383}
   - component: {fileID: 8546617630232985770}
   m_Layer: 0
-  m_Name: Dialogue Manager
+  m_Name: Dialogue2Manager
   m_TagString: Inventory
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
