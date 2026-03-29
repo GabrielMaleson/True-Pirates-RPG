@@ -792,19 +792,13 @@ public class CombatUIManager : MonoBehaviour
         if (itemButtonGrid != null)
         {
             foreach (Transform child in itemButtonGrid)
-            {
                 Destroy(child.gameObject);
-            }
         }
 
         if (item.efeitos != null && item.efeitos.Count > 0)
         {
-            // Use first effect to determine targeting
             var effect = item.efeitos[0];
-            TargetType targetType = effect.targetType;
-            int numberOfTargets = effect.numberOfTargets;
-
-            StartTargeting(targetType, numberOfTargets, isItem: true);
+            StartTargeting(effect.targetType, effect.numberOfTargets, isItem: true);
         }
     }
 
@@ -1078,7 +1072,7 @@ public class CombatUIManager : MonoBehaviour
         if (playerInventory != null)
         {
             playerInventory.RemoverItem(item, 1);
-            statusText.text = $"Used {item.nomeDoItem}!";
+            statusText.text = $"Usou {item.nomeDoItem}!";
         }
     }
 

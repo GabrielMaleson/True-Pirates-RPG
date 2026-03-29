@@ -2,6 +2,15 @@
 
 ---
 
+## 2026-03-29
+
+### Fix: Fluxo de uso de item em batalha usa mesma lógica de mira que ataques
+**Files:** `Battle/CombatUIManager.cs`
+
+`OnItemSelected` usa `StartTargeting` (TargetSelector nos sprites de personagem), idêntico ao fluxo de ataques. Apenas consumíveis (`ehConsumivel && usavelEmBatalha`) aparecem no grid de itens. `RemoverItem` funciona corretamente com o sistema não-empilhável (remove o primeiro slot com aquele item). **Corrigido:** string "Used {item}" traduzida para "Usou {item}".
+
+---
+
 ## 2026-03-28 (session 37)
 
 ### Refactor: Itens não são mais empilháveis + redesign de prefabs
