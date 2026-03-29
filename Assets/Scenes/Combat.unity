@@ -389,6 +389,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
+  m_UseReflectionProbes: 0
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
@@ -13013,7 +13014,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ddcd458260665f42935c2dd698730a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ConfigMenu
-  masterMixer: {fileID: 0}
+  masterMixer: {fileID: 24100000, guid: bedf9933fc11f2f47bd5f430802b74c7, type: 2}
   mixerSliders:
   - label: Master Volume
     exposedParameterName: MasterVolume
