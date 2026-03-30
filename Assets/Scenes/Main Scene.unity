@@ -1085,6 +1085,7 @@ MonoBehaviour:
   Activator: {fileID: 766683549}
   Activator2: {fileID: 0}
   Killer: {fileID: 0}
+  Killer2: {fileID: 0}
   NotificationThing: {fileID: 0}
   compassquest: 0
   chestquest: 0
@@ -47790,7 +47791,7 @@ MonoBehaviour:
     currentHP: 0
     currentAP: 0
     currentExperience: 0
-    weapon: {fileID: 0}
+    accessory: {fileID: 0}
     armor: {fileID: 0}
     learnedAttacks: []
     activeStatusEffects: []
@@ -48074,6 +48075,7 @@ MonoBehaviour:
   Activator: {fileID: 150022141}
   Activator2: {fileID: 1238468658}
   Killer: {fileID: 272847102}
+  Killer2: {fileID: 0}
   NotificationThing: {fileID: 596422107}
   compassquest: 0
   chestquest: 0
@@ -58907,7 +58909,7 @@ GameObject:
   - component: {fileID: 533054389}
   m_Layer: 0
   m_Name: npcNotif
-  m_TagString: Notification
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -59415,7 +59417,7 @@ GameObject:
   - component: {fileID: 596422109}
   m_Layer: 0
   m_Name: npcNotif
-  m_TagString: Notification
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -59737,7 +59739,7 @@ MonoBehaviour:
     currentHP: 0
     currentAP: 0
     currentExperience: 0
-    weapon: {fileID: 0}
+    accessory: {fileID: 0}
     armor: {fileID: 0}
     learnedAttacks: []
     activeStatusEffects: []
@@ -60794,6 +60796,7 @@ MonoBehaviour:
   Activator: {fileID: 2030917697}
   Activator2: {fileID: 1552424098}
   Killer: {fileID: 794449463}
+  Killer2: {fileID: 0}
   NotificationThing: {fileID: 0}
   compassquest: 0
   chestquest: 0
@@ -60899,6 +60902,7 @@ MonoBehaviour:
   Activator: {fileID: 1491425525}
   Activator2: {fileID: 53525098}
   Killer: {fileID: 0}
+  Killer2: {fileID: 0}
   NotificationThing: {fileID: 2073192127}
   compassquest: 0
   chestquest: 0
@@ -63395,7 +63399,7 @@ GameObject:
   - component: {fileID: 1216367363}
   m_Layer: 0
   m_Name: npcNotif
-  m_TagString: Notification
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -63867,6 +63871,7 @@ MonoBehaviour:
   Activator: {fileID: 754411964}
   Activator2: {fileID: 0}
   Killer: {fileID: 0}
+  Killer2: {fileID: 0}
   NotificationThing: {fileID: 533054387}
   compassquest: 1
   chestquest: 0
@@ -70946,7 +70951,7 @@ GameObject:
   - component: {fileID: 1501647607}
   m_Layer: 0
   m_Name: npcNotif
-  m_TagString: Notification
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -71154,7 +71159,8 @@ MonoBehaviour:
   DestroyThe: 1
   Activator: {fileID: 1933411260}
   Activator2: {fileID: 1217893615}
-  Killer: {fileID: 1547378131}
+  Killer: {fileID: 1053095547}
+  Killer2: {fileID: 1933411260}
   NotificationThing: {fileID: 1581723890}
   compassquest: 0
   chestquest: 0
@@ -71319,6 +71325,7 @@ MonoBehaviour:
   Activator: {fileID: 0}
   Activator2: {fileID: 0}
   Killer: {fileID: 0}
+  Killer2: {fileID: 0}
   NotificationThing: {fileID: 2113687239}
   compassquest: 0
   chestquest: 0
@@ -71485,7 +71492,7 @@ GameObject:
   - component: {fileID: 1581723892}
   m_Layer: 0
   m_Name: npcNotif
-  m_TagString: Notification
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -72201,6 +72208,7 @@ MonoBehaviour:
   Activator: {fileID: 0}
   Activator2: {fileID: 0}
   Killer: {fileID: 0}
+  Killer2: {fileID: 0}
   NotificationThing: {fileID: 1501647605}
   compassquest: 0
   chestquest: 0
@@ -72791,6 +72799,7 @@ MonoBehaviour:
   Activator: {fileID: 222407282}
   Activator2: {fileID: 1606221627}
   Killer: {fileID: 766683549}
+  Killer2: {fileID: 0}
   NotificationThing: {fileID: 0}
   compassquest: 0
   chestquest: 0
@@ -75568,6 +75577,7 @@ MonoBehaviour:
   Activator: {fileID: 0}
   Activator2: {fileID: 0}
   Killer: {fileID: 0}
+  Killer2: {fileID: 0}
   NotificationThing: {fileID: 1216367361}
   compassquest: 0
   chestquest: 1
@@ -76614,7 +76624,7 @@ GameObject:
   - component: {fileID: 2073192129}
   m_Layer: 0
   m_Name: npcNotif
-  m_TagString: Notification
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -77106,7 +77116,7 @@ GameObject:
   - component: {fileID: 2113687240}
   m_Layer: 0
   m_Name: npcNotif (1)
-  m_TagString: Notification
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

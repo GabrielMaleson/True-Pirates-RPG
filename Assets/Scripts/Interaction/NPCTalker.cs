@@ -13,6 +13,7 @@ public class NPCTalker : MonoBehaviour
     public GameObject Activator;
     public GameObject Activator2;
     public GameObject Killer;
+    public GameObject Killer2;
     public GameObject NotificationThing;
     public bool compassquest = false;
     public bool chestquest = false;
@@ -35,6 +36,8 @@ public class NPCTalker : MonoBehaviour
         if (SistemaInventario.Instance != null)
             SistemaInventario.Instance.AdicionarItem(found, quantidade);
     }
+
+    [System.Obsolete]
     void Start()
     {
         dialogue = FindFirstObjectByType<DialogueManager>();
@@ -83,6 +86,10 @@ public class NPCTalker : MonoBehaviour
             if (Activator2 != null)
             {
                 Activator2.SetActive(true);
+            }
+            if (Killer2 != null)
+            {
+                Killer2.SetActive(false);
             }
             if (Killer != null)
             {
