@@ -898,7 +898,7 @@ public class PartyMenuManager : MonoBehaviour
 
     public void ConfirmLeave()
     {
-        SaveLoadManager.Instance?.SaveGame();
+        SaveLoadManager.GetOrCreate().SaveGame();
         SceneManager.LoadScene("TitleScreen");
     }
 
@@ -907,7 +907,7 @@ public class PartyMenuManager : MonoBehaviour
 
     public void SaveGame()
     {
-        SaveLoadManager.Instance?.SaveGame();
+        SaveLoadManager.GetOrCreate().SaveGame();
     }
 
     private void OnDestroy()

@@ -41,6 +41,9 @@ public class EncounterStarter : MonoBehaviour
         EncounterData encounterData = BuildEncounterData(encounterFile, playerInventory);
         encounterData.encounterStarterObject = this.gameObject;
 
+        // Salva automaticamente antes de entrar em batalha (checkpoint pré-batalha)
+        SaveLoadManager.GetOrCreate().SaveGame();
+
         BattleTransitionManager btm = BattleTransitionManager.GetOrCreate();
         if (transitionConfig != null) btm.Configure(transitionConfig);
         btm.StartTransitionThen(encounterFile.transitionType, () =>
@@ -65,6 +68,9 @@ public class EncounterStarter : MonoBehaviour
     public static void StartEncounterFromCutscene(EncounterFile encounterFile, SistemaInventario inventory)
     {
         BuildEncounterData(encounterFile, inventory);
+
+        // Salva automaticamente antes de entrar em batalha (checkpoint pré-batalha)
+        SaveLoadManager.GetOrCreate().SaveGame();
 
         BattleTransitionManager.GetOrCreate().StartTransitionThen(encounterFile.transitionType, () =>
         {

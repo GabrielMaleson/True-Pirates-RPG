@@ -3363,6 +3363,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a797b6b96f2f4404ea0a8d97d221981c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SFXManager
+  sfxMixerGroup: {fileID: 8447757656645813869, guid: bedf9933fc11f2f47bd5f430802b74c7, type: 2}
+  loopMixerGroup: {fileID: -3874869322690201968, guid: bedf9933fc11f2f47bd5f430802b74c7, type: 2}
   uiForward: {fileID: 8300000, guid: cc55120ad62453541ba1e3973ef4be86, type: 3}
   uiBackward: {fileID: 8300000, guid: ae060808ee591bd44a56b41b2a93d79c, type: 3}
   defeatFail: {fileID: 8300000, guid: 12c42c9c9d6d04b47b4c7c1a761a8451, type: 3}
@@ -4958,6 +4960,7 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: 0cc163690391ac94ca4acc5bc4415560, type: 3}
   startupMusicName: 
   audioSource: {fileID: 1821845794}
+  musicMixerGroup: {fileID: 8447757656645813869, guid: bedf9933fc11f2f47bd5f430802b74c7, type: 2}
 --- !u!4 &1821845796
 Transform:
   m_ObjectHideFlags: 0

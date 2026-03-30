@@ -800,6 +800,13 @@ public class CombatUIManager : MonoBehaviour
             var effect = item.efeitos[0];
             StartTargeting(effect.targetType, effect.numberOfTargets, isItem: true);
         }
+        else
+        {
+            // Sem efeitos configurados no item — volta ao menu de ação
+            Debug.LogWarning($"[CombatUIManager] Item '{item.nomeDoItem}' não tem efeitos configurados (efeitos está vazio). Verifique o ScriptableObject.");
+            actionMenuPanel.SetActive(true);
+            if (statusText != null) statusText.text = "Item sem efeitos configurados.";
+        }
     }
 
     private void StartTargeting(AttackFile attack)

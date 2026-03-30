@@ -4,6 +4,23 @@
 
 ## 2026-03-29
 
+### Fix: Save, áudio, mira de item em batalha e UI de objetivos
+**Files:** `SaveLoadManager.cs`, `EncounterStarter.cs`, `CombatSystem.cs`, `PartyMenuManager.cs`, `SFXManager.cs`, `MusicManager.cs`, `CombatUIManager.cs`, `Objective Manager.cs`
+
+**Save — `SaveLoadManager.Instance` era null → saves silenciosos:**
+Adicionado `GetOrCreate()` (semelhante ao `BattleSaveManager`) — garante que o singleton sempre exista. Todos os callers (`PartyMenuManager.ConfirmLeave`, `PartyMenuManager.SaveGame`, `CombatSystem.ConfirmLeave`) agora usam `GetOrCreate()` em vez de `Instance?.`. Adicionado auto-save antes de batalha em `EncounterStarter.StartEncounter()` e `StartEncounterFromCutscene()`.
+
+**Áudio — `AudioSource` sem `outputAudioMixerGroup` → slider não tinha efeito:**
+`SFXManager` e `MusicManager` não roteavam suas `AudioSource`s pelo AudioMixer. Adicionados campos `sfxMixerGroup`, `loopMixerGroup` (SFXManager) e `musicMixerGroup` (MusicManager). Atribuir no Inspector para que os sliders de volume do `ConfigMenu` tenham efeito.
+
+**Mira de item em batalha — UI congelava se `efeitos` estivesse vazio:**
+Adicionado fallback: se o item não tiver `ItemEffectData` configurado, volta ao menu de ação com aviso em vez de travar a UI.
+
+**Objetivos — botão mostrava nome interno:**
+`CreateQuestButton` agora exibe "Quest #1", "Quest #2", etc. O nome completo só aparece no painel de detalhes.
+
+---
+
 ### Fix: Fluxo de uso de item em batalha usa mesma lógica de mira que ataques
 **Files:** `Battle/CombatUIManager.cs`
 

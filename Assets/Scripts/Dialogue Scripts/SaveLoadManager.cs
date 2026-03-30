@@ -67,6 +67,17 @@ public class SaveLoadManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Retorna a instância existente ou cria uma nova caso não exista.
+    /// Use este método em vez de Instance?.SaveGame() para garantir que o save sempre funcione.
+    /// </summary>
+    public static SaveLoadManager GetOrCreate()
+    {
+        if (Instance != null) return Instance;
+        GameObject go = new GameObject("SaveLoadManager");
+        return go.AddComponent<SaveLoadManager>();
+    }
+
     // ── API pública ───────────────────────────────────────────────────────────
 
     public void NewGame()

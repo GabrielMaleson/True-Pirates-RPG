@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 using Yarn.Unity;
 
 /// <summary>
@@ -34,6 +35,10 @@ public class MusicManager : MonoBehaviour
     [Header("Audio Source")]
     public AudioSource audioSource;
 
+    [Header("Audio Mixer Group (opcional — necessário para o controle de volume funcionar)")]
+    [Tooltip("Grupo do AudioMixer para música. Deixe em branco para saída direta.")]
+    public AudioMixerGroup musicMixerGroup;
+
     // Nome da última trilha de ambiente tocada via PlayMusicCommand — restaurado após combate
     private string lastAmbienceTrackName;
 
@@ -55,6 +60,7 @@ public class MusicManager : MonoBehaviour
         audioSource.loop         = true;
         audioSource.playOnAwake  = false;
         audioSource.spatialBlend = 0f; // 2D — volume não depende de distância
+        if (musicMixerGroup != null) audioSource.outputAudioMixerGroup = musicMixerGroup;
 
         if (!string.IsNullOrEmpty(startupMusicName))
             PlayMusicCommand(startupMusicName);

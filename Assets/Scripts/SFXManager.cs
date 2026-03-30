@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Audio;
 
 /// <summary>
 /// Singleton para efeitos sonoros. Persiste entre cenas (DontDestroyOnLoad).
@@ -8,6 +9,12 @@ using UnityEngine;
 public class SFXManager : MonoBehaviour
 {
     public static SFXManager Instance { get; private set; }
+
+    [Header("Audio Mixer Groups (opcional — necessário para o controle de volume funcionar)")]
+    [Tooltip("Grupo do AudioMixer para efeitos sonoros (SFX). Deixe em branco para saída direta.")]
+    public AudioMixerGroup sfxMixerGroup;
+    [Tooltip("Grupo do AudioMixer para sons em loop/ambientação. Deixe em branco para saída direta.")]
+    public AudioMixerGroup loopMixerGroup;
 
     [Header("UI")]
     public AudioClip uiForward;
@@ -43,11 +50,13 @@ public class SFXManager : MonoBehaviour
             sfxSource  = gameObject.AddComponent<AudioSource>();
             sfxSource.playOnAwake = false;
             sfxSource.spatialBlend = 0f; // 2D — volume não depende de distância
+            if (sfxMixerGroup != null) sfxSource.outputAudioMixerGroup = sfxMixerGroup;
 
             loopSource = gameObject.AddComponent<AudioSource>();
             loopSource.playOnAwake = false;
             loopSource.loop = true;
             loopSource.spatialBlend = 0f; // 2D
+            if (loopMixerGroup != null) loopSource.outputAudioMixerGroup = loopMixerGroup;
         }
         else
         {

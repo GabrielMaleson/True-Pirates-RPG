@@ -136,12 +136,14 @@ public class ObjectiveManager : MonoBehaviour
             Destroy(child.gameObject);
         }
 
+        int questIndex = 1;
+
         // Add active objectives first
         foreach (var objective in activeObjectives)
         {
             if (objective != null && objective.data != null)
             {
-                CreateQuestButton(objective, activeQuestColor);
+                CreateQuestButton(objective, activeQuestColor, questIndex++);
             }
         }
 
@@ -150,12 +152,12 @@ public class ObjectiveManager : MonoBehaviour
         {
             if (objective != null && objective.data != null)
             {
-                CreateQuestButton(objective, completedQuestColor);
+                CreateQuestButton(objective, completedQuestColor, questIndex++);
             }
         }
     }
 
-    private void CreateQuestButton(ObjectiveInstance objective, Color textColor)
+    private void CreateQuestButton(ObjectiveInstance objective, Color textColor, int questNumber)
     {
         GameObject buttonObj = Instantiate(questNameButtonPrefab, questListContainer);
         TextMeshProUGUI buttonText = buttonObj.GetComponentInChildren<TextMeshProUGUI>();
@@ -163,14 +165,8 @@ public class ObjectiveManager : MonoBehaviour
 
         if (buttonText != null)
         {
-            buttonText.text = objective.data.objectiveName;
+            buttonText.text = $"Quest #{questNumber}";
             buttonText.color = textColor;
-
-            // Add status indicator
-            if (objective.isCompleted)
-                buttonText.text += " (Completed)";
-            else if (objective.isActive)
-                buttonText.text += " (Active)";
         }
 
         if (button != null)

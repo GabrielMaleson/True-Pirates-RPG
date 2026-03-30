@@ -876,8 +876,8 @@ public class CombatSystem : MonoBehaviour
     public void ConfirmLeave()
     {
         EncounterData encounterData = FindFirstObjectByType<EncounterData>();
-        if (encounterData != null && SaveLoadManager.Instance != null)
-            SaveLoadManager.Instance.SaveAndReturnToTitle(encounterData);
+        if (encounterData != null)
+            SaveLoadManager.GetOrCreate().SaveAndReturnToTitle(encounterData);
         else
             SceneManager.LoadScene("TitleScreen");
     }
