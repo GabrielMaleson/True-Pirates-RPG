@@ -268,9 +268,9 @@ public class Shopkeeper : MonoBehaviour
     private string GetItemTypeLabel(DadosItem item)
     {
         if (item.ehEquipavel)
-            return item.slotEquipamento == EquipmentSlot.Acessorio ? "acessório" : "armadura";
+            return item.slotEquipamento == EquipmentSlot.Acessorio ? "Acessório" : "Armadura";
         if (item.ehConsumivel)
-            return "consumível";
+            return "Consumível";
         return "item";
     }
 
