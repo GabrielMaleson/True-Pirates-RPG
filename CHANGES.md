@@ -4,6 +4,13 @@
 
 ## 2026-03-29
 
+### Fix: ConfigMenu fecha sozinho na primeira abertura
+**Files:** `Menu Scripts/ConfigMenu.cs`
+
+`Start()` chamava `gameObject.SetActive(false)` — em Unity, `Start()` só executa na **primeira ativação**. Se o painel começar inativo na cena (como deveria), a primeira vez que settings era aberto, `Start()` disparava e fechava o painel imediatamente. Movido para `OnEnable()` com flag `hasInitialized`. O painel deve começar **inativo** no Inspector.
+
+---
+
 ### Fix: Save, áudio, mira de item em batalha e UI de objetivos
 **Files:** `SaveLoadManager.cs`, `EncounterStarter.cs`, `CombatSystem.cs`, `PartyMenuManager.cs`, `SFXManager.cs`, `MusicManager.cs`, `CombatUIManager.cs`, `Objective Manager.cs`
 

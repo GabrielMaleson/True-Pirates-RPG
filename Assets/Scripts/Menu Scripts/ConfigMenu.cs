@@ -40,12 +40,16 @@ public class ConfigMenu : MonoBehaviour
     public Toggle fullscreenToggle;
 
     private Resolution[] availableResolutions;
+    private bool hasInitialized = false;
 
-    private void Start()
+    private void OnEnable()
     {
-        SetupResolutionDropdown();
+        if (!hasInitialized)
+        {
+            SetupResolutionDropdown();
+            hasInitialized = true;
+        }
         LoadSettings();
-        gameObject.SetActive(false);
     }
 
     // ── Resolution ─────────────────────────────────────────────────────────
@@ -171,6 +175,8 @@ public class ConfigMenu : MonoBehaviour
         value = Mathf.Clamp(value, 0.0001f, 1f);
         return Mathf.Log10(value) * 20f;
     }
+
+    // ── Close ──────────────────────────────────────────────────────────────
 
     // ── Close ──────────────────────────────────────────────────────────────
 
