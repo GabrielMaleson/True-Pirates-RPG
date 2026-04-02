@@ -19,6 +19,7 @@ public class CharacterUI : MonoBehaviour, IPointerClickHandler, IPointerEnterHan
     [Header("Selected Portrait")]
     public GameObject selectedContainer;
     public Image selectedPortraitImage;
+    public TextMeshProUGUI selectedNameText;
     public TextMeshProUGUI selectedHpText;
     public Image selectedHealthBar;
 
@@ -56,7 +57,8 @@ public class CharacterUI : MonoBehaviour, IPointerClickHandler, IPointerEnterHan
         characterVisualObject = visualObject;
         uiManager = manager;
 
-        if (nameText != null) nameText.text = state.CharacterName;
+        if (nameText         != null) nameText.text         = state.CharacterName;
+        if (selectedNameText != null) selectedNameText.text = state.CharacterName;
 
         // Portrait sprite — try battlePortrait first, fall back to partyIcon
         Sprite portrait = null;

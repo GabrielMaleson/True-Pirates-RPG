@@ -1903,6 +1903,7 @@ MonoBehaviour:
   defeatedOverlay: {fileID: 4849601825679763013}
   selectedContainer: {fileID: 5391490731902235020}
   selectedPortraitImage: {fileID: 15068284565552801}
+  selectedNameText: {fileID: 1552753798138206182}
   selectedHpText: {fileID: 242600543975594482}
   selectedHealthBar: {fileID: 3915155873858713916}
   damageText: {fileID: 2694519498568885275}

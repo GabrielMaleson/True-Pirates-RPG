@@ -4,6 +4,14 @@
 
 ## 2026-04-01
 
+### Fix: Nome do personagem não aparecia no retrato durante o turno dele
+**Files:** `Battle/PartyMemberDisplay.cs`
+
+`CharacterUI` tem dois containers: `defaultContainer` (turno de outro personagem) e `selectedContainer` (turno do personagem). O `nameText` existia apenas no container padrão — ao selecionar um personagem, o container padrão era ocultado e o selecionado não tinha campo equivalente para o nome. Adicionado `selectedNameText` e atribuído em `Initialize`.
+**Inspector:** atribuir o TMP do nome dentro do selected container no prefab de retrato.
+
+---
+
 ### Fix: Shader de transição de batalha removido no build
 **Files:** `ProjectSettings/GraphicsSettings.asset`
 
