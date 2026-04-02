@@ -2,6 +2,15 @@
 
 ---
 
+## 2026-04-01
+
+### Fix: Shader de transição de batalha removido no build
+**Files:** `ProjectSettings/GraphicsSettings.asset`
+
+`Shader.Find("Custom/BattleTransition")` retornava null em builds porque o shader não estava referenciado por nenhum material de cena e não estava na lista Always Included Shaders. Resultado: sem efeito de wipe na transição (fallback imediato, sem tela preta). Adicionado o shader à lista `m_AlwaysIncludedShaders` em GraphicsSettings.asset.
+
+---
+
 ## 2026-03-29
 
 ### Fix: ConfigMenu fecha sozinho na primeira abertura
